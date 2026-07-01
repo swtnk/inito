@@ -226,3 +226,35 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [ ] Re-run `mypy --strict` and `pyright` against `examples/` with the plugin enabled and confirm
       they pass cleanly (closing the gap identified in Phase 11)
 - [ ] Update TASKS.md/README once this lands to remove the "known limitation" notice
+
+## Phase 18 — Dependency injection: @Service/@Inject/@Singleton (post-v1, not blocking release)
+
+`inito.md`'s "Future Features" list names `@Singleton`, `@Inject`, `@Lazy`,
+`@Factory` and says explicitly not to implement them yet, only to keep the
+architecture extensible. Raised in conversation: Lombok's
+`@RequiredArgsConstructor` enables Spring-style constructor DI in Java, but
+that wiring is Spring's IoC container doing the work, not Lombok itself —
+so an equivalent in Python needs a real DI container, not just a
+constructor-generating decorator. Design sketch, to flesh out when this
+phase is picked up:
+
+- [ ] A stateful `Container` registry (new kind of shared state — everything
+      built so far is per-class, no cross-class global state)
+- [ ] `@Service`/`@Component` registers a class's constructor dependency
+      types in the container **at decoration time** (cheap; matches the
+      "reflect once" rule) without instantiating anything yet
+- [ ] Lazy resolution: `container.get(MyService)` resolves the dependency
+      graph and builds instances bottom-up on first request — after
+      construction, using the object is ordinary Python with zero DI-related
+      overhead (proxies/`__getattr__`/per-call resolution are all
+      out-of-bounds, per the existing performance rules)
+- [ ] Scope semantics: singleton (cache the instance) vs. transient/prototype
+      (new instance per `get()`) — decide the default and how to override it
+- [ ] Discovery: Python has no classpath-scanning equivalent, so services
+      only register when their module is actually imported — decide between
+      explicit registration and an explicit "scan this package" helper
+- [ ] Circular-dependency detection at graph-build time, with a clear
+      `InitoError` subtype
+- [ ] Tests: resolution correctness, singleton caching, transient scope,
+      circular-dependency error, zero post-construction overhead
+      (benchmark-verified, per Phase 13's methodology)
