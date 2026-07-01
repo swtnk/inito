@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0-beta] - 2026-07-01
+## [0.0.2-beta] - 2026-07-01
 
 ### Added
 - A mypy plugin (`inito.typing.mypy_plugin`) synthesizing every generated
