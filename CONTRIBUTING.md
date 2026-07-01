@@ -34,4 +34,31 @@ versus planned. Update its checkboxes as work lands.
 ## Versioning
 
 Semantic versioning. Version is single-sourced from `src/inito/__init__.py`'s
-`__version__`.
+`__version__` — hatchling reads it via a regex, so bumping it there is the
+only place that needs to change.
+
+## Release process
+
+1. Bump `__version__` in `src/inito/__init__.py`, following semver.
+2. Update `CHANGELOG.md`: move the `[Unreleased]` entries under a new
+   `[X.Y.Z] - YYYY-MM-DD` heading.
+3. Commit, then tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+4. Pushing a `v*` tag triggers `.github/workflows/release.yml`, which builds
+   the sdist/wheel, runs `twine check`, and publishes to PyPI via trusted
+   publishing (OIDC) — no API token needed in CI.
+
+**One-time setup required before the first release** (not something CI or
+this repo's config can do on its own):
+
+- On [PyPI](https://pypi.org/manage/account/publishing/), register a
+  "trusted publisher" for the `inito` project pointing at this repo, the
+  `release.yml` workflow filename, and a `pypi` environment name (this can
+  be done *before* the first release — PyPI supports pending publishers for
+  projects that don't exist yet).
+- In the GitHub repo settings, create an environment named `pypi` (matches
+  `release.yml`'s `environment: name: pypi`) — optionally with protection
+  rules (e.g. required reviewers) before it can publish.
+
+Without that one-time PyPI-side setup, `release.yml`'s publish job will
+fail with an OIDC/trusted-publisher authentication error — that's expected
+until the trusted publisher is registered.

@@ -204,10 +204,21 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       confirmed applied, `literalinclude`/`autodoc` output spot-checked)
 
 ## Phase 15 — CI hardening & packaging
-- [ ] Verify CI green across all 5 Python versions
-- [ ] Add PyPI trusted publishing release workflow (tag-triggered)
-- [ ] Dry-run `uv build` + `twine check` locally
-- [ ] Version bump workflow documented in `CONTRIBUTING.md`
+- [x] Verify CI green across all 5 Python versions — verified **locally** (no GitHub remote is
+      configured yet, so the actual `.github/workflows/ci.yml` matrix hasn't run for real): built a
+      throwaway venv per version (3.9, 3.10, 3.11, 3.13; 3.12 already covered by the main `.venv`),
+      ran `ruff check`/`mypy src`/`pytest` in each — all green, 176 tests, 100% coverage on every
+      version. Re-confirm on the actual CI matrix once this repo has a GitHub remote.
+- [x] Add PyPI trusted publishing release workflow (tag-triggered): `.github/workflows/release.yml`
+      (`build` job → `uv build` + `twine check`; `publish` job → OIDC trusted publishing via
+      `pypa/gh-action-pypi-publish`, no stored API token). Validated with `@action-validator/cli`
+      (via `bunx`) alongside `ci.yml`. **Requires one-time manual PyPI + GitHub setup before it can
+      actually publish** — documented in `CONTRIBUTING.md`'s new "Release process" section (register
+      a trusted publisher on PyPI, create a `pypi` GitHub environment) — not something achievable
+      from this environment.
+- [x] Dry-run `uv build` + `twine check` locally — both `PASSED` on the built sdist and wheel
+- [x] Version bump workflow documented in `CONTRIBUTING.md` (new "Release process" section: bump
+      `__version__`, update `CHANGELOG.md`, tag `vX.Y.Z`, push triggers `release.yml`)
 
 ## Phase 16 — Release
 - [ ] Tag v0.1.0
