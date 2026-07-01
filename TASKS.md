@@ -86,8 +86,8 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Tests (all fields must have defaults or raise `InvalidFieldDefinitionError`) + docs example
 
 ## Phase 6 — @AllArgsConstructor
-- [ ] `decorators/all_args_constructor.py`: thin wrapper over `"constructor"` capability
-- [ ] Tests + docs example
+- [x] `decorators/all_args_constructor.py`: thin wrapper over `"constructor"` capability
+- [x] Tests + docs example
 
 ## Phase 7 — @RequiredArgsConstructor
 - [ ] `generators/constructor.py`: add `RequiredArgsConstructorGenerator`
