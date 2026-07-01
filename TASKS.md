@@ -204,11 +204,20 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       confirmed applied, `literalinclude`/`autodoc` output spot-checked)
 
 ## Phase 15 — CI hardening & packaging
-- [x] Verify CI green across all 5 Python versions — verified **locally** (no GitHub remote is
-      configured yet, so the actual `.github/workflows/ci.yml` matrix hasn't run for real): built a
-      throwaway venv per version (3.9, 3.10, 3.11, 3.13; 3.12 already covered by the main `.venv`),
-      ran `ruff check`/`mypy src`/`pytest` in each — all green, 176 tests, 100% coverage on every
-      version. Re-confirm on the actual CI matrix once this repo has a GitHub remote.
+- [x] Verify CI green across all 5 Python versions — verified **locally** first (built a throwaway
+      venv per version: 3.9, 3.10, 3.11, 3.13; 3.12 already covered by the main `.venv` — all green,
+      176 tests, 100% coverage). Once pushed to the real GitHub remote, the actual CI run failed on
+      every matrix leg with `uv pip install --system`: Ubuntu's runner Python at `/usr` is PEP
+      668-protected ("externally managed"), and `--system` targets it directly rather than the
+      matrix-selected version `setup-uv` prepared. Fixed by switching to `uv venv --python
+      <version>` + `uv pip install -e ".[dev]"`, then `uv run <command>` for every subsequent step
+      (ruff/mypy/pytest/sphinx-build); `twine`'s install-then-invoke (same `--system` problem)
+      replaced with `uvx twine check dist/*` in both `ci.yml` and `release.yml`. Re-verified by
+      reproducing every CI step locally against a clean `git archive` checkout (not the dev `.venv`)
+      for Python 3.9 — install, lint, format-check, mypy, pytest, docs build, `uv build`, and `uvx
+      twine check` all pass. Also bumped `actions/checkout` v4→v7, `astral-sh/setup-uv` v3→v8,
+      `actions/upload-artifact`/`download-artifact` v4→v7/v8 in both workflow files, since GitHub's
+      Node 20 deprecation notice flagged the old pins as still targeting the retiring runtime.
 - [x] Add PyPI trusted publishing release workflow (tag-triggered): `.github/workflows/release.yml`
       (`build` job → `uv build` + `twine check`; `publish` job → OIDC trusted publishing via
       `pypa/gh-action-pypi-publish`, no stored API token). Validated with `@action-validator/cli`
