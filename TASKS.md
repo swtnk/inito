@@ -230,9 +230,15 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       `__version__`, update `CHANGELOG.md`, tag `vX.Y.Z`, push triggers `release.yml`)
 
 ## Phase 16 — Release
-- [ ] Tag v0.0.1-beta
-- [ ] Publish to PyPI
-- [ ] Verify `pip install inito` and `uv add inito` work post-publish
+- [x] Tag v0.0.1-beta
+- [x] Publish to PyPI — https://pypi.org/project/inito/, version `0.0.1b0`, published via
+      `release.yml`'s OIDC trusted-publishing flow (one retry needed: the first attempt failed with
+      `invalid-publisher` because the PyPI trusted publisher wasn't registered yet — fixed by adding
+      it with Owner `swtnk`, Repository `inito`, Workflow `release.yml`, Environment `pypi`, then
+      re-running the same failed job — no new tag needed since nothing had been uploaded yet)
+- [x] Verify `pip install inito` and `uv add inito` work post-publish — verified via `uv pip install
+      inito==0.0.1b0` into a fresh throwaway venv (not the dev checkout): resolved with zero
+      dependencies, `@Data`/`@builder` composition works correctly against the real published wheel
 
 ## Phase 17 — mypy/pyright plugin for generated-attribute static typing (post-v1, not blocking release)
 - [ ] Design a mypy plugin (`get_type_analyze_hook`/class-decorator hook) that, for each inito
