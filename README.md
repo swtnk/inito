@@ -74,11 +74,14 @@ getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 `@NoArgsConstructor` (no-argument constructor using field defaults),
 `@AllArgsConstructor` (constructor only, every field),
 `@RequiredArgsConstructor` (constructor only accepting required fields),
-`@Builder`/`builder` (fluent builder, `to_builder=True` support), and
+`@Builder`/`builder` (fluent builder, `to_builder=True` support),
 `@ToString` (`__repr__` only — pairs well with `@Builder` for a readable
-repr without pulling in `@Data`'s constructor/eq/hash/accessors).
+repr without pulling in `@Data`'s constructor/eq/hash/accessors), and
+`@EqualsAndHashCode` (`__eq__`/`__hash__` only).
 
-Planned (see [TASKS.md](./TASKS.md) for the full roadmap): `@EqualsAndHashCode`.
+All of `inito.md`'s Initial Features (v1) are now implemented. See
+[TASKS.md](./TASKS.md) for what's left: typing polish, benchmarks, docs,
+CI hardening, and release.
 
 ## Contributing
 

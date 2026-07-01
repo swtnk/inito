@@ -114,8 +114,8 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Tests + docs example
 
 ## Phase 10 — @EqualsAndHashCode
-- [ ] `decorators/equals_and_hash_code.py`: `EqualsAndHashCodeOptions` + thin wrapper over `"eq"` + `"hash"` capabilities
-- [ ] Tests + docs example
+- [x] `decorators/equals_and_hash_code.py`: `EqualsAndHashCodeOptions` + thin wrapper over `"eq"` + `"hash"` capabilities
+- [x] Tests + docs example
 
 ## Phase 11 — Typing polish pass
 - [ ] Add Protocol-based generics review across `builders/`/`typing/` surface

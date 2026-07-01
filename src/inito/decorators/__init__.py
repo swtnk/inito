@@ -7,6 +7,11 @@ from inito.decorators.all_args_constructor import (
 )
 from inito.decorators.builder import Builder, BuilderOptions, builder
 from inito.decorators.data import Data, DataOptions, data
+from inito.decorators.equals_and_hash_code import (
+    EqualsAndHashCode,
+    EqualsAndHashCodeOptions,
+    equals_and_hash_code,
+)
 from inito.decorators.getter import Getter, GetterOptions, getter
 from inito.decorators.no_args_constructor import (
     NoArgsConstructor,
@@ -28,6 +33,8 @@ __all__ = [
     "BuilderOptions",
     "Data",
     "DataOptions",
+    "EqualsAndHashCode",
+    "EqualsAndHashCodeOptions",
     "Getter",
     "GetterOptions",
     "NoArgsConstructor",
@@ -41,6 +48,7 @@ __all__ = [
     "all_args_constructor",
     "builder",
     "data",
+    "equals_and_hash_code",
     "getter",
     "no_args_constructor",
     "required_args_constructor",
