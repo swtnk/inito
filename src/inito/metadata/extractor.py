@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import dataclasses
 import typing
-from typing import Any
 
 from inito.metadata.class_metadata import METADATA_ATTRIBUTE, ClassMetadata
 from inito.metadata.field import MISSING, FieldMetadata
@@ -45,7 +44,7 @@ class MetadataExtractor:
             fields.append(
                 FieldMetadata(
                     name=field.name,
-                    type_hint=hints.get(field.name, field.type),
+                    type_hint=hints[field.name],
                     default=default,
                     default_factory=default_factory,
                 )
@@ -57,7 +56,7 @@ class MetadataExtractor:
         hints = resolve_type_hints(cls)
         fields = []
         for name in ordered_names:
-            type_hint = hints.get(name, Any)
+            type_hint = hints[name]
             if is_class_var(type_hint):
                 continue
             fields.append(

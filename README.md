@@ -80,8 +80,19 @@ repr without pulling in `@Data`'s constructor/eq/hash/accessors), and
 `@EqualsAndHashCode` (`__eq__`/`__hash__` only).
 
 All of `inito.md`'s Initial Features (v1) are now implemented. See
-[TASKS.md](./TASKS.md) for what's left: typing polish, benchmarks, docs,
-CI hardening, and release.
+[TASKS.md](./TASKS.md) for what's left: benchmarks, docs, CI hardening, and
+release.
+
+### Known limitation: static type checkers don't see generated members yet
+
+Every generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, the
+generated constructor's parameters, ...) is attached to your class via
+`setattr` at decoration time — real attributes at runtime, but invisible to
+`mypy`/`pyright` today, since neither tool has a plugin for inito yet. Your
+code will run correctly; `mypy --strict`/`pyright` will flag those accesses
+as unknown attributes in the meantime. `attrs` and Pydantic hit the same
+problem and solved it with dedicated mypy plugins — that's tracked as a
+future initiative (see `TASKS.md` Phase 17), not required for this release.
 
 ## Contributing
 

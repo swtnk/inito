@@ -118,10 +118,31 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Tests + docs example
 
 ## Phase 11 — Typing polish pass
-- [ ] Add Protocol-based generics review across `builders/`/`typing/` surface
-- [ ] Confirm `mypy --strict` and `pyright` both pass on `examples/`
-- [ ] Add `.pyi` stub review if needed for builder autocomplete
-- [ ] Minimal-`Any` audit across whole `src/`
+- [x] Add Protocol-based generics review across `builders/`/`typing/` surface — reviewed;
+      `generators/base.py`'s `MethodGenerator`/`MultiMethodGenerator` Protocols remain the only
+      warranted use (a real family of interchangeable generators). `BuilderGenerator` is a single,
+      structurally unique implementation — forcing a Protocol onto it would be speculative. `typing/`
+      stays intentionally empty pending real generic support (needs the plugin work below).
+- [x] Confirm `mypy --strict` passes on `src/` (already true) — **but confirmed it and `pyright`
+      both fail on `examples/`** with `reportAttributeAccessIssue`/`attr-defined` for every
+      runtime-generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, ...). This is
+      expected: those members are attached via `setattr` at decoration time, so no static tool can
+      see them without a dedicated plugin (the same problem `attrs`/Pydantic solved with mypy
+      plugins). Documented as a known v1 limitation rather than worked around; real fix tracked in
+      Phase 17.
+- [x] `.pyi` stub review for builder autocomplete — reviewed; a per-class `.pyi` isn't feasible for
+      a runtime decorator applied to arbitrary user classes without generator/plugin tooling. Real
+      fix tracked in Phase 17.
+- [x] Minimal-`Any` audit across whole `src/` — reviewed every `Any` usage. Removed two dead
+      fallbacks in `metadata/extractor.py` (`hints.get(name, Any)` / `hints.get(field.name,
+      field.type)`) that could never actually trigger, since `resolve_type_hints` is all-or-nothing
+      (raises `AnnotationResolutionError` rather than returning a partial dict) — replaced with
+      direct `hints[name]` indexing (fails fast instead of masking a bug behind a silent fallback).
+      All remaining `Any` usages are justified: `FieldMetadata.type_hint`/`default`/`default_factory`
+      (arbitrary user-declared types/values — no tighter type exists), generator `build_globals()` →
+      `dict[str, Any]` and `codegen.build_function` (the static/dynamic boundary feeding `exec()`),
+      and `decorator_factory.make_decorator`'s dual-mode dispatch (already flagged inline with
+      `# noqa: ANN401` explaining why).
 
 ## Phase 12 — Full test suite to >95% coverage (library-wide)
 - [ ] Cross-decorator composition tests (`@Data` + `@Builder` stacking, etc.)
@@ -157,3 +178,16 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [ ] Tag v0.1.0
 - [ ] Publish to PyPI
 - [ ] Verify `pip install inito` and `uv add inito` work post-publish
+
+## Phase 17 — mypy/pyright plugin for generated-attribute static typing (post-v1, not blocking release)
+- [ ] Design a mypy plugin (`get_type_analyze_hook`/class-decorator hook) that, for each inito
+      decorator, synthesizes the generated members (`get_x`/`set_x`, `__init__` signature,
+      `.builder()`/`Builder`/`to_builder()`) onto the decorated class's inferred type — the same
+      approach `attrs` and Pydantic use for their mypy plugins
+- [ ] Register the plugin via `[tool.mypy] plugins = [...]` and document setup in README/docs
+- [ ] Investigate an equivalent pyright plugin or type-stub-generation strategy (pyright's plugin
+      story differs from mypy's; may require a different approach, e.g. a companion stub generator)
+- [ ] Add plugin-specific tests (mypy's plugin test harness) covering every decorator
+- [ ] Re-run `mypy --strict` and `pyright` against `examples/` with the plugin enabled and confirm
+      they pass cleanly (closing the gap identified in Phase 11)
+- [ ] Update TASKS.md/README once this lands to remove the "known limitation" notice
