@@ -21,4 +21,5 @@ def _apply_setter(cls: type, options: SetterOptions) -> type:
 
 
 Setter = make_decorator(_apply_setter, SetterOptions())
+Setter.__doc__ = "Generate a set_<field>(value) mutator method for every declared field."
 setter = Setter

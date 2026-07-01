@@ -21,4 +21,5 @@ def _apply_getter(cls: type, options: GetterOptions) -> type:
 
 
 Getter = make_decorator(_apply_getter, GetterOptions())
+Getter.__doc__ = "Generate a get_<field>() accessor method for every declared field."
 getter = Getter

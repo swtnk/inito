@@ -16,6 +16,7 @@ ruff format .            # format
 mypy src                 # typecheck
 pytest                   # test + coverage
 ./scripts/check_all.sh   # all of the above
+sphinx-build -b html docs docs/_build -W   # build docs, warnings-as-errors
 ```
 
 ## Standards

@@ -15,6 +15,11 @@ def _apply_builder(cls: type, options: BuilderOptions) -> type:
 
 
 Builder = make_decorator(_apply_builder, BuilderOptions())
+Builder.__doc__ = (
+    "Generate a nested fluent Builder class, a builder() classmethod, and "
+    "(with to_builder=True) a to_builder() instance method. Accepts "
+    "BuilderOptions (to_builder, setter_prefix, build_method_name)."
+)
 builder = Builder
 
 __all__ = ["Builder", "BuilderOptions", "builder"]

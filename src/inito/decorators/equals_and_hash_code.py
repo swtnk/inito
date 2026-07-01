@@ -22,4 +22,5 @@ def _apply_equals_and_hash_code(cls: type, options: EqualsAndHashCodeOptions) ->
 
 
 EqualsAndHashCode = make_decorator(_apply_equals_and_hash_code, EqualsAndHashCodeOptions())
+EqualsAndHashCode.__doc__ = "Generate __eq__ and __hash__ over every declared field."
 equals_and_hash_code = EqualsAndHashCode

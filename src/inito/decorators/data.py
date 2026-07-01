@@ -36,4 +36,9 @@ def _apply_data(cls: type, options: DataOptions) -> type:
 
 
 Data = make_decorator(_apply_data, DataOptions())
+Data.__doc__ = (
+    "Generate a constructor, __repr__, __eq__, __hash__, and ``get_``/``set_`` "
+    "accessors for every declared field. Accepts DataOptions "
+    "(frozen, include_getters, include_setters)."
+)
 data = Data

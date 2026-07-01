@@ -42,8 +42,9 @@ dev = [
     "pytest-benchmark>=4",
     "ruff>=0.6",
     "mypy>=1.11,<2",
-    "mkdocs>=1.6",
-    "mkdocs-material>=9",
+    "sphinx>=7",
+    "furo>=2024.1",
+    "myst-parser>=3",
     "pre-commit>=3.7",
     "attrs>=23",
     "pyperf>=2.6",
@@ -75,6 +76,7 @@ convention = "google"
 "tests/**" = ["ANN", "D"]
 "benchmarks/**" = ["ANN", "D"]
 "examples/**" = ["ANN", "D"]
+"docs/conf.py" = ["ANN", "D"]
 
 [tool.ruff.format]
 line-ending = "lf"

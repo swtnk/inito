@@ -21,4 +21,5 @@ def _apply_all_args_constructor(cls: type, options: AllArgsConstructorOptions) -
 
 
 AllArgsConstructor = make_decorator(_apply_all_args_constructor, AllArgsConstructorOptions())
+AllArgsConstructor.__doc__ = "Generate a constructor accepting every declared field."
 all_args_constructor = AllArgsConstructor

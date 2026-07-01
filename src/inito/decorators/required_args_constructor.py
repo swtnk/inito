@@ -23,4 +23,8 @@ def _apply_required_args_constructor(cls: type, options: RequiredArgsConstructor
 RequiredArgsConstructor = make_decorator(
     _apply_required_args_constructor, RequiredArgsConstructorOptions()
 )
+RequiredArgsConstructor.__doc__ = (
+    "Generate a constructor accepting only fields without a default; "
+    "defaulted fields still get their default value assigned."
+)
 required_args_constructor = RequiredArgsConstructor

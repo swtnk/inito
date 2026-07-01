@@ -21,4 +21,9 @@ def _apply_no_args_constructor(cls: type, options: NoArgsConstructorOptions) -> 
 
 
 NoArgsConstructor = make_decorator(_apply_no_args_constructor, NoArgsConstructorOptions())
+NoArgsConstructor.__doc__ = (
+    "Generate a no-argument __init__ that assigns every field its default. "
+    "Every field must have a default or default_factory, or decoration raises "
+    "InvalidFieldDefinitionError."
+)
 no_args_constructor = NoArgsConstructor

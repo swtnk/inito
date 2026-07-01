@@ -6,7 +6,8 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Create src-layout package skeleton (`src/inito/{decorators,generators,builders,reflection,typing,metadata,utils,core,exceptions}/__init__.py`)
 - [x] Create `tests/` mirrored package skeleton with `conftest.py`
 - [x] Create `benchmarks/` skeleton (`conftest.py` + placeholder test file)
-- [x] Create `docs/` + `mkdocs.yml` minimal config
+- [x] Create `docs/` + `mkdocs.yml` minimal config (superseded in Phase 14: migrated to Sphinx +
+      Furo, `mkdocs.yml` removed in favor of `docs/conf.py`)
 - [x] Create `examples/data_basic.py`
 - [x] Create `scripts/check_all.sh`
 - [x] Write `pyproject.toml` (Hatchling backend, ruff/mypy/pytest/coverage config)
@@ -177,17 +178,30 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] `benchmarks/import_time.py`: subprocess-based cold-import overhead comparison (not originally
       itemized here, but explicitly required by `inito.md`'s benchmarking section)
 - [x] `benchmarks/memory_profile.py`: memory allocation comparison (tracemalloc-based)
-- [x] Publish results into `docs/performance.md` (added to `mkdocs.yml` nav); notes attrs' default
-      `__slots__` memory edge and inito's decoration-time cost as known, expected trade-offs
+- [x] Publish results into `docs/performance.md` (added to the docs toctree in Phase 14); notes
+      attrs' default `__slots__` memory edge and inito's decoration-time cost as known trade-offs
 
 ## Phase 14 — Documentation
-- [ ] `docs/index.md`, `installation.md`, `quickstart.md`
-- [ ] `docs/api/` reference pages per decorator
-- [ ] `docs/examples/` (mirroring `examples/` directory)
-- [ ] `docs/migration.md` (from dataclasses/attrs/Pydantic)
-- [ ] `docs/performance.md`
-- [ ] `docs/faq.md`, `docs/troubleshooting.md`
-- [ ] `mkdocs build` verified clean
+- [x] Switched doc tooling from mkdocs to **Sphinx + Furo** (user-requested deviation from
+      `inito.md`'s named `mkdocs` tool, made now while only `index.md`/`performance.md` existed —
+      cheapest point to switch). Added `sphinx`, `furo`, `myst-parser` dev deps; removed `mkdocs`,
+      `mkdocs-material`; removed `mkdocs.yml`; added `docs/conf.py` (MyST markdown support,
+      `sphinx.ext.autodoc`/`napoleon`/`viewcode`/`intersphinx`, `myst_heading_anchors = 3`)
+- [x] `docs/index.md`, `installation.md`, `quickstart.md`
+- [x] `docs/api.md`: curated reference for all 9 decorators + their Options dataclasses (via
+      `autodata`/`autoclass`) and the full exception hierarchy — decorators are hand-described
+      rather than `autofunction`'d, since they're `make_decorator`-built closures whose introspected
+      `(*args, **kwargs)` signature wouldn't be informative
+- [x] `docs/examples.md`: every `examples/*.py` embedded via `literalinclude` (can't drift out of
+      sync with what actually runs, unlike copy-pasted snippets)
+- [x] `docs/migration.md` (from dataclasses/attrs/Pydantic)
+- [x] `docs/performance.md` (already written in Phase 13, now linked from the toctree)
+- [x] `docs/faq.md`, `docs/troubleshooting.md` (troubleshooting covers the two Phase 12 interaction
+      limitations, the Phase 11 typing gap, and the native-Python `__slots__`+default conflict)
+- [x] Also added real `__doc__` strings to all 9 public decorator objects (`Data.__doc__ = ...` etc.)
+      — needed for a useful `autodata` rendering, and a good side effect: `help(Data)` now works
+- [x] `sphinx-build -b html docs <out> -W` verified clean (zero warnings/errors, Furo theme
+      confirmed applied, `literalinclude`/`autodoc` output spot-checked)
 
 ## Phase 15 — CI hardening & packaging
 - [ ] Verify CI green across all 5 Python versions

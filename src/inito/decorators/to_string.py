@@ -21,4 +21,5 @@ def _apply_to_string(cls: type, options: ToStringOptions) -> type:
 
 
 ToString = make_decorator(_apply_to_string, ToStringOptions())
+ToString.__doc__ = "Generate a __repr__ listing every declared field."
 to_string = ToString

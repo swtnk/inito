@@ -21,3 +21,4 @@ htmlcov/
 
 # Docs
 site/
+docs/_build/

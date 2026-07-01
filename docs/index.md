@@ -1,9 +1,36 @@
 # inito
 
-A Lombok-inspired boilerplate-elimination library for Python.
+A Lombok-inspired boilerplate-elimination library for Python. `inito`
+generates constructors, `repr`, equality/hashing, accessors, and fluent
+builders once at class-decoration time — never at instance construction or
+attribute-access time — so the generated classes perform like handwritten
+ones. Zero runtime dependencies.
 
-This site is a placeholder. Full documentation (installation, quickstart,
-API reference, examples, migration guide, performance, FAQ) is tracked as
-Phase 14 in [TASKS.md](https://github.com/swtnk/inito/blob/main/TASKS.md).
+```python
+from inito import Data
 
-For now, see the [README](https://github.com/swtnk/inito#readme).
+
+@Data
+class User:
+    name: str
+    age: int = 0
+
+
+user = User("Ada", age=30)
+print(user)              # User(name='Ada', age=30)
+print(user.get_name())   # Ada
+```
+
+```{toctree}
+:maxdepth: 2
+:hidden:
+
+installation
+quickstart
+api
+examples
+migration
+performance
+faq
+troubleshooting
+```
