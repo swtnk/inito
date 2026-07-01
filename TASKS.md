@@ -221,7 +221,7 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       `__version__`, update `CHANGELOG.md`, tag `vX.Y.Z`, push triggers `release.yml`)
 
 ## Phase 16 — Release
-- [ ] Tag v0.1.0
+- [ ] Tag v0.0.1-beta
 - [ ] Publish to PyPI
 - [ ] Verify `pip install inito` and `uv add inito` work post-publish
 
