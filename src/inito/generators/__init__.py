@@ -5,12 +5,13 @@ here under a new capability name — existing generators are never modified.
 """
 
 from inito.generators.accessors import GetterGenerator, SetterGenerator
-from inito.generators.constructor import ConstructorGenerator
+from inito.generators.constructor import ConstructorGenerator, NoArgsConstructorGenerator
 from inito.generators.equality import EqGenerator, HashGenerator
 from inito.generators.registry import GeneratorRegistry, default_registry
 from inito.generators.repr_ import ReprGenerator
 
 default_registry.register("constructor", ConstructorGenerator())
+default_registry.register("no_args_constructor", NoArgsConstructorGenerator())
 default_registry.register("repr", ReprGenerator())
 default_registry.register("eq", EqGenerator())
 default_registry.register("hash", HashGenerator())

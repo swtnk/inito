@@ -51,11 +51,12 @@ class Point:
 ## Status
 
 Implemented today: `@Data` (constructor, `__repr__`, `__eq__`, `__hash__`,
-getters, setters), `@Getter` (getters only), and `@Setter` (setters only).
+getters, setters), `@Getter` (getters only), `@Setter` (setters only), and
+`@NoArgsConstructor` (no-argument constructor using field defaults).
 
 Planned (see [TASKS.md](./TASKS.md) for the full roadmap):
-`@NoArgsConstructor`, `@AllArgsConstructor`, `@RequiredArgsConstructor`,
-`@Builder`/`builder`, `@ToString`, `@EqualsAndHashCode`.
+`@AllArgsConstructor`, `@RequiredArgsConstructor`, `@Builder`/`builder`,
+`@ToString`, `@EqualsAndHashCode`.
 
 ## Contributing
 

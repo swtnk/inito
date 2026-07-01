@@ -1,0 +1,24 @@
+"""@NoArgsConstructor: generates a no-argument __init__ using field defaults."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from inito.core.attach import attach_capability
+from inito.metadata.extractor import default_extractor
+from inito.utils.decorator_factory import make_decorator
+
+
+@dataclass(frozen=True)
+class NoArgsConstructorOptions:
+    """Configuration surface for the @NoArgsConstructor decorator (no options yet)."""
+
+
+def _apply_no_args_constructor(cls: type, options: NoArgsConstructorOptions) -> type:
+    metadata = default_extractor.extract(cls)
+    attach_capability(cls, metadata, "no_args_constructor")
+    return cls
+
+
+NoArgsConstructor = make_decorator(_apply_no_args_constructor, NoArgsConstructorOptions())
+no_args_constructor = NoArgsConstructor

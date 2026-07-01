@@ -80,10 +80,10 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Update `inito/__init__.py` exports
 
 ## Phase 5 — @NoArgsConstructor
-- [ ] `generators/constructor.py`: add `NoArgsConstructorGenerator` (reusing shared rendering helpers)
-- [ ] Register `"no_args_constructor"` capability
-- [ ] `decorators/no_args_constructor.py`
-- [ ] Tests (all fields must have defaults or raise `InvalidFieldDefinitionError`) + docs example
+- [x] `generators/constructor.py`: add `NoArgsConstructorGenerator` (reusing shared rendering helpers)
+- [x] Register `"no_args_constructor"` capability
+- [x] `decorators/no_args_constructor.py`
+- [x] Tests (all fields must have defaults or raise `InvalidFieldDefinitionError`) + docs example
 
 ## Phase 6 — @AllArgsConstructor
 - [ ] `decorators/all_args_constructor.py`: thin wrapper over `"constructor"` capability
