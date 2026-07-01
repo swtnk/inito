@@ -1,0 +1,105 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "inito"
+version = "0.1.0"
+description = "A Lombok-inspired boilerplate-elimination library for Python."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Swetank Subham", email = "swetanksubham.r@gmail.com" }]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+    "Operating System :: OS Independent",
+]
+keywords = ["lombok", "boilerplate", "codegen", "dataclass", "builder"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/swtnk/inito"
+Repository = "https://github.com/swtnk/inito"
+Documentation = "https://github.com/swtnk/inito#readme"
+Changelog = "https://github.com/swtnk/inito/blob/main/CHANGELOG.md"
+Issues = "https://github.com/swtnk/inito/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "pytest-benchmark>=4",
+    "ruff>=0.6",
+    "mypy>=1.11,<2",
+    "mkdocs>=1.6",
+    "mkdocs-material>=9",
+    "pre-commit>=3.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inito"]
+
+[tool.hatch.version]
+path = "src/inito/__init__.py"
+pattern = '__version__ = "(?P<version>[^"]+)"'
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+src = ["src", "tests", "benchmarks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C90", "SIM", "RUF", "ANN", "D"]
+ignore = ["D203", "D212"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 14
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN", "D"]
+"benchmarks/**" = ["ANN", "D"]
+"examples/**" = ["ANN", "D"]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_unused_ignores = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+show_error_codes = true
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra --strict-markers --strict-config --cov=inito --cov-report=term-missing --cov-fail-under=95"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+source = ["src/inito"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
+fail_under = 95

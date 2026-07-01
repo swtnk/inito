@@ -1,0 +1,31 @@
+"""Exception hierarchy for all inito errors."""
+
+from __future__ import annotations
+
+
+class InitoError(Exception):
+    """Base class for all inito errors."""
+
+
+class MetadataExtractionError(InitoError):
+    """Raised when class metadata cannot be built at decoration time."""
+
+
+class AnnotationResolutionError(MetadataExtractionError):
+    """Raised when field type hints cannot be resolved."""
+
+
+class InvalidFieldDefinitionError(MetadataExtractionError):
+    """Raised when a field declaration is structurally invalid."""
+
+
+class CodeGenerationError(InitoError):
+    """Raised when generated method source fails to compile or execute."""
+
+
+class DecoratorConfigurationError(InitoError):
+    """Raised when decorator options are invalid or conflicting."""
+
+
+class DuplicateGeneratorError(InitoError):
+    """Raised when a generator name collides in the registry."""
