@@ -29,3 +29,7 @@ class DecoratorConfigurationError(InitoError):
 
 class DuplicateGeneratorError(InitoError):
     """Raised when a generator name collides in the registry."""
+
+
+class BuilderValidationError(InitoError):
+    """Raised when `.build()` is called before every required field is set."""

@@ -1,1 +1,5 @@
-"""Fluent builder generation (@Builder). Not implemented yet — see TASKS.md Phase 8."""
+"""Fluent builder generation for @Builder."""
+
+from inito.builders.builder_generator import BuilderGenerator, BuilderOptions
+
+__all__ = ["BuilderGenerator", "BuilderOptions"]

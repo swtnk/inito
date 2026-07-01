@@ -1,10 +1,10 @@
 # inito
 
 A Lombok-inspired boilerplate-elimination library for Python. `inito`
-generates constructors, `repr`, equality/hashing, accessors, and (soon)
-fluent builders once at class-decoration time — never at instance
-construction or attribute-access time — so the generated classes perform
-like handwritten ones. Zero runtime dependencies.
+generates constructors, `repr`, equality/hashing, accessors, and fluent
+builders once at class-decoration time — never at instance construction or
+attribute-access time — so the generated classes perform like handwritten
+ones. Zero runtime dependencies.
 
 ## Install
 
@@ -48,16 +48,36 @@ class Point:
     y: int
 ```
 
+`@builder` generates a fluent, chainable builder, and composes with
+`@dataclass`:
+
+```python
+from dataclasses import dataclass
+from inito import builder
+
+
+@builder(to_builder=True)
+@dataclass
+class Request:
+    prompt: str
+    temperature: float = 0.7
+
+
+request = Request.builder().prompt("hello").build()
+revised = request.to_builder().temperature(0.9).build()
+```
+
 ## Status
 
 Implemented today: `@Data` (constructor, `__repr__`, `__eq__`, `__hash__`,
 getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 `@NoArgsConstructor` (no-argument constructor using field defaults),
-`@AllArgsConstructor` (constructor only, every field), and
-`@RequiredArgsConstructor` (constructor only accepting required fields).
+`@AllArgsConstructor` (constructor only, every field),
+`@RequiredArgsConstructor` (constructor only accepting required fields), and
+`@Builder`/`builder` (fluent builder, `to_builder=True` support).
 
-Planned (see [TASKS.md](./TASKS.md) for the full roadmap): `@Builder`/`builder`,
-`@ToString`, `@EqualsAndHashCode`.
+Planned (see [TASKS.md](./TASKS.md) for the full roadmap): `@ToString`,
+`@EqualsAndHashCode`.
 
 ## Contributing
 

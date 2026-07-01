@@ -2,6 +2,7 @@
 
 from inito.exceptions.errors import (
     AnnotationResolutionError,
+    BuilderValidationError,
     CodeGenerationError,
     DecoratorConfigurationError,
     DuplicateGeneratorError,
@@ -12,6 +13,7 @@ from inito.exceptions.errors import (
 
 __all__ = [
     "AnnotationResolutionError",
+    "BuilderValidationError",
     "CodeGenerationError",
     "DecoratorConfigurationError",
     "DuplicateGeneratorError",

@@ -2,6 +2,7 @@ import pytest
 
 from inito.exceptions import (
     AnnotationResolutionError,
+    BuilderValidationError,
     CodeGenerationError,
     DecoratorConfigurationError,
     DuplicateGeneratorError,
@@ -20,6 +21,7 @@ from inito.exceptions import (
         CodeGenerationError,
         DecoratorConfigurationError,
         DuplicateGeneratorError,
+        BuilderValidationError,
     ],
 )
 def test_every_error_type_is_an_inito_error(exception_type: type) -> None:

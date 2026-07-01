@@ -5,6 +5,7 @@ from inito.decorators.all_args_constructor import (
     AllArgsConstructorOptions,
     all_args_constructor,
 )
+from inito.decorators.builder import Builder, BuilderOptions, builder
 from inito.decorators.data import Data, DataOptions, data
 from inito.decorators.getter import Getter, GetterOptions, getter
 from inito.decorators.no_args_constructor import (
@@ -25,6 +26,8 @@ __version__ = "0.1.0"
 __all__ = [
     "AllArgsConstructor",
     "AllArgsConstructorOptions",
+    "Builder",
+    "BuilderOptions",
     "Data",
     "DataOptions",
     "Getter",
@@ -38,6 +41,7 @@ __all__ = [
     "SetterOptions",
     "__version__",
     "all_args_constructor",
+    "builder",
     "data",
     "getter",
     "no_args_constructor",

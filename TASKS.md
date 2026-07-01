@@ -96,14 +96,18 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Tests (defaulted fields excluded from signature, still get default value) + docs example
 
 ## Phase 8 — @Builder / builder
-- [ ] `builders/builder_generator.py`: `BuilderGenerator` (nested Builder class, per-field fluent setters, `build()`, static `builder()` factory attached to owner class)
-- [ ] `BuilderOptions` (`to_builder`, `setter_prefix`, `build_method_name`)
-- [ ] Register `"builder"` capability
-- [ ] `decorators/builder.py`: `Builder`/`builder` export, supports bare `@builder`, `@builder(to_builder=True)`, stacking under `@dataclass`
-- [ ] Typing: generic `Builder[T]` support / IDE-autocomplete review
-- [ ] Tests: fluent chaining, defaults, optional fields, `to_builder=True` pre-population, stacking with `@dataclass`, stacking order variations
-- [ ] Update `examples/` with all three builder example snippets from `local_dev/project.md`
-- [ ] Verify all 3 `project.md` example snippets run verbatim
+- [x] `builders/builder_generator.py`: `BuilderGenerator` (nested Builder class, per-field fluent setters, `build()`, static `builder()` factory attached to owner class)
+- [x] `BuilderOptions` (`to_builder`, `setter_prefix`, `build_method_name`)
+- [x] Not registered in the shared `GeneratorRegistry` (deliberate deviation: Builder generation depends
+      on per-decoration `BuilderOptions`, unlike the fixed-behavior capability generators, so
+      `decorators/builder.py` uses `BuilderGenerator` + `core.attach.attach_builder` directly)
+- [x] `decorators/builder.py`: `Builder`/`builder` export, supports bare `@builder`, `@builder(to_builder=True)`, stacking under `@dataclass`
+- [ ] Typing: generic `Builder[T]` support / IDE-autocomplete review (deferred to Phase 11 — current
+      typing is functionally correct but has no `.pyi` stub for fluent-chain autocomplete)
+- [x] Tests: fluent chaining, defaults, optional fields, `to_builder=True` pre-population, stacking with `@dataclass`, `setter_prefix`/`build_method_name` options, missing-required-field validation
+- [x] Update `examples/` with all three builder example snippets from `local_dev/project.md`
+- [x] Verify all 3 `project.md` example snippets run verbatim (`examples/builder_basic.py`; `UUID`
+      casing typo from the original spec corrected)
 
 ## Phase 9 — @ToString
 - [ ] `decorators/to_string.py`: `ToStringOptions` + thin wrapper over `"repr"` capability
