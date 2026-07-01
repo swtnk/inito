@@ -2,6 +2,7 @@
 
 from inito.decorators.data import Data, DataOptions, data
 from inito.decorators.getter import Getter, GetterOptions, getter
+from inito.decorators.setter import Setter, SetterOptions, setter
 from inito.exceptions.errors import InitoError
 
 __version__ = "0.1.0"
@@ -12,7 +13,10 @@ __all__ = [
     "Getter",
     "GetterOptions",
     "InitoError",
+    "Setter",
+    "SetterOptions",
     "__version__",
     "data",
     "getter",
+    "setter",
 ]

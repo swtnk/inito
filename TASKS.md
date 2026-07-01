@@ -75,9 +75,9 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Update `inito/__init__.py` exports
 
 ## Phase 4 — @Setter
-- [ ] `decorators/setter.py`: `SetterOptions` + thin wrapper over `"setter"` capability
-- [ ] Tests + docs example
-- [ ] Update `inito/__init__.py` exports
+- [x] `decorators/setter.py`: `SetterOptions` + thin wrapper over `"setter"` capability
+- [x] Tests + docs example
+- [x] Update `inito/__init__.py` exports
 
 ## Phase 5 — @NoArgsConstructor
 - [ ] `generators/constructor.py`: add `NoArgsConstructorGenerator` (reusing shared rendering helpers)
