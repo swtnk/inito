@@ -79,8 +79,14 @@ no `# type: ignore` needed. Enable it in your `pyproject.toml` or `mypy.ini`:
 plugins = ["inito.typing.mypy_plugin"]
 ```
 
-This is mypy-only — pyright has no equivalent third-party plugin mechanism,
-so pyright users still hit the gap described below.
+The plugin is mypy-only — pyright has no third-party plugin mechanism.
+`@Data` and `@AllArgsConstructor` additionally ship a `.pyi` stub marked
+with the standard `typing.dataclass_transform` (PEP 681), so **pyright
+also** gets a correctly-typed `__init__` for those two decorators — no
+plugin needed, since this is a standard both tools understand natively.
+`get_x`/`set_x` and `@Builder`'s fluent chain remain pyright's gap
+regardless (see below), since `dataclass_transform` can only express a
+constructor signature, not arbitrary generated methods.
 
 ## Status
 
@@ -99,17 +105,31 @@ All of `inito.md`'s Initial Features (v1) are now implemented. See
 handwritten classes, `dataclasses`, and `attrs`. See [TASKS.md](./TASKS.md)
 for what's left: docs, CI hardening, and release.
 
-### Known limitation: pyright doesn't see generated members
+### Known limitation: pyright doesn't see most generated members
 
 Every generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, the
 generated constructor's parameters, ...) is attached to your class via
 `setattr` at decoration time — real attributes at runtime. **mypy** sees
-them correctly once you enable [the bundled plugin](#type-checking) (the
-same approach `attrs`/Pydantic use). **pyright** has no equivalent
-third-party plugin mechanism, so it still flags these as unknown attributes
-— your code runs correctly regardless, this is a pyright-only static-typing
-gap. Closing it would need a different strategy (e.g. a companion stub
-generator); tracked in `TASKS.md` Phase 17, not required for this release.
+all of them correctly once you enable [the bundled plugin](#type-checking)
+(the same approach `attrs`/Pydantic use). **pyright** has no equivalent
+third-party plugin mechanism, so `get_x`/`set_x` and `@Builder`'s fluent
+chain still show up as unknown attributes there — your code runs correctly
+regardless, this is a pyright-only static-typing gap.
+
+`@Data`'s and `@AllArgsConstructor`'s constructors are the exception:
+**pyright does see these correctly**, via a `.pyi` stub marked with the
+standard `typing.dataclass_transform` (no inito-specific plugin needed —
+this is a mechanism pyright supports natively). This doesn't extend to
+`@NoArgsConstructor`/`@RequiredArgsConstructor`: both were deliberately left
+unmarked, since their real signatures diverge from what `dataclass_transform`
+can express (`@NoArgsConstructor` truly accepts zero arguments rather than
+"all fields optional"; `@RequiredArgsConstructor` excludes defaulted fields
+from `__init__` entirely rather than making them optional) — applying the
+marker there would make pyright silently *accept* calls the real runtime
+rejects, which is worse than the current honest gap. Closing the remaining
+gap for `get_x`/`set_x`/`@Builder` would need a different strategy (e.g. a
+companion stub generator); tracked in `TASKS.md` Phase 17, not required for
+this release.
 
 ### Known limitations: frozen dataclasses and self-referential fields
 

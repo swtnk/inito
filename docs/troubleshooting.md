@@ -71,13 +71,21 @@ doubled qualname (e.g. `Point.Point.Builder`) due to how mypy formats
 synthetic nested classes — this doesn't affect type-checking correctness,
 only that one debug-output string.
 
-## pyright still flags the same attributes as unknown
+## pyright still flags `get_x`/`set_x`/`@Builder` members as unknown
 
 pyright has no third-party mypy-plugin equivalent, so the plugin above
 doesn't help it. This is a real, currently-unresolved gap — your code runs
 correctly regardless, but pyright can't verify it statically. See the
-[README's known limitations section](https://github.com/swtnk/inito#known-limitation-pyright-doesnt-see-generated-members)
+[README's known limitations section](https://github.com/swtnk/inito#known-limitation-pyright-doesnt-see-most-generated-members)
 for more, and `TASKS.md` Phase 17 for what closing this would require.
+
+**Exception:** `@Data` and `@AllArgsConstructor`'s constructors *are*
+correctly typed under pyright too, via a `.pyi` stub marked with the
+standard `typing.dataclass_transform` (PEP 681) — no inito-specific plugin
+needed there, since both tools understand this marker natively. This
+doesn't extend to `@NoArgsConstructor`/`@RequiredArgsConstructor`, whose
+real constructor signatures can't be expressed by `dataclass_transform`
+without misrepresenting them (see the README section above for why).
 
 ## `ValueError: '<field>' in __slots__ conflicts with class variable`
 

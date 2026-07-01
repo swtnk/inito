@@ -26,8 +26,11 @@ If you use mypy, enable inito's bundled plugin so `get_x`/`set_x`,
 plugins = ["inito.typing.mypy_plugin"]
 ```
 
-This is mypy-only — see [Troubleshooting](troubleshooting.md) for the
-current pyright gap.
+This is mypy-only — pyright has no equivalent plugin mechanism, though
+`@Data`/`@AllArgsConstructor`'s constructors are typed correctly under
+pyright too (via a standard `dataclass_transform`-marked stub, no
+inito-specific setup needed). See [Troubleshooting](troubleshooting.md) for
+the remaining pyright gap.
 
 ## Development install
 

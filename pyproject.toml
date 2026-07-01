@@ -48,6 +48,7 @@ dev = [
     "pre-commit>=3.7",
     "attrs>=23",
     "pyperf>=2.6",
+    "typing-extensions>=4.6",
 ]
 
 [tool.hatch.build.targets.wheel]

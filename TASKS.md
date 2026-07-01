@@ -244,7 +244,7 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       inito==0.0.1b0` into a fresh throwaway venv (not the dev checkout): resolved with zero
       dependencies, `@Data`/`@builder` composition works correctly against the real published wheel
 
-## Phase 17 — mypy plugin for generated-attribute static typing (mypy done; pyright remains a gap)
+## Phase 17 — mypy plugin for generated-attribute static typing (mypy done; pyright partially closed)
 - [x] Built a real mypy plugin at `src/inito/typing/mypy_plugin/` using `get_class_decorator_hook_2`,
       grounded directly against the installed mypy 1.20.2's own source (`mypy/plugin.py`,
       `mypy/plugins/common.py`, and mypy's own bundled `dataclasses.py`/`attrs.py` plugins as
@@ -292,6 +292,24 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       doubled qualname (e.g. `Point.Point.Builder`) due to how mypy's printer formats synthetic nested
       classes; doesn't affect real error messages (already correctly say `Point.Builder`) or
       type-checking correctness — not chased further given the effort/value tradeoff
+- [x] **Partial pyright fix, added afterward**: `decorators/data.pyi` and `decorators/all_args_constructor.pyi`
+      mark `Data`/`AllArgsConstructor` with standard `typing.dataclass_transform` (PEP 681, which both
+      mypy and pyright understand natively — no plugin needed), giving pyright a correctly-typed
+      constructor for these two. Modeled directly on `attrs`' own `.pyi` stub (two `@overload`s per
+      decorator: bare-class-arg form and keyword-options form, each marked with the transform) rather
+      than guessed. Verified end-to-end from a real installed wheel (not just the editable dev checkout)
+      that both mypy and pyright correctly catch missing/extra constructor arguments and still show
+      `reveal_type` as the real class, not `Any`
+- [x] Deliberately did **not** apply this to `NoArgsConstructor`/`RequiredArgsConstructor`: built throwaway
+      probes proving `dataclass_transform`'s standard semantics don't match either decorator's real
+      constructor behavior (`NoArgsConstructor` truly takes zero arguments, not "every field optional";
+      `RequiredArgsConstructor` excludes defaulted fields from `__init__` entirely, not "optional") — both
+      probes showed pyright/mypy would silently *accept* a call the real generated `__init__` rejects at
+      runtime if marked this way. A misleading type is worse than an honest gap, so these two decorators
+      keep the plain (unmarked) gap rather than gaining an incorrect one
+- [x] Added `typing-extensions` as an explicit dev dependency (used only inside `.pyi` stubs, never
+      executed at runtime — it was already a transitive dependency of `mypy` itself, but made explicit
+      for dev-environment clarity rather than silently relying on another package's dependency chain)
 
 ## Phase 18 — Dependency injection: @Service/@Inject/@Singleton (post-v1, not blocking release)
 

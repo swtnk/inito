@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3-beta] - 2026-07-01
+
+### Added
+- `decorators/data.pyi` and `decorators/all_args_constructor.pyi`: `.pyi`
+  stubs marking `@Data`/`@AllArgsConstructor` with standard
+  `typing.dataclass_transform` (PEP 681), so **pyright** (which has no
+  plugin mechanism) also gets a correctly-typed constructor for these two
+  decorators — no inito-specific setup needed beyond having the package
+  installed. Deliberately not applied to `@NoArgsConstructor`/
+  `@RequiredArgsConstructor`: verified their real constructor signatures
+  can't be expressed by `dataclass_transform` without pyright silently
+  accepting calls the runtime would reject.
+
 ## [0.0.2-beta] - 2026-07-01
 
 ### Added

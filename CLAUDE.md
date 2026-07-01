@@ -67,6 +67,18 @@ Two sanctioned mutation points, and only two:
   Any]` rather than having a real keyword signature mypy's CallableType-based
   argument lookup could use). Mypy-only — pyright has no third-party plugin
   mechanism.
+- `decorators/data.pyi`, `decorators/all_args_constructor.pyi` — hand-written
+  `.pyi` stubs (alongside the real `.py` implementation) marking `Data`/
+  `AllArgsConstructor` with `typing.dataclass_transform` (PEP 681), so
+  pyright — which has no plugin mechanism — still gets a correctly-typed
+  constructor for these two. Deliberately **not** added to
+  `NoArgsConstructor`/`RequiredArgsConstructor`: verified empirically that
+  `dataclass_transform`'s standard semantics (every field becomes an
+  optional-or-required `__init__` param) don't match either decorator's real
+  behavior (`NoArgsConstructor` truly takes zero args;
+  `RequiredArgsConstructor` excludes defaulted fields from `__init__`
+  entirely) — marking them would make pyright silently accept calls the
+  real runtime rejects, which is worse than the current honest gap.
 - `metadata/` — `FieldMetadata`/`ClassMetadata` value types and
   `MetadataExtractor`, which builds and caches metadata once per class.
 - `utils/` — `codegen.build_function` and
