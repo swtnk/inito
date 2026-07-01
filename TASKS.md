@@ -21,7 +21,7 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Write this `TASKS.md`
 - [x] Add `src/inito/py.typed` marker
 - [x] Verify `uv pip install -e ".[dev]"` succeeds locally
-- [ ] Initial commit
+- [x] Initial commit
 
 ## Phase 1 — Core Engine (metadata + codegen + exceptions)
 - [x] `exceptions/errors.py`: `InitoError` hierarchy (7 exception types)
@@ -70,9 +70,9 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Manually verify `examples/data_basic.py` runs correctly
 
 ## Phase 3 — @Getter
-- [ ] `decorators/getter.py`: `GetterOptions` + thin wrapper over `"getter"` capability
-- [ ] Tests + docs example
-- [ ] Update `inito/__init__.py` exports
+- [x] `decorators/getter.py`: `GetterOptions` + thin wrapper over `"getter"` capability
+- [x] Tests + docs example
+- [x] Update `inito/__init__.py` exports
 
 ## Phase 4 — @Setter
 - [ ] `decorators/setter.py`: `SetterOptions` + thin wrapper over `"setter"` capability
