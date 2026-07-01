@@ -167,10 +167,18 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Confirm library-wide coverage >95% (176 tests, 100% line+branch coverage across all of `src/`)
 
 ## Phase 13 — Benchmarks
-- [ ] `benchmarks/`: real pytest-benchmark suite (import time, decoration time, construction, attribute access, builder perf, eq, hash)
-- [ ] pyperf-based comparison scripts vs handwritten classes/dataclasses/attrs
-- [ ] Memory allocation comparison (tracemalloc-based)
-- [ ] Publish results into `docs/performance.md`
+- [x] `benchmarks/`: real pytest-benchmark suite (decoration time, construction, attribute access,
+      `@Builder` fluent-chain vs direct construction, `__repr__`, `__eq__`, `__hash__`) comparing
+      handwritten/`@Data`/`dataclasses`/`attrs` via a shared `conftest.py` fixture set
+      (`point_class`, `point_class_factory`, `builder_point_class`). Added `attrs` + `pyperf` as
+      benchmark-only dev dependencies.
+- [x] `benchmarks/pyperf_suite.py`: pyperf-based construction comparison vs handwritten
+      classes/dataclasses/attrs
+- [x] `benchmarks/import_time.py`: subprocess-based cold-import overhead comparison (not originally
+      itemized here, but explicitly required by `inito.md`'s benchmarking section)
+- [x] `benchmarks/memory_profile.py`: memory allocation comparison (tracemalloc-based)
+- [x] Publish results into `docs/performance.md` (added to `mkdocs.yml` nav); notes attrs' default
+      `__slots__` memory edge and inito's decoration-time cost as known, expected trade-offs
 
 ## Phase 14 — Documentation
 - [ ] `docs/index.md`, `installation.md`, `quickstart.md`

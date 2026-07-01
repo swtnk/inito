@@ -85,6 +85,10 @@ ruff format --check .           # format check (CI mode)
 mypy src                        # typecheck
 uv build                        # build sdist + wheel
 ./scripts/check_all.sh          # run all of the above
+pytest benchmarks/ --benchmark-only   # run the pytest-benchmark suite
+python benchmarks/pyperf_suite.py     # process-isolated pyperf construction comparison
+python benchmarks/memory_profile.py   # per-instance memory footprint comparison
+python benchmarks/import_time.py      # cold-import overhead comparison
 ```
 
 ## Testing conventions

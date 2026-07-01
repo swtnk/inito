@@ -80,8 +80,9 @@ repr without pulling in `@Data`'s constructor/eq/hash/accessors), and
 `@EqualsAndHashCode` (`__eq__`/`__hash__` only).
 
 All of `inito.md`'s Initial Features (v1) are now implemented. See
-[TASKS.md](./TASKS.md) for what's left: benchmarks, docs, CI hardening, and
-release.
+[docs/performance.md](./docs/performance.md) for benchmarks against
+handwritten classes, `dataclasses`, and `attrs`. See [TASKS.md](./TASKS.md)
+for what's left: docs, CI hardening, and release.
 
 ### Known limitation: static type checkers don't see generated members yet
 
