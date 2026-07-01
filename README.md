@@ -73,11 +73,12 @@ Implemented today: `@Data` (constructor, `__repr__`, `__eq__`, `__hash__`,
 getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 `@NoArgsConstructor` (no-argument constructor using field defaults),
 `@AllArgsConstructor` (constructor only, every field),
-`@RequiredArgsConstructor` (constructor only accepting required fields), and
-`@Builder`/`builder` (fluent builder, `to_builder=True` support).
+`@RequiredArgsConstructor` (constructor only accepting required fields),
+`@Builder`/`builder` (fluent builder, `to_builder=True` support), and
+`@ToString` (`__repr__` only — pairs well with `@Builder` for a readable
+repr without pulling in `@Data`'s constructor/eq/hash/accessors).
 
-Planned (see [TASKS.md](./TASKS.md) for the full roadmap): `@ToString`,
-`@EqualsAndHashCode`.
+Planned (see [TASKS.md](./TASKS.md) for the full roadmap): `@EqualsAndHashCode`.
 
 ## Contributing
 

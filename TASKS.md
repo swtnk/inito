@@ -110,8 +110,8 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       casing typo from the original spec corrected)
 
 ## Phase 9 — @ToString
-- [ ] `decorators/to_string.py`: `ToStringOptions` + thin wrapper over `"repr"` capability
-- [ ] Tests + docs example
+- [x] `decorators/to_string.py`: `ToStringOptions` + thin wrapper over `"repr"` capability
+- [x] Tests + docs example
 
 ## Phase 10 — @EqualsAndHashCode
 - [ ] `decorators/equals_and_hash_code.py`: `EqualsAndHashCodeOptions` + thin wrapper over `"eq"` + `"hash"` capabilities
