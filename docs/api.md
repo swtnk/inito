@@ -1,11 +1,12 @@
 # API reference
 
 Every decorator supports three call styles: `@Data`, `@Data()`, and
-`@Data(option=value, ...)`. Lowercase aliases (`data`, `getter`, `builder`,
-...) are the same object as their PascalCase name — use whichever reads
-better in your code.
+`@Data(option=value, ...)`. Every decorator is also exported under a
+lowercase alias (`Data`/`data`, `Builder`/`builder`, ...) bound to the exact
+same object — use whichever reads better in your code. Each section below
+names both forms explicitly.
 
-## @Data
+## @Data / data
 
 ```{eval-rst}
 .. autodata:: inito.Data
@@ -15,7 +16,9 @@ better in your code.
    :members:
 ```
 
-## @Getter
+Also exported as `inito.data` (the same object).
+
+## @Getter / getter
 
 ```{eval-rst}
 .. autodata:: inito.Getter
@@ -25,7 +28,9 @@ better in your code.
    :members:
 ```
 
-## @Setter
+Also exported as `inito.getter` (the same object).
+
+## @Setter / setter
 
 ```{eval-rst}
 .. autodata:: inito.Setter
@@ -35,7 +40,9 @@ better in your code.
    :members:
 ```
 
-## @NoArgsConstructor
+Also exported as `inito.setter` (the same object).
+
+## @NoArgsConstructor / no_args_constructor
 
 ```{eval-rst}
 .. autodata:: inito.NoArgsConstructor
@@ -45,7 +52,9 @@ better in your code.
    :members:
 ```
 
-## @AllArgsConstructor
+Also exported as `inito.no_args_constructor` (the same object).
+
+## @AllArgsConstructor / all_args_constructor
 
 ```{eval-rst}
 .. autodata:: inito.AllArgsConstructor
@@ -55,7 +64,9 @@ better in your code.
    :members:
 ```
 
-## @RequiredArgsConstructor
+Also exported as `inito.all_args_constructor` (the same object).
+
+## @RequiredArgsConstructor / required_args_constructor
 
 ```{eval-rst}
 .. autodata:: inito.RequiredArgsConstructor
@@ -64,6 +75,8 @@ better in your code.
 .. autoclass:: inito.RequiredArgsConstructorOptions
    :members:
 ```
+
+Also exported as `inito.required_args_constructor` (the same object).
 
 ## @Builder / builder
 
@@ -75,7 +88,10 @@ better in your code.
    :members:
 ```
 
-## @ToString
+Also exported as `inito.builder` (the same object) — this is the form used
+throughout the [Quick start](quickstart.md) and [Examples](examples.md) pages.
+
+## @ToString / to_string
 
 ```{eval-rst}
 .. autodata:: inito.ToString
@@ -85,7 +101,9 @@ better in your code.
    :members:
 ```
 
-## @EqualsAndHashCode
+Also exported as `inito.to_string` (the same object).
+
+## @EqualsAndHashCode / equals_and_hash_code
 
 ```{eval-rst}
 .. autodata:: inito.EqualsAndHashCode
@@ -94,6 +112,8 @@ better in your code.
 .. autoclass:: inito.EqualsAndHashCodeOptions
    :members:
 ```
+
+Also exported as `inito.equals_and_hash_code` (the same object).
 
 ## Exceptions
 
