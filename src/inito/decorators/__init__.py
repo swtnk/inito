@@ -12,6 +12,11 @@ from inito.decorators.no_args_constructor import (
     NoArgsConstructorOptions,
     no_args_constructor,
 )
+from inito.decorators.required_args_constructor import (
+    RequiredArgsConstructor,
+    RequiredArgsConstructorOptions,
+    required_args_constructor,
+)
 from inito.decorators.setter import Setter, SetterOptions, setter
 
 __all__ = [
@@ -23,11 +28,14 @@ __all__ = [
     "GetterOptions",
     "NoArgsConstructor",
     "NoArgsConstructorOptions",
+    "RequiredArgsConstructor",
+    "RequiredArgsConstructorOptions",
     "Setter",
     "SetterOptions",
     "all_args_constructor",
     "data",
     "getter",
     "no_args_constructor",
+    "required_args_constructor",
     "setter",
 ]

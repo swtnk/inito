@@ -90,10 +90,10 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Tests + docs example
 
 ## Phase 7 — @RequiredArgsConstructor
-- [ ] `generators/constructor.py`: add `RequiredArgsConstructorGenerator`
-- [ ] Register `"required_args_constructor"` capability
-- [ ] `decorators/required_args_constructor.py`
-- [ ] Tests (defaulted fields excluded from signature, still get default value) + docs example
+- [x] `generators/constructor.py`: add `RequiredArgsConstructorGenerator`
+- [x] Register `"required_args_constructor"` capability
+- [x] `decorators/required_args_constructor.py`
+- [x] Tests (defaulted fields excluded from signature, still get default value) + docs example
 
 ## Phase 8 — @Builder / builder
 - [ ] `builders/builder_generator.py`: `BuilderGenerator` (nested Builder class, per-field fluent setters, `build()`, static `builder()` factory attached to owner class)

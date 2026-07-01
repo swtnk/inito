@@ -84,6 +84,39 @@ def _render_no_args_assignment(field: FieldMetadata) -> str:
     return f"    self.{field.name} = {default_name(field)}"
 
 
+class RequiredArgsConstructorGenerator:
+    """Generates an __init__ accepting only required fields; others get their default."""
+
+    method_name = "__init__"
+
+    def generate_source(self, metadata: ClassMetadata) -> str:
+        """Return an __init__ accepting only required fields as parameters."""
+        required, optional = metadata.required_fields(), metadata.optional_fields()
+        parameters = ", ".join(field.name for field in required)
+        header = f"def __init__(self{', ' + parameters if parameters else ''}):"
+        body = render_required_args_assignment_body(required, optional)
+        return f"{header}\n{body}\n"
+
+    def build_globals(self, metadata: ClassMetadata) -> dict[str, Any]:
+        """Return the defaults and default factories the optional fields need."""
+        globals_ns: dict[str, Any] = {}
+        for field in metadata.optional_fields():
+            if field.default_factory is not None:
+                globals_ns[factory_name(field)] = field.default_factory
+            else:
+                globals_ns[default_name(field)] = field.default
+        return globals_ns
+
+
+def render_required_args_assignment_body(
+    required: tuple[FieldMetadata, ...], optional: tuple[FieldMetadata, ...]
+) -> str:
+    """Render an __init__ body: required fields from parameters, others from defaults."""
+    lines = [f"    self.{field.name} = {field.name}" for field in required]
+    lines.extend(_render_no_args_assignment(field) for field in optional)
+    return "\n".join(lines) if lines else "    pass"
+
+
 def render_parameter_list(fields: tuple[FieldMetadata, ...]) -> str:
     """Render the __init__ parameter list: required fields, then optional ones."""
     required = [field.name for field in fields if field.is_required]
