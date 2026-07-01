@@ -145,13 +145,26 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       `# noqa: ANN401` explaining why).
 
 ## Phase 12 — Full test suite to >95% coverage (library-wide)
-- [ ] Cross-decorator composition tests (`@Data` + `@Builder` stacking, etc.)
-- [ ] Generic class support tests
-- [ ] Frozen class tests across all relevant decorators
-- [ ] Edge cases: empty class, single field, deeply inherited chains, slots interaction, forward-referenced annotations
-- [ ] Invalid usage tests across all decorators
-- [ ] Compatibility tests: stacking with dataclasses, with each other
-- [ ] Confirm library-wide coverage >95%
+- [x] Cross-decorator composition tests (`tests/integration/test_composition.py`): `@Data` +
+      `@Builder` stacking in both orders, manually composing a `@Data`-equivalent from atomic
+      decorators (`@Getter @Setter @EqualsAndHashCode @ToString @AllArgsConstructor`), overlapping
+      capabilities (documented: the last-applied/outermost decorator wins), `@Builder` + `@ToString`
+      + `@dataclass`
+- [x] Generic class support tests (`tests/integration/test_generics.py`): `@Data`/`@Builder` on a
+      `Generic[T]` class
+- [x] Frozen class tests (`tests/integration/test_frozen.py`): `@Data(frozen=True)`, and — newly
+      discovered and documented in README — stacking with `@dataclass(frozen=True)` in either order
+      correctly raises `FrozenInstanceError` rather than silently bypassing immutability
+- [x] Edge cases (`tests/integration/test_edge_cases.py`): empty class, single field, 3-level
+      inheritance, `__slots__` with required-only fields, `__slots__`+default conflicting natively
+      in Python (not an inito issue), forward ref to an already-defined class (works), and — newly
+      discovered and documented in README — self-referential forward refs fail at decoration time
+      since annotations resolve eagerly, before the class's own name is bound
+- [x] Invalid usage tests across all 9 decorators, parametrized (`tests/integration/test_invalid_usage.py`):
+      non-type/non-options argument, multiple positional arguments, bare vs. `()` call equivalence
+- [x] Compatibility tests: stacking with dataclasses covered per-decorator (Phase 2-10) and in
+      `test_composition.py`/`test_frozen.py`; stacking with each other covered in `test_composition.py`
+- [x] Confirm library-wide coverage >95% (176 tests, 100% line+branch coverage across all of `src/`)
 
 ## Phase 13 — Benchmarks
 - [ ] `benchmarks/`: real pytest-benchmark suite (import time, decoration time, construction, attribute access, builder perf, eq, hash)

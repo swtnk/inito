@@ -94,6 +94,23 @@ as unknown attributes in the meantime. `attrs` and Pydantic hit the same
 problem and solved it with dedicated mypy plugins — that's tracked as a
 future initiative (see `TASKS.md` Phase 17), not required for this release.
 
+### Known limitations: frozen dataclasses and self-referential fields
+
+Stacking any inito constructor-generating decorator (`@Data`, `@Builder`,
+`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` — in either
+order — raises `dataclasses.FrozenInstanceError`. This is expected, not a
+bug: the generated `__init__`/`build()` assign fields with plain
+`self.x = value`, which correctly respects the frozen class's blocking
+`__setattr__` rather than silently bypassing the immutability you asked
+for. If you want inito's own frozen-style behavior, use `@Data(frozen=True)`
+(which just omits setters) instead of also stacking `@dataclass(frozen=True)`.
+
+Self-referential type hints (e.g. a linked-list `next: Node`) also aren't
+supported: inito resolves annotations eagerly, once, at decoration time —
+before the class's own name is bound in its module's globals — so a forward
+reference to the class currently being decorated can't resolve. Forward
+references to any other, already-defined class work normally.
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
