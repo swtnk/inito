@@ -103,8 +103,12 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       on per-decoration `BuilderOptions`, unlike the fixed-behavior capability generators, so
       `decorators/builder.py` uses `BuilderGenerator` + `core.attach.attach_builder` directly)
 - [x] `decorators/builder.py`: `Builder`/`builder` export, supports bare `@builder`, `@builder(to_builder=True)`, stacking under `@dataclass`
-- [ ] Typing: generic `Builder[T]` support / IDE-autocomplete review (deferred to Phase 11 — current
-      typing is functionally correct but has no `.pyi` stub for fluent-chain autocomplete)
+- [x] Typing: generic `Builder[T]` support / IDE-autocomplete review — resolved for mypy by Phase 17's
+      mypy plugin (`typing/mypy_plugin/builder.py` synthesizes a real nested `Builder` type with
+      correctly-typed fluent setters and `build()`, giving genuine autocomplete/type-checking in any
+      mypy-aware editor integration). **Still an open gap for pyright/Pylance specifically** — the
+      backend most VS Code users get autocomplete from — since pyright has no third-party plugin
+      mechanism; tracked honestly as a permanent limitation in Phase 17, not re-opened here
 - [x] Tests: fluent chaining, defaults, optional fields, `to_builder=True` pre-population, stacking with `@dataclass`, `setter_prefix`/`build_method_name` options, missing-required-field validation
 - [x] Update `examples/` with all three builder example snippets from `local_dev/project.md`
 - [x] Verify all 3 `project.md` example snippets run verbatim (`examples/builder_basic.py`; `UUID`
