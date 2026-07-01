@@ -67,6 +67,21 @@ request = Request.builder().prompt("hello").build()
 revised = request.to_builder().temperature(0.9).build()
 ```
 
+## Type checking
+
+inito ships a **mypy plugin** that synthesizes every generated member
+(`__init__`'s real signature, `get_x`/`set_x`, `.builder()`/`Builder`/
+`.to_builder()`) so `mypy --strict` sees your decorated classes correctly —
+no `# type: ignore` needed. Enable it in your `pyproject.toml` or `mypy.ini`:
+
+```toml
+[tool.mypy]
+plugins = ["inito.typing.mypy_plugin"]
+```
+
+This is mypy-only — pyright has no equivalent third-party plugin mechanism,
+so pyright users still hit the gap described below.
+
 ## Status
 
 Implemented today: `@Data` (constructor, `__repr__`, `__eq__`, `__hash__`,
@@ -84,16 +99,17 @@ All of `inito.md`'s Initial Features (v1) are now implemented. See
 handwritten classes, `dataclasses`, and `attrs`. See [TASKS.md](./TASKS.md)
 for what's left: docs, CI hardening, and release.
 
-### Known limitation: static type checkers don't see generated members yet
+### Known limitation: pyright doesn't see generated members
 
 Every generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, the
 generated constructor's parameters, ...) is attached to your class via
-`setattr` at decoration time — real attributes at runtime, but invisible to
-`mypy`/`pyright` today, since neither tool has a plugin for inito yet. Your
-code will run correctly; `mypy --strict`/`pyright` will flag those accesses
-as unknown attributes in the meantime. `attrs` and Pydantic hit the same
-problem and solved it with dedicated mypy plugins — that's tracked as a
-future initiative (see `TASKS.md` Phase 17), not required for this release.
+`setattr` at decoration time — real attributes at runtime. **mypy** sees
+them correctly once you enable [the bundled plugin](#type-checking) (the
+same approach `attrs`/Pydantic use). **pyright** has no equivalent
+third-party plugin mechanism, so it still flags these as unknown attributes
+— your code runs correctly regardless, this is a pyright-only static-typing
+gap. Closing it would need a different strategy (e.g. a companion stub
+generator); tracked in `TASKS.md` Phase 17, not required for this release.
 
 ### Known limitations: frozen dataclasses and self-referential fields
 

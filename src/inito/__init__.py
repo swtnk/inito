@@ -27,7 +27,7 @@ from inito.decorators.setter import Setter, SetterOptions, setter
 from inito.decorators.to_string import ToString, ToStringOptions, to_string
 from inito.exceptions.errors import InitoError
 
-__version__ = "0.0.1-beta"
+__version__ = "0.1.0-beta"
 
 __all__ = [
     "AllArgsConstructor",

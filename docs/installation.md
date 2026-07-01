@@ -16,6 +16,19 @@ uv add inito
 
 Python 3.9, 3.10, 3.11, 3.12, and 3.13.
 
+## Type checking (mypy)
+
+If you use mypy, enable inito's bundled plugin so `get_x`/`set_x`,
+`__init__`, and `@Builder`'s fluent chain are all correctly typed:
+
+```toml
+[tool.mypy]
+plugins = ["inito.typing.mypy_plugin"]
+```
+
+This is mypy-only — see [Troubleshooting](troubleshooting.md) for the
+current pyright gap.
+
 ## Development install
 
 To work on `inito` itself:

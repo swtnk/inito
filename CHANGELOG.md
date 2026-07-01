@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta] - 2026-07-01
+
+### Added
+- A mypy plugin (`inito.typing.mypy_plugin`) synthesizing every generated
+  member's real type: `__init__`'s signature, `get_x`/`set_x` accessors, and
+  the full `@Builder` fluent chain (`Builder`, `builder()`, `to_builder()`).
+  Enable via `[tool.mypy] plugins = ["inito.typing.mypy_plugin"]`. Closes the
+  mypy half of the "static type checkers don't see generated members" known
+  limitation from 0.0.1-beta; pyright has no equivalent plugin mechanism and
+  remains a documented gap.
+
 ## [0.0.1-beta] - 2026-07-01
 
 ### Added

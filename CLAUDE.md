@@ -56,7 +56,17 @@ Two sanctioned mutation points, and only two:
 - `builders/` — the `@Builder` generator (not yet implemented — see Phase 8).
 - `reflection/` — low-level MRO/annotation-walking helpers used once by
   `MetadataExtractor`.
-- `typing/` — reserved for Protocol/generic typing support (currently empty).
+- `typing/mypy_plugin/` — the mypy plugin (`fields.py` collects declared
+  fields from a class + its bases via mypy's AST, mirroring
+  `reflection/introspection.py`'s runtime MRO-walk; `constructors.py`
+  synthesizes `__init__`/`get_x`/`set_x` for the constructor/accessor
+  decorators; `builder.py` synthesizes the nested `Builder` class via
+  `mypy.plugin.SemanticAnalyzerPluginInterface.basic_new_typeinfo`; `options.py`
+  reads `@Data(frozen=True)`-style keyword arguments from the decorator call
+  expression, since inito's decorators are typed as plain `Callable[...,
+  Any]` rather than having a real keyword signature mypy's CallableType-based
+  argument lookup could use). Mypy-only — pyright has no third-party plugin
+  mechanism.
 - `metadata/` — `FieldMetadata`/`ClassMetadata` value types and
   `MetadataExtractor`, which builds and caches metadata once per class.
 - `utils/` — `codegen.build_function` and

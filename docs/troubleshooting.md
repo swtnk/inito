@@ -53,14 +53,31 @@ for genuinely self-referential fields. If you need a linked structure, keep
 the self-referential field un-annotated for `inito`'s purposes, or manage
 that field outside the decorator-generated constructor.
 
-## Static type checkers don't see generated members
+## mypy flags `user.get_name()`, `Point.builder()`, etc. as unknown attributes
 
-`mypy`/`pyright` will flag `user.get_name()`, `Point.builder()`, etc. as
-unknown attributes, even though they work correctly at runtime. This is
-expected for the current release — see the
-[README's known limitations section](https://github.com/swtnk/inito#known-limitation-static-type-checkers-dont-see-generated-members-yet)
-for why, and `TASKS.md` Phase 17 for the tracked future fix (a dedicated
-mypy/pyright plugin, the same approach `attrs`/Pydantic use).
+Enable inito's bundled mypy plugin — without it, mypy has no way to know
+about members attached via `setattr` at decoration time:
+
+```toml
+[tool.mypy]
+plugins = ["inito.typing.mypy_plugin"]
+```
+
+With the plugin enabled, `mypy --strict` correctly infers the real
+`__init__` signature, `get_x`/`set_x` accessor types, and the full
+`.builder()`/`Builder`/`.to_builder()` chain for every decorator. One
+cosmetic quirk: `reveal_type()` on a `Builder` instance itself may show a
+doubled qualname (e.g. `Point.Point.Builder`) due to how mypy formats
+synthetic nested classes — this doesn't affect type-checking correctness,
+only that one debug-output string.
+
+## pyright still flags the same attributes as unknown
+
+pyright has no third-party mypy-plugin equivalent, so the plugin above
+doesn't help it. This is a real, currently-unresolved gap — your code runs
+correctly regardless, but pyright can't verify it statically. See the
+[README's known limitations section](https://github.com/swtnk/inito#known-limitation-pyright-doesnt-see-generated-members)
+for more, and `TASKS.md` Phase 17 for what closing this would require.
 
 ## `ValueError: '<field>' in __slots__ conflicts with class variable`
 

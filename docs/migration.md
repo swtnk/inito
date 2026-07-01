@@ -48,9 +48,10 @@ runtime overhead. The differences:
 - `attrs` has one flexible `@define`/`@attrs.s` entry point with many flags;
   `inito` favors many small, Lombok-named decorators
   (`@Getter`, `@ToString`, ...) you compose explicitly.
-- `attrs` has mature mypy/pyright plugin support for its generated
-  attributes; `inito` doesn't yet (see
-  [Troubleshooting](troubleshooting.md#static-type-checkers-dont-see-generated-members)).
+- `attrs` has mature mypy *and* pyright plugin support for its generated
+  attributes; `inito` ships an equivalent [mypy plugin](installation.md#type-checking-mypy)
+  but has no pyright equivalent yet (see
+  [Troubleshooting](troubleshooting.md#pyright-still-flags-the-same-attributes-as-unknown)).
 
 If you're coming from Java/Lombok and want that naming/mental model
 directly in Python, `inito` will feel more familiar. If per-instance memory
