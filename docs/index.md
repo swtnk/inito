@@ -1,10 +1,11 @@
-# inito
+# InitO
 
-A Lombok-inspired boilerplate-elimination library for Python. `inito`
-generates constructors, `repr`, equality/hashing, accessors, and fluent
+**Boilerplate elimination for Python — Lombok-inspired, zero-dependency.**
+
+InitO generates constructors, `repr`, equality/hashing, accessors, and fluent
 builders once at class-decoration time — never at instance construction or
 attribute-access time — so the generated classes perform like handwritten
-ones. Zero runtime dependencies.
+ones.
 
 ```python
 from inito import Data
@@ -22,7 +23,55 @@ print(user)              # User(name='Ada', age=30)
 print(user.get_name())   # Ada
 ```
 
-## Why inito
+::::{grid} 1 2 2 3
+:gutter: 3
+
+:::{grid-item-card} {octicon}`rocket;1.5em;sd-mr-1` Get started
+:link: quickstart
+:link-type: doc
+
+Install InitO and tour every decorator in a few minutes.
+:::
+
+:::{grid-item-card} {octicon}`book;1.5em;sd-mr-1` User Guide
+:link: user-guide
+:link-type: doc
+
+Task-oriented docs: a dedicated page per decorator, plus DI, recipes, and
+migration.
+:::
+
+:::{grid-item-card} {octicon}`code-square;1.5em;sd-mr-1` API reference
+:link: reference/index
+:link-type: doc
+
+Every decorator, option, and exception, generated from the source.
+:::
+
+:::{grid-item-card} {octicon}`light-bulb;1.5em;sd-mr-1` Concepts
+:link: concepts
+:link-type: doc
+
+The boilerplate problem InitO solves — and how it stays fast.
+:::
+
+:::{grid-item-card} {octicon}`plug;1.5em;sd-mr-1` Dependency injection
+:link: dependency-injection
+:link-type: doc
+
+Wire object graphs with `@Service`/`@Singleton`/`@Inject` and a `Container`.
+:::
+
+:::{grid-item-card} {octicon}`beaker;1.5em;sd-mr-1` Recipes
+:link: recipes
+:link-type: doc
+
+Real-world, copy-pasteable patterns combining several decorators.
+:::
+
+::::
+
+## Why InitO
 
 - **Real methods, generated once.** Each decorator builds true Python
   functions from source at decoration time and attaches them to the class —
@@ -38,9 +87,10 @@ print(user.get_name())   # Ada
   `mypy --strict` see every generated member; `@Data`/`@Value`/
   `@AllArgsConstructor` also type-check under pyright via a
   `dataclass_transform` stub.
-- **Batteries for services.** A small [dependency-injection](dependency-injection.md)
-  layer (`@Service`/`@Singleton`/`@Inject` + a `Container`) wires
-  constructors together lazily and thread-safely.
+- **Batteries for services.** A small
+  [dependency-injection](dependency-injection.md) layer
+  (`@Service`/`@Singleton`/`@Inject` + a `Container`) wires constructors
+  together lazily and thread-safely.
 
 ## Decorators at a glance
 
@@ -60,93 +110,9 @@ print(user.get_name())   # Ada
 Every PascalCase decorator has a lowercase alias (`data`, `builder`, ...)
 bound to the same object.
 
-## Where to next
-
-::::{grid} 1 2 2 3
-:gutter: 3
-
-:::{grid-item-card} {octicon}`rocket;1.5em;sd-mr-1` Get started
-:link: quickstart
-:link-type: doc
-
-Install inito and tour every decorator in a few minutes.
-:::
-
-:::{grid-item-card} {octicon}`light-bulb;1.5em;sd-mr-1` Concepts
-:link: concepts
-:link-type: doc
-
-The boilerplate problem inito solves — and how it stays fast.
-:::
-
-:::{grid-item-card} {octicon}`package;1.5em;sd-mr-1` Decorators
-:link: decorators/index
-:link-type: doc
-
-A dedicated page per decorator: the problem it solves, options, gotchas.
-:::
-
-:::{grid-item-card} {octicon}`plug;1.5em;sd-mr-1` Dependency injection
-:link: dependency-injection
-:link-type: doc
-
-Wire object graphs with `@Service`/`@Singleton`/`@Inject` and a `Container`.
-:::
-
-:::{grid-item-card} {octicon}`book;1.5em;sd-mr-1` Recipes
-:link: recipes
-:link-type: doc
-
-Real-world, copy-pasteable patterns that combine several decorators.
-:::
-
-:::{grid-item-card} {octicon}`code-square;1.5em;sd-mr-1` API reference
-:link: api
-:link-type: doc
-
-Every public decorator, option, and exception.
-:::
-
-::::
-
 ```{toctree}
-:caption: Getting started
 :hidden:
 
-installation
-concepts
-quickstart
-```
-
-```{toctree}
-:caption: Decorators
-:hidden:
-
-decorators/index
-```
-
-```{toctree}
-:caption: Dependency injection
-:hidden:
-
-dependency-injection
-```
-
-```{toctree}
-:caption: Guides
-:hidden:
-
-recipes
-examples
-migration
-```
-
-```{toctree}
-:caption: Reference
-:hidden:
-
-api
-performance
-faq
-troubleshooting
+user-guide
+reference/index
 ```

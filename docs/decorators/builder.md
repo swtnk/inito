@@ -108,4 +108,4 @@ Widget.builder().with_name("x").create()
 - [@ToString](to-string.md) — commonly paired for a readable `repr`.
 - [Constructors](constructors.md) — the non-fluent alternative.
 - [Recipes](../recipes.md) — a request/response builder example.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

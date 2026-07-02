@@ -78,4 +78,4 @@ lock down via an option.
 - [@Data](data.md) — the mutable, setter-included counterpart.
 - [Composing with frozen dataclasses](../troubleshooting.md) — stacking
   order rules if you combine inito with `@dataclass(frozen=True)`.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

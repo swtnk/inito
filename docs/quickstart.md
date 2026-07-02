@@ -180,5 +180,5 @@ point = Point.builder().x(1).y(2).build()
 print(point)   # Point(x=1, y=2)
 ```
 
-See [API reference](api.md) for the full decorator list and
+See [API reference](reference/index.md) for the full decorator list and
 [Examples](examples.md) for a runnable script per decorator.

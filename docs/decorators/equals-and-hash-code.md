@@ -59,4 +59,4 @@ None today; `@EqualsAndHashCode` and `@EqualsAndHashCode()` are equivalent.
 
 - [@Data](data.md) / [@Value](value.md) — include eq/hash in the bundle.
 - [@ToString](to-string.md) — the `repr` counterpart.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

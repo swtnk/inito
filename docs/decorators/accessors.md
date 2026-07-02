@@ -64,4 +64,4 @@ forms (`@Getter` and `@Getter()`).
   `eq`/`hash`.
 - [Constructors](constructors.md) — pair accessors with a generated
   constructor.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

@@ -111,4 +111,4 @@ not later at construction.
 - [@Builder](builder.md) — a fluent alternative to a many-argument constructor.
 - [Dependency injection](../dependency-injection.md) — `@Service` on top of
   `@RequiredArgsConstructor`.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

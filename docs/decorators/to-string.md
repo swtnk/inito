@@ -62,4 +62,4 @@ None today; `@ToString` and `@ToString()` are equivalent.
 - [@Builder](builder.md) — commonly paired with `@ToString`.
 - [@EqualsAndHashCode](equals-and-hash-code.md) — the equality/hashing
   counterpart.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

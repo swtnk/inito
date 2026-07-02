@@ -93,4 +93,4 @@ is the more descriptive choice when immutability is the point (see
 - [Accessors](accessors.md), [@ToString](to-string.md),
   [@EqualsAndHashCode](equals-and-hash-code.md) — the atomic pieces `@Data`
   bundles.
-- [API reference](../api.md)
+- [API reference](../reference/index.md)

@@ -172,4 +172,4 @@ pyright infer the returned type with no plugin or stub needed.
   pairs naturally with `@Service`.
 - [Recipes](recipes.md) — a full service-layer example.
 - [Troubleshooting](troubleshooting.md) — DI error walkthroughs.
-- [API reference](api.md)
+- [API reference](reference/index.md)

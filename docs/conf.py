@@ -32,7 +32,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # --- HTML theme: PyData Sphinx Theme (NumPy-style layout) -------------------
 html_theme = "pydata_sphinx_theme"
-html_title = "inito"
+# "InitO" is the display/brand name; the installable package is `inito`.
+html_title = "InitO"
 
 # Served as a GitHub Pages project site under the account's custom domain,
 # i.e. https://swetanksubham.com/inito/. Sphinx uses relative links for
@@ -41,7 +42,7 @@ html_title = "inito"
 html_baseurl = "https://swetanksubham.com/inito/"
 
 html_theme_options = {
-    "logo": {"text": "inito"},
+    "logo": {"text": "InitO"},
     "icon_links": [
         {
             "name": "GitHub",
