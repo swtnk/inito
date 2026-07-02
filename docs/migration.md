@@ -31,11 +31,14 @@ Stick with plain `dataclasses` if you don't need any of the above — it's
 in the standard library, and (per [Performance](performance.md)) construction
 performance is within noise of `inito`.
 
-Stacking any `inito` constructor-generating decorator with
-`@dataclass(frozen=True)` works correctly in either stacking order — see
-[Troubleshooting](troubleshooting.md) if you hit `FrozenInstanceError`
-from a setter afterward (expected: setters still respect frozen semantics,
-only construction is exempted).
+To stack an `inito` constructor-generating decorator with
+`@dataclass(frozen=True)`, put the `@dataclass(frozen=True)` **innermost**
+(`@Data` / `@dataclass(frozen=True)` / `class`); the reverse order isn't
+supported. For an immutable class, prefer `@Value` or `@Data(frozen=True)`,
+which need no stacking. See [Troubleshooting](troubleshooting.md) for
+details, and if you hit `FrozenInstanceError` from a setter afterward
+(expected: setters still respect frozen semantics, only construction is
+exempted).
 
 ## From `attrs`
 

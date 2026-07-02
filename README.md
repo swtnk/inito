@@ -164,23 +164,37 @@ point.x = 5   # raises dataclasses.FrozenInstanceError
 del point.x   # also raises
 ```
 
-Generated constructors (and `@Builder`'s `build()`) assign fields via
-`object.__setattr__` internally, bypassing the generated `__setattr__` —
-the exact technique a real frozen dataclass's own `__init__` uses — so
-construction always succeeds regardless. `@Data(frozen=True)` also skips
-generating setters; `@Value` never generates them in the first place.
+For an immutable class, generated constructors (and `@Builder`'s `build()`)
+assign fields via `object.__setattr__` internally, bypassing the blocking
+`__setattr__` — the exact technique a real frozen dataclass's own
+`__init__` uses — so construction always succeeds. A non-frozen class uses
+a plain `self.x = x` instead, which is both faster and keeps attribute
+reads at handwritten speed. `@Data(frozen=True)` also skips generating
+setters; `@Value` never generates them in the first place.
 
 ### Composing with frozen dataclasses
 
-Stacking any inito constructor-generating decorator (`@Data`, `@Builder`,
-`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` also works
-correctly, in either stacking order: construction succeeds, and
-equality/hashing work as expected, for the same `object.__setattr__`
-reason above. This matters for decorators without their own `frozen`
-option (`@Builder`, `@AllArgsConstructor`, ...) — stack them under a real
-`@dataclass(frozen=True)` for immutability. Post-construction mutation
-still correctly raises `FrozenInstanceError` either way, since only
-construction is exempted from the frozen check, not general mutation.
+To combine a decorator that has no `frozen` option of its own (`@Builder`,
+`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)`, stack the
+`@dataclass(frozen=True)` **innermost** — i.e. closest to the class:
+
+```python
+@Data
+@dataclass(frozen=True)   # innermost — correct
+class Point:
+    x: int
+    y: int
+```
+
+In this order the frozen `__setattr__` already exists when inito generates
+its constructor, so inito detects it and builds correctly. The **reverse**
+order (`@dataclass(frozen=True)` outermost, applied *after* inito) is
+**not supported** — inito can't see a decorator that hasn't run yet, so its
+constructor would use `self.x = x` and construction would raise
+`FrozenInstanceError`. For an immutable class, prefer `@Value` or
+`@Data(frozen=True)` (no stacking needed at all), or use the innermost form
+above. Post-construction mutation always raises `FrozenInstanceError` — only
+construction is exempted from the frozen check.
 
 ### Self-referential fields
 

@@ -18,13 +18,16 @@ class ValueOptions:
 
 def _apply_value(cls: type, options: ValueOptions) -> type:
     metadata = default_extractor.extract(cls)
+    # Immutability is attached before the constructor so the constructor
+    # assigns via object.__setattr__ (bypassing the blocking __setattr__)
+    # rather than a plain self.x = x. See generators/constructor.py.
+    attach_capability(cls, metadata, "immutable")
     attach_capability(cls, metadata, "constructor")
     attach_capability(cls, metadata, "repr")
     attach_capability(cls, metadata, "eq")
     attach_capability(cls, metadata, "hash")
     if options.include_getters:
         attach_capability(cls, metadata, "getter")
-    attach_capability(cls, metadata, "immutable")
     return cls
 
 

@@ -200,16 +200,27 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] Publish results into `docs/performance.md` (added to the docs toctree in Phase 14); notes
       attrs' default `__slots__` memory edge and inito's decoration-time cost as known trade-offs
 - [x] **Performance pass in 0.0.11-beta** (prompted by a requested code review, written up in
-      `local_dev/review.md`): (1) generated constructors + `@Builder.build()` switched from
-      per-field `object.__setattr__` to a hoisted `self.__dict__["x"] = x` write for non-slotted
-      classes — ~2x faster construction (was ~2.5x handwritten, now ~1.2-1.3x), still
-      immutable-correct in every stacking order because a `__dict__` write bypasses `__setattr__`;
-      slotted classes fall back to a once-bound `object.__setattr__` (new
-      `generators/constructor.py::supports_dict_assignment`). (2) `@Inject` no longer calls
-      `Signature.bind_partial()` per call — precomputes each param's (name, positional-index,
-      resolved-type) once at decoration time, ~4x faster (~830ns → ~200ns). (3) `docs/performance.md`
-      construction/DI numbers re-measured and corrected — the old construction row predated the
-      0.0.4 `object.__setattr__` change and understated the cost
+      `local_dev/review.md`): (1) `@Inject` no longer calls `Signature.bind_partial()` per call —
+      precomputes each param's (name, positional-index, resolved-type) once at decoration time,
+      ~4x faster (~830ns → ~200ns). (2) DI container resolves dependencies before taking a
+      service's construction lock, eliminating a cross-thread cyclic deadlock. (3)
+      `docs/performance.md` construction/DI numbers re-measured — the old construction row predated
+      the 0.0.4 `object.__setattr__` change and understated the cost
+- [x] **Performance pass follow-up in 0.0.12-beta** (second review round): the 0.0.11 attempt to
+      speed up construction via a `self.__dict__["x"] = x` write was found to be a **net
+      regression** — it breaks CPython's key-sharing instance dict (PEP 412), silently slowing
+      every attribute read (+~40%) and `__eq__`/`__hash__`/`__repr__` (+~80%), which are far hotter
+      than construction. Reverted to a plain `self.x = x` for ordinary classes (fastest *and*
+      key-sharing-friendly) with a once-bound `object.__setattr__` only for immutable classes
+      (detected via `generators/constructor.py::needs_object_setattr`, an MRO walk for an overridden
+      `__setattr__`; `@Value`/`@Data(frozen=True)` now attach immutability *before* the constructor
+      so it's detected). Net: inito reaches handwritten/dataclasses parity on construction AND reads
+      AND eq/hash/repr. Cost: stacking `@dataclass(frozen=True)` *outermost* (after inito) is no
+      longer supported — construction raises, since inito generates its constructor before that
+      decorator runs and can't detect it; use the innermost order or `@Value`/`@Data(frozen=True)`.
+      Also fast-pathed the warm `Container.get()` (single dict lookup, ~79ns → ~45ns). `@Builder`'s
+      `build()` keeps `object.__setattr__` unconditionally (it can't detect immutability applied by
+      a later decorator like `@Value @Builder`, and object.__setattr__ preserves key-sharing anyway)
 
 ## Phase 14 — Documentation
 - [x] Switched doc tooling from mkdocs to **Sphinx + Furo** (user-requested deviation from

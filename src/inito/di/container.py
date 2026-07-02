@@ -64,6 +64,14 @@ class Container:
 
     def get(self, cls: type[T]) -> T:
         """Resolve and return an instance of cls, building its dependency graph bottom-up."""
+        # Warm-singleton fast path: a single dict lookup, skipping registration
+        # lookup / scope / cycle checks and even typing.cast (a real runtime call
+        # here). A cached instance is never None, so a miss falls through to the
+        # full resolve. This is the overwhelmingly common call once the graph is
+        # built, so the returned-Any is silenced rather than paying for a cast.
+        instance = self._singletons.get(cls)
+        if instance is not None:
+            return instance  # type: ignore[no-any-return]
         return cast(T, self._resolve(cls, path=()))
 
     def is_registered(self, cls: type) -> bool:

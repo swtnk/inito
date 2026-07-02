@@ -24,29 +24,38 @@ def test_data_frozen_true_is_genuinely_immutable_without_stacking_dataclass():
         del point.x
 
 
-def test_data_construction_succeeds_on_a_frozen_dataclass_in_either_stacking_order():
-    # Generated constructors assign fields via object.__setattr__, mirroring
-    # how a real frozen dataclass's own __init__ bypasses its blocking
-    # __setattr__ for initial construction - so stacking with
-    # @dataclass(frozen=True) works regardless of order.
+def test_data_construction_succeeds_with_dataclass_frozen_innermost():
+    # Idiomatic order: @dataclass(frozen=True) is innermost, so its blocking
+    # __setattr__ is already on the class when @Data generates its constructor.
+    # The constructor detects it (generators/constructor.py::needs_object_setattr)
+    # and assigns via object.__setattr__, so construction succeeds and the
+    # instance is immutable.
     @Data
     @dataclass(frozen=True)
-    class PointA:
+    class Point:
         x: int
         y: int
 
+    point = Point(1, 2)
+    assert point == Point(1, 2)
+    assert hash(point) == hash(Point(1, 2))
+    with pytest.raises(FrozenInstanceError):
+        point.x = 5
+
+
+def test_data_with_dataclass_frozen_outermost_is_unsupported():
+    # Non-idiomatic order: @dataclass(frozen=True) is applied *after* @Data has
+    # already generated a plain `self.x = x` constructor, which @Data can't
+    # predict. Construction then hits the frozen __setattr__ and raises. Use the
+    # innermost order above, or @Data(frozen=True)/@Value, for an immutable class.
     @dataclass(frozen=True)
     @Data
-    class PointB:
+    class Point:
         x: int
         y: int
 
-    a = PointA(1, 2)
-    b = PointB(1, 2)
-    assert a == PointA(1, 2)
-    assert hash(a) == hash(PointA(1, 2))
-    assert b == PointB(1, 2)
-    assert hash(b) == hash(PointB(1, 2))
+    with pytest.raises(FrozenInstanceError):
+        Point(1, 2)
 
 
 def test_data_setters_and_direct_assignment_still_fail_on_a_frozen_dataclass():

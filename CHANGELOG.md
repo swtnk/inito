@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.12-beta] - 2026-07-02
+
+### Fixed
+- **Reverted a performance regression from 0.0.11-beta.** That release
+  assigned constructor fields via `self.__dict__["x"] = x`, which is a hair
+  faster to construct but breaks CPython's key-sharing instance dict
+  (PEP 412) — silently regressing *every* attribute read (+~40%) and
+  `__eq__`/`__hash__`/`__repr__` (+~80%), which are far hotter than
+  construction. Constructors now use a plain `self.x = x` for ordinary
+  classes (fastest, and key-sharing-friendly) and a once-bound
+  `object.__setattr__` only for immutable classes (`@Value`,
+  `@Data(frozen=True)`, or a class stacked on `@dataclass(frozen=True)`),
+  which also preserves key-sharing. Result: inito is now at handwritten/
+  dataclasses parity on construction **and** reads **and** eq/hash/repr.
+
+### Changed (performance — no behavior change)
+- `Container.get()` now fast-paths a warm/cached singleton through a single
+  dict lookup (ahead of the registration/scope/cycle checks and skipping
+  `typing.cast`), ~1.75x faster on the hottest DI call (~79ns → ~45ns).
+
+### Removed / breaking
+- Stacking `@dataclass(frozen=True)` **outermost** — i.e. applied *after*
+  an inito constructor decorator (`@dataclass(frozen=True)` on top of
+  `@Data`) — is no longer supported: construction raises
+  `FrozenInstanceError`, because inito generates its `self.x = x`
+  constructor before the outer `@dataclass` installs its frozen
+  `__setattr__` and can't detect it. This was previously made to work by
+  using `object.__setattr__` for *every* class, which is what caused the
+  read/eq/hash slowdown. Use the **innermost** order
+  (`@Data` / `@dataclass(frozen=True)`), or `@Value` / `@Data(frozen=True)`
+  (no stacking needed) — all of which keep full read performance.
+
 ## [0.0.11-beta] - 2026-07-02
 
 ### Changed (performance — no behavior change)

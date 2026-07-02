@@ -14,7 +14,7 @@ class Point:
     y: int
 
 
-point = Point(1, 2)   # works fine, in either stacking order
+point = Point(1, 2)   # works — @dataclass(frozen=True) is innermost
 point.set_x(5)         # raises dataclasses.FrozenInstanceError - expected
 point.x = 5            # also raises - expected
 ```
@@ -22,11 +22,17 @@ point.x = 5            # also raises - expected
 This is expected, not a bug: generated setters remain plain attribute
 assignment, so post-construction mutation on a frozen dataclass correctly
 still fails — only *construction itself* is exempted from the frozen
-check (generated constructors use `object.__setattr__` internally, the
-same technique a real frozen dataclass's own `__init__` uses). If you see
-`FrozenInstanceError` on the *construction* call itself rather than a
-setter, please [open an issue](https://github.com/swtnk/inito/issues) —
-that would be a genuine regression, not expected behavior.
+check (for an immutable class, generated constructors use
+`object.__setattr__` internally, the same technique a real frozen
+dataclass's own `__init__` uses).
+
+**Stacking order matters:** put `@dataclass(frozen=True)` **innermost**
+(closest to the class), as above. In the reverse order —
+`@dataclass(frozen=True)` on the *outside* of `@Data` — construction itself
+raises `FrozenInstanceError`, because inito generates its constructor
+before the outer `@dataclass` installs the frozen `__setattr__` and so
+can't know to bypass it. Use the innermost order, or `@Value` /
+`@Data(frozen=True)` (which need no stacking), for an immutable class.
 
 ## `FrozenInstanceError` from `@Value`/`@Data(frozen=True)` alone (no `@dataclass` needed)
 

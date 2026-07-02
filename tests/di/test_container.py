@@ -97,6 +97,31 @@ def test_resolves_nested_dependency_graph_bottom_up():
     assert isinstance(a.b.c, C)
 
 
+def test_shared_singleton_dependency_is_reused_across_services():
+    # Two services depend on the same singleton. Resolving the second one
+    # reaches the shared dependency via recursion *after* it was cached by the
+    # first, exercising the cached-singleton return inside _resolve (not the
+    # top-level get() fast path).
+    class Shared:
+        pass
+
+    class A:
+        def __init__(self, shared: Shared):
+            self.shared = shared
+
+    class B:
+        def __init__(self, shared: Shared):
+            self.shared = shared
+
+    container = Container()
+    container.register(Shared)
+    container.register(A)
+    container.register(B)
+    a = container.get(A)
+    b = container.get(B)
+    assert a.shared is b.shared
+
+
 def test_circular_dependency_two_nodes_raises():
     container = Container()
     container.register(_CycleA2)

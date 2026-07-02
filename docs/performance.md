@@ -52,27 +52,27 @@ decision.
 
 | Operation | handwritten | inito | dataclass | attrs |
 |---|---:|---:|---:|---:|
-| construction | 66 | 88 | 74 | 61 |
-| attribute access | 13.8 | 13.8 | 13.8 | 13.9 |
-| `__repr__` | 106 | 119 | 198 | 207 |
-| `__eq__` | 62 | 88 | 66 | 50 |
-| `__hash__` | 61 | 72 | 64 | 71 |
+| construction | 66 | 71 | 71 | 62 |
+| attribute access | 13.6 | 13.6 | 13.6 | 13.5 |
+| `__repr__` | 104 | 107 | 197 | 204 |
+| `__eq__` | 62 | 67 | 67 | 49 |
+| `__hash__` | 58 | 62 | 61 | 62 |
 | decoration (µs) | ~2 | ~100 | ~78 | ~92 |
 
-**On construction** inito carries a ~1.2-1.3x premium over a handwritten
-`self.x = x` constructor. This is a deliberate, one-time-decided tradeoff:
-generated constructors assign fields via a direct `self.__dict__["x"] = x`
-write (for ordinary classes) rather than `self.x = x`, so that `@Value`,
-`@Data(frozen=True)`, and any stacking order with `@dataclass(frozen=True)`
-are all immutable-correct **without** a per-instance branch — construction
-writes straight to the instance dict, bypassing the blocking `__setattr__`,
-while a later `obj.x = 5` still raises. The `__dict__` write is ~2x faster
-than the `object.__setattr__` this replaced (which cost inito ~2.5x
-handwritten and is what an earlier version of this table, recorded before
-that change, under-reported). Fully slotted classes fall back to a
-once-bound `object.__setattr__`. `attribute access`, `__repr__`, `__eq__`,
-and `__hash__` remain at or near handwritten parity — those generators emit
-exactly what you'd write by hand.
+**inito is at parity with handwritten/dataclasses across every runtime
+operation.** For an ordinary (non-frozen) class, generated constructors
+assign fields via plain `self.x = x` — the fastest option, and the one that
+keeps CPython's key-sharing instance dict (PEP 412) intact so attribute
+reads and `__eq__`/`__hash__`/`__repr__` stay at handwritten speed. When a
+class is immutable — `@Value`, `@Data(frozen=True)`, or stacked on top of
+`@dataclass(frozen=True)` (innermost) — the constructor assigns via a
+once-bound `object.__setattr__` to bypass the blocking `__setattr__`. That
+costs more to construct (~130ns, roughly 2x — a cold, once-per-object path)
+but **still keeps reads fast**, because `object.__setattr__` also preserves
+the key-sharing dict. `__repr__` is the fastest of the three codegen flavors
+(single unrolled f-string). (An earlier 0.0.11 experiment wrote fields via
+`self.__dict__["x"] = x`; it was slightly faster to construct but broke
+key-sharing, silently regressing every attribute read — reverted here.)
 
 `@Builder` fluent chain vs. a direct constructor call (both on the same
 `@Data`-equipped class): the direct call took ~80ns; the four-method fluent
@@ -113,15 +113,15 @@ current spec).
 
 ## Takeaways
 
-- **Attribute access, `__eq__`, `__hash__`:** inito is at or within a few
-  percent of handwritten — those generators emit exactly what you'd write by
-  hand, so the "generated code performs like handwritten code" goal holds up
-  in measurement, not just in design intent.
-- **Construction:** ~1.2-1.3x handwritten — the one place inito accepts a
-  small, deliberate premium (the frozen-safe `__dict__` write, see the table
-  note above) in exchange for correct, branch-free immutability across every
-  decorator and stacking order. Still ~2x faster than the `object.__setattr__`
-  approach it replaced.
+- **Construction, attribute access, `__eq__`, `__hash__`:** inito is at or
+  within a few percent of handwritten/dataclasses — those generators emit
+  exactly what you'd write by hand, and non-frozen construction uses a plain
+  `self.x = x`, so the "generated code performs like handwritten code" goal
+  holds up in measurement, not just in design intent.
+- **Immutable classes** (`@Value`/`@Data(frozen=True)`/frozen-innermost) pay
+  ~2x on construction only (the `object.__setattr__` bypass, a cold
+  once-per-object path); their attribute reads and eq/hash/repr stay at
+  handwritten speed.
 - **`__repr__`:** inito's single unrolled f-string is the fastest generated
   repr among the three codegen-based flavors, and close to handwritten.
 - **Decoration time:** meaningfully higher than dataclasses (both are
@@ -143,7 +143,7 @@ section](quickstart.md)):
 | Operation | inito (DI) | hand-written | Verdict |
 |---|---:|---:|---|
 | attribute access on a resolved instance | 12 ns | 12 ns | **at parity** — zero DI-related overhead once an object is built |
-| `container.get()`, warm/singleton-cached | 94 ns | 22 ns | real but small — a dict lookup + scope check, not zero; **no lock is touched once a singleton is cached** |
+| `container.get()`, warm/singleton-cached | 45 ns | 22 ns | small — a single dict lookup (fast-pathed ahead of registration/scope/cycle checks); **no lock is touched once a singleton is cached** |
 | cold full-graph resolution (3-level) | ~900 ns | ~140 ns | real, one-time-per-resolution cost — quantified, not hidden |
 | `@Inject`-wrapped function call | 202 ns | 25 ns | real, **every call** — but ~4x cheaper than before (see below) |
 

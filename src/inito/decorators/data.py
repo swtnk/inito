@@ -26,15 +26,19 @@ class DataOptions:
 
 def _apply_data(cls: type, options: DataOptions) -> type:
     metadata = default_extractor.extract(cls)
+    # Immutability is attached before the constructor so the constructor
+    # generator sees the blocking __setattr__ and assigns fields via
+    # object.__setattr__; a non-frozen class keeps the faster plain
+    # self.x = x. See generators/constructor.py::needs_object_setattr.
+    if options.frozen:
+        attach_capability(cls, metadata, "immutable")
     attach_capability(cls, metadata, "constructor")
     attach_capability(cls, metadata, "repr")
     attach_capability(cls, metadata, "eq")
     attach_capability(cls, metadata, "hash")
     if options.include_getters:
         attach_capability(cls, metadata, "getter")
-    if options.frozen:
-        attach_capability(cls, metadata, "immutable")
-    elif options.include_setters:
+    if not options.frozen and options.include_setters:
         attach_capability(cls, metadata, "setter")
     return cls
 
