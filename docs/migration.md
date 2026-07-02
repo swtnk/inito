@@ -31,9 +31,11 @@ Stick with plain `dataclasses` if you don't need any of the above — it's
 in the standard library, and (per [Performance](performance.md)) construction
 performance is within noise of `inito`.
 
-**Known interaction:** stacking any `inito` constructor-generating decorator
-with `@dataclass(frozen=True)` raises `FrozenInstanceError`, in either
-stacking order — see [Troubleshooting](troubleshooting.md).
+Stacking any `inito` constructor-generating decorator with
+`@dataclass(frozen=True)` works correctly in either stacking order — see
+[Troubleshooting](troubleshooting.md) if you hit `FrozenInstanceError`
+from a setter afterward (expected: setters still respect frozen semantics,
+only construction is exempted).
 
 ## From `attrs`
 

@@ -131,16 +131,21 @@ gap for `get_x`/`set_x`/`@Builder` would need a different strategy (e.g. a
 companion stub generator); tracked in `TASKS.md` Phase 17, not required for
 this release.
 
-### Known limitations: frozen dataclasses and self-referential fields
+### Composing with frozen dataclasses
 
 Stacking any inito constructor-generating decorator (`@Data`, `@Builder`,
-`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` — in either
-order — raises `dataclasses.FrozenInstanceError`. This is expected, not a
-bug: the generated `__init__`/`build()` assign fields with plain
-`self.x = value`, which correctly respects the frozen class's blocking
-`__setattr__` rather than silently bypassing the immutability you asked
-for. If you want inito's own frozen-style behavior, use `@Data(frozen=True)`
-(which just omits setters) instead of also stacking `@dataclass(frozen=True)`.
+`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` works correctly
+in either stacking order: construction succeeds, and equality/hashing work
+as expected. Generated constructors assign fields via `object.__setattr__`
+internally — the same technique a real frozen dataclass's own `__init__`
+uses to bypass its blocking `__setattr__` for initial construction — so
+this isn't a special case, it's how frozen classes are meant to be built.
+Post-construction mutation (`point.set_x(5)`, `point.x = 5`) still
+correctly raises `FrozenInstanceError` either way, since setters remain
+plain attribute assignment — only construction is exempted from the
+frozen check, not general mutation.
+
+### Known limitation: self-referential fields
 
 Self-referential type hints (e.g. a linked-list `next: Node`) also aren't
 supported: inito resolves annotations eagerly, once, at decoration time —

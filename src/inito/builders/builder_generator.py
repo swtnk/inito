@@ -113,7 +113,9 @@ def _render_fluent_setter_source(field: FieldMetadata, method_name: str) -> str:
 def _render_build_method_source(fields: tuple[FieldMetadata, ...], build_method_name: str) -> str:
     lines = [_render_unset_check(field, build_method_name) for field in fields if field.is_required]
     lines.append("    _instance = _owner_cls.__new__(_owner_cls)")
-    lines.extend(f"    _instance.{field.name} = self._{field.name}" for field in fields)
+    lines.extend(
+        f'    object.__setattr__(_instance, "{field.name}", self._{field.name})' for field in fields
+    )
     lines.append("    return _instance")
     return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
 

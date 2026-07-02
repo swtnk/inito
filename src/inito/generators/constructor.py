@@ -80,8 +80,10 @@ def render_no_args_assignment_body(fields: tuple[FieldMetadata, ...]) -> str:
 
 def _render_no_args_assignment(field: FieldMetadata) -> str:
     if field.default_factory is not None:
-        return f"    self.{field.name} = {factory_name(field)}()"
-    return f"    self.{field.name} = {default_name(field)}"
+        value_expr = f"{factory_name(field)}()"
+    else:
+        value_expr = default_name(field)
+    return f'    object.__setattr__(self, "{field.name}", {value_expr})'
 
 
 class RequiredArgsConstructorGenerator:
@@ -112,7 +114,7 @@ def render_required_args_assignment_body(
     required: tuple[FieldMetadata, ...], optional: tuple[FieldMetadata, ...]
 ) -> str:
     """Render an __init__ body: required fields from parameters, others from defaults."""
-    lines = [f"    self.{field.name} = {field.name}" for field in required]
+    lines = [f'    object.__setattr__(self, "{field.name}", {field.name})' for field in required]
     lines.extend(_render_no_args_assignment(field) for field in optional)
     return "\n".join(lines) if lines else "    pass"
 
@@ -137,10 +139,10 @@ def _render_assignment(field: FieldMetadata) -> str:
     if field.default_factory is not None:
         sentinel = factory_sentinel_name(field)
         factory = factory_name(field)
-        return (
-            f"    self.{field.name} = {factory}() if {field.name} is {sentinel} else {field.name}"
-        )
-    return f"    self.{field.name} = {field.name}"
+        value_expr = f"{factory}() if {field.name} is {sentinel} else {field.name}"
+    else:
+        value_expr = field.name
+    return f'    object.__setattr__(self, "{field.name}", {value_expr})'
 
 
 def _default_reference(field: FieldMetadata) -> str:

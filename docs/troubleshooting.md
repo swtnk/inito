@@ -1,6 +1,6 @@
 # Troubleshooting
 
-## `FrozenInstanceError` when stacking with `@dataclass(frozen=True)`
+## `FrozenInstanceError` when calling a setter on a frozen instance
 
 ```python
 from dataclasses import dataclass
@@ -14,19 +14,19 @@ class Point:
     y: int
 
 
-Point(1, 2)   # raises dataclasses.FrozenInstanceError
+point = Point(1, 2)   # works fine, in either stacking order
+point.set_x(5)         # raises dataclasses.FrozenInstanceError - expected
+point.x = 5            # also raises - expected
 ```
 
-This happens in either stacking order (`@Data` then `@dataclass(frozen=True)`,
-or the reverse) and is expected, not a bug: the generated `__init__`
-(and `@Builder`'s `build()`) assign fields with plain `self.x = value`,
-which correctly respects the frozen class's blocking `__setattr__` rather
-than silently bypassing the immutability you asked for.
-
-**Fix:** don't stack both. Use `@Data(frozen=True)` on its own (which just
-omits setter generation) if you want inito's frozen-style behavior, or use
-plain `@dataclass(frozen=True)` on its own if you want Python's native
-frozen semantics.
+This is expected, not a bug: generated setters remain plain attribute
+assignment, so post-construction mutation on a frozen dataclass correctly
+still fails — only *construction itself* is exempted from the frozen
+check (generated constructors use `object.__setattr__` internally, the
+same technique a real frozen dataclass's own `__init__` uses). If you see
+`FrozenInstanceError` on the *construction* call itself rather than a
+setter, please [open an issue](https://github.com/swtnk/inito/issues) —
+that would be a genuine regression, not expected behavior.
 
 ## `AnnotationResolutionError` on a self-referential field
 

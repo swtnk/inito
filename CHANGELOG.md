@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4-beta] - 2026-07-02
+
+### Fixed
+- Generated constructors (`@Data`'s `__init__`, `@Builder`'s `build()`,
+  `@AllArgsConstructor`, `@NoArgsConstructor`, `@RequiredArgsConstructor`)
+  now assign fields via `object.__setattr__` instead of plain attribute
+  assignment, so they work correctly when stacked with
+  `@dataclass(frozen=True)` in either order — matching how a real frozen
+  dataclass's own `__init__` bypasses its blocking `__setattr__` for
+  initial construction. Previously this raised `FrozenInstanceError` on
+  construction itself, which 0.0.3-beta's docs incorrectly described as
+  "expected, not a bug" until a real usage report prompted reconsidering
+  it. Setters remain plain assignment, so post-construction mutation on a
+  frozen dataclass still correctly fails.
+
 ## [0.0.3-beta] - 2026-07-01
 
 ### Added

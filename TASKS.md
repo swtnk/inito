@@ -157,9 +157,15 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       + `@dataclass`
 - [x] Generic class support tests (`tests/integration/test_generics.py`): `@Data`/`@Builder` on a
       `Generic[T]` class
-- [x] Frozen class tests (`tests/integration/test_frozen.py`): `@Data(frozen=True)`, and — newly
-      discovered and documented in README — stacking with `@dataclass(frozen=True)` in either order
-      correctly raises `FrozenInstanceError` rather than silently bypassing immutability
+- [x] Frozen class tests (`tests/integration/test_frozen.py`): `@Data(frozen=True)`, and stacking with
+      `@dataclass(frozen=True)` in either order. **Revised after initial release**: originally this
+      phase found construction itself raised `FrozenInstanceError` and documented that as "expected,
+      not a bug" — a real user hit this in practice and prompted reconsidering it. Fixed by having
+      generated constructors (`@Data`'s `__init__`, `@Builder`'s `build()`, `@NoArgsConstructor`/
+      `@RequiredArgsConstructor`) assign fields via `object.__setattr__` instead of plain assignment,
+      mirroring exactly how a real frozen dataclass's own `__init__` bypasses its blocking
+      `__setattr__` for initial construction. Setters deliberately kept as plain assignment, so
+      post-construction mutation still correctly fails — only construction is exempted
 - [x] Edge cases (`tests/integration/test_edge_cases.py`): empty class, single field, 3-level
       inheritance, `__slots__` with required-only fields, `__slots__`+default conflicting natively
       in Python (not an inito issue), forward ref to an already-defined class (works), and — newly
