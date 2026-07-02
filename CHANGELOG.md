@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+- The Sphinx docs are now published to GitHub Pages and served at
+  <https://swetanksubham.com/inito/> (auto-deployed on every push to `main`
+  via a new `docs.yml` workflow). Repointed the PyPI `Documentation` project
+  URL and the README's doc links/badge to the hosted site.
+
 ## [0.0.12-beta] - 2026-07-02
 
 ### Documentation

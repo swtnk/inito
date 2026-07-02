@@ -4,6 +4,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/inito.svg)](https://pypi.org/project/inito/)
 [![License: MIT](https://img.shields.io/pypi/l/inito.svg)](https://github.com/swtnk/inito/blob/main/LICENSE)
 [![CI](https://github.com/swtnk/inito/actions/workflows/ci.yml/badge.svg)](https://github.com/swtnk/inito/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-swetanksubham.com%2Finito-blue.svg)](https://swetanksubham.com/inito/)
 
 A Lombok-inspired boilerplate-elimination library for Python. `inito`
 generates constructors, `repr`, equality/hashing, accessors, and fluent
@@ -32,7 +33,7 @@ print(user == User("Ada", 31))   # True
 Without inito, the class above is ~20 lines of hand-written `__init__`,
 `__repr__`, `__eq__`, `__hash__`, and accessor boilerplate. With inito it is
 the three lines you see, and the generated methods are the *same* Python you
-would have written by hand — [benchmarked](https://github.com/swtnk/inito/blob/main/docs/performance.md) at parity
+would have written by hand — [benchmarked](https://swetanksubham.com/inito/performance.html) at parity
 with handwritten classes and `dataclasses`.
 
 ## Decorators at a glance
@@ -190,12 +191,12 @@ class's constructor dependencies into a `Container`), `@Singleton`
 function's annotated parameters from a container per call). `@Service`
 never mutates the decorated class — it stays an ordinary, directly
 constructible Python class; `container.get(cls)` is the DI-aware,
-lazily-resolving path. See [Quick start](https://github.com/swtnk/inito/blob/main/docs/quickstart.md) for a
+lazily-resolving path. See [Quick start](https://swetanksubham.com/inito/quickstart.html) for a
 worked DI example.
 
 All of `inito.md`'s Initial Features (v1) are now implemented, plus
 `@Value` and dependency injection, both pulled forward from its Future
-Features list. See [docs/performance.md](https://github.com/swtnk/inito/blob/main/docs/performance.md) for
+Features list. See [the performance page](https://swetanksubham.com/inito/performance.html) for
 benchmarks against handwritten classes, `dataclasses`, and `attrs`. See
 [TASKS.md](https://github.com/swtnk/inito/blob/main/TASKS.md) for what's left.
 

@@ -31,7 +31,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/swtnk/inito"
 Repository = "https://github.com/swtnk/inito"
-Documentation = "https://github.com/swtnk/inito#readme"
+Documentation = "https://swetanksubham.com/inito/"
 Changelog = "https://github.com/swtnk/inito/blob/main/CHANGELOG.md"
 Issues = "https://github.com/swtnk/inito/issues"
 
