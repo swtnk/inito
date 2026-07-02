@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc2] - 2026-07-03
+
+### Changed (performance — no behavior change)
+- **Faster cold dependency-graph resolution** (~900ns → ~700ns for a 3-level
+  graph; warm `container.get()` and resolved-instance attribute access are
+  unchanged). Two decoration-time moves, both keeping inito's "reflect once"
+  rule: each dependency's autowire type (its `Optional[...]`/`X | None` wrapper
+  stripped) is now computed once at `@Service` registration and stored on
+  `Dependency`, instead of calling `typing.get_origin`/`get_args` on every
+  `get()`; and each singleton's construction lock is created at registration,
+  so the cold path reads it with a plain dict lookup rather than guarding a
+  lazily-built lock table. Thread-safety and all resolution semantics are
+  identical.
+
+### Documentation / CI
+- Docs are now published to the `gh-pages` branch (built by CI, served via
+  Pages' "Deploy from a branch" mode) instead of the Pages deployment API,
+  which had wedged on a stuck deployment; this path can't hit that failure.
+
 ## [1.0.0-rc1] - 2026-07-02
 
 First release candidate for a stable **1.0.0**. All of `inito.md`'s Initial

@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 import types
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from inito.exceptions.errors import DependencyRegistrationError
@@ -14,14 +14,6 @@ from inito.reflection.introspection import _self_reference_injected
 
 _UNION_TYPE = getattr(types, "UnionType", None)
 """types.UnionType (X | Y's runtime type) only exists on Python 3.10+."""
-
-
-@dataclass(frozen=True)
-class Dependency:
-    """A single constructor parameter's resolved type and whether it has a default value."""
-
-    type_hint: Any
-    has_default: bool
 
 
 def registrable_type(type_hint: Any) -> Any:  # noqa: ANN401 -- accepts/returns an arbitrary type hint
@@ -41,6 +33,28 @@ def registrable_type(type_hint: Any) -> Any:  # noqa: ANN401 -- accepts/returns 
         if len(args) == 1:
             return args[0]
     return type_hint
+
+
+@dataclass(frozen=True)
+class Dependency:
+    """A single constructor parameter's resolved type and whether it has a default value.
+
+    ``registrable`` is the autowire lookup key - ``type_hint`` with any
+    ``Optional``/``X | None`` wrapper stripped - computed once here at
+    registration time rather than on every ``Container.get()`` resolution,
+    keeping annotation inspection to decoration time only. It is derived
+    from ``type_hint`` (not a separate constructor argument), so every
+    ``Dependency(type_hint, has_default)`` call site stays unchanged and
+    the two fields can never disagree.
+    """
+
+    type_hint: Any
+    has_default: bool
+    registrable: Any = field(init=False, compare=False)
+
+    def __post_init__(self) -> None:
+        """Derive and cache the Optional-unwrapped autowire key from type_hint."""
+        object.__setattr__(self, "registrable", registrable_type(self.type_hint))
 
 
 def resolve_constructor_dependencies(cls: type) -> dict[str, Dependency]:

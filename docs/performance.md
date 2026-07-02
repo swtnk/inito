@@ -143,7 +143,7 @@ singleton construction (see the [Dependency injection guide](dependency-injectio
 |---|---:|---:|---|
 | attribute access on a resolved instance | 12 ns | 12 ns | **at parity** — zero DI-related overhead once an object is built |
 | `container.get()`, warm/singleton-cached | 45 ns | 22 ns | small — a single dict lookup (fast-pathed ahead of registration/scope/cycle checks); **no lock is touched once a singleton is cached** |
-| cold full-graph resolution (3-level) | ~900 ns | ~140 ns | real, one-time-per-resolution cost — quantified, not hidden |
+| cold full-graph resolution (3-level) | ~700 ns | ~150 ns | real, one-time-per-resolution cost — quantified, not hidden |
 | `@Inject`-wrapped function call | 202 ns | 25 ns | real, **every call** — but ~4x cheaper than before (see below) |
 
 Unlike every other decorator in this library, `@Inject` and cold
@@ -167,3 +167,10 @@ is taken, so no thread ever holds two locks at once — a cyclic graph
 resolved concurrently from opposite ends raises `CircularDependencyError`
 cleanly rather than deadlocking. The lock only runs on the cold path; warm
 `get()` is lock-free.
+
+Cold resolution keeps to inito's "reflect once, at decoration time" rule:
+each dependency's autowire type (its `Optional[...]` wrapper stripped) is
+computed once at `@Service` registration, not re-derived on every `get()`,
+and each singleton's construction lock is created at registration too — so
+the cold path is a plain dict read rather than guarding a lazily-built lock
+table. Both keep the warm path untouched.

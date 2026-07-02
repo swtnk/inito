@@ -9,7 +9,6 @@ from typing import Any, TypeVar, cast
 
 from inito.di.dependency_resolver import (
     Dependency,
-    registrable_type,
     resolve_constructor_dependencies,
 )
 from inito.exceptions.errors import (
@@ -53,7 +52,6 @@ class Container:
         self._registrations: dict[type, ServiceRegistration] = {}
         self._singletons: dict[type, Any] = {}
         self._singleton_locks: dict[type, threading.Lock] = {}
-        self._locks_guard = threading.Lock()
 
     def register(self, cls: type, *, scope: Scope = Scope.SINGLETON) -> None:
         """Register cls's constructor dependency types under scope, without instantiating it."""
@@ -61,6 +59,11 @@ class Container:
             raise DependencyRegistrationError(f"{cls!r} is already registered.")
         dependencies = resolve_constructor_dependencies(cls)
         self._registrations[cls] = ServiceRegistration(cls, scope, dependencies)
+        if scope is Scope.SINGLETON:
+            # Create the construction lock now, at (single-threaded) decoration
+            # time, so the cold resolve path reads it with a plain dict lookup
+            # instead of guarding a lazily-created-lock dict on every build.
+            self._singleton_locks[cls] = threading.Lock()
 
     def get(self, cls: type[T]) -> T:
         """Resolve and return an instance of cls, building its dependency graph bottom-up."""
@@ -109,27 +112,21 @@ class Container:
         # cyclic graph from opposite ends. Double-checked locking keeps the
         # warm/cached path lock-free (checked in _resolve before we get here).
         kwargs = self._resolve_dependencies(cls, registration, path)
-        with self._lock_for(cls):
+        # The lock was created for this singleton at register() time, so this is
+        # a plain (thread-safe) dict read - no guard lock needed on the cold path.
+        with self._singleton_locks[cls]:
             if cls in self._singletons:
                 return self._singletons[cls]
             instance = cls(**kwargs)
             self._singletons[cls] = instance
             return instance
 
-    def _lock_for(self, cls: type) -> threading.Lock:
-        with self._locks_guard:
-            lock = self._singleton_locks.get(cls)
-            if lock is None:
-                lock = threading.Lock()
-                self._singleton_locks[cls] = lock
-            return lock
-
     def _resolve_dependencies(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
     ) -> dict[str, Any]:
         kwargs: dict[str, Any] = {}
         for name, dependency in registration.dependencies.items():
-            resolved_type = registrable_type(dependency.type_hint)
+            resolved_type = dependency.registrable  # precomputed at registration time
             if resolved_type in self._registrations:
                 kwargs[name] = self._resolve(resolved_type, (*path, cls))
             elif not dependency.has_default:
