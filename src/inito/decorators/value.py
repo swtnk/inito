@@ -1,4 +1,4 @@
-"""@Value: an immutable-style data class - constructor, repr, eq/hash, getters, no setters."""
+"""@Value: a genuinely immutable data class - constructor, repr, eq/hash, getters, no setters."""
 
 from __future__ import annotations
 
@@ -24,15 +24,16 @@ def _apply_value(cls: type, options: ValueOptions) -> type:
     attach_capability(cls, metadata, "hash")
     if options.include_getters:
         attach_capability(cls, metadata, "getter")
+    attach_capability(cls, metadata, "immutable")
     return cls
 
 
 Value = make_decorator(_apply_value, ValueOptions())
 Value.__doc__ = (
-    "Generate an immutable-style data class: constructor, __repr__, __eq__, "
-    "__hash__, and ``get_`` accessors for every declared field - never "
-    "setters. Stack with @dataclass(frozen=True) for genuine attribute-write "
-    "immutability; on its own, @Value only omits setters, it doesn't block "
-    "direct attribute assignment."
+    "Generate a genuinely immutable data class: constructor, __repr__, "
+    "__eq__, __hash__, and ``get_`` accessors for every declared field - "
+    "never setters. Attribute assignment and deletion always raise "
+    "dataclasses.FrozenInstanceError after construction, unconditionally - "
+    "no @dataclass(frozen=True) stacking required."
 )
 value = Value

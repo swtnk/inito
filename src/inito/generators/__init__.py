@@ -11,6 +11,7 @@ from inito.generators.constructor import (
     RequiredArgsConstructorGenerator,
 )
 from inito.generators.equality import EqGenerator, HashGenerator
+from inito.generators.immutability import ImmutableGenerator
 from inito.generators.registry import GeneratorRegistry, default_registry
 from inito.generators.repr_ import ReprGenerator
 
@@ -22,5 +23,6 @@ default_registry.register("eq", EqGenerator())
 default_registry.register("hash", HashGenerator())
 default_registry.register("getter", GetterGenerator())
 default_registry.register("setter", SetterGenerator())
+default_registry.register("immutable", ImmutableGenerator())
 
 __all__ = ["GeneratorRegistry", "default_registry"]

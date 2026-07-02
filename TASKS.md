@@ -165,7 +165,15 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       `@RequiredArgsConstructor`) assign fields via `object.__setattr__` instead of plain assignment,
       mirroring exactly how a real frozen dataclass's own `__init__` bypasses its blocking
       `__setattr__` for initial construction. Setters deliberately kept as plain assignment, so
-      post-construction mutation still correctly fails — only construction is exempted
+      post-construction mutation still correctly fails — only construction is exempted.
+      **Revised again in 0.0.8-beta**: `@Data(frozen=True)` originally only skipped setter
+      generation, silently allowing `point.x = 5` to succeed directly — a second user-reported bug
+      (this time against `@Value`, see Phase 18) showed this didn't match real immutability
+      expectations. Both `@Data(frozen=True)` and `@Value` now attach a generated
+      `__setattr__`/`__delattr__` pair (new `generators/immutability.py` capability, registered as
+      `"immutable"`) that unconditionally raises `FrozenInstanceError` — no `@dataclass(frozen=True)`
+      stacking needed for either. Required no change to any constructor generator, since they already
+      bypass `__setattr__` via `object.__setattr__`
 - [x] Edge cases (`tests/integration/test_edge_cases.py`): empty class, single field, 3-level
       inheritance, `__slots__` with required-only fields, `__slots__`+default conflicting natively
       in Python (not an inito issue), forward ref to an already-defined class (works), and
@@ -331,9 +339,10 @@ unimplemented.
 
 - [x] `decorators/value.py`: `ValueOptions` (`include_getters`), `_apply_value`
       wiring the existing `constructor`/`repr`/`eq`/`hash`/`getter` capabilities
-      (no new generator — reuses the same `ConstructorGenerator` `@Data`/
-      `@AllArgsConstructor` already use) — never generates setters, unlike
-      `@Data`, which only omits them when `frozen=True` is passed explicitly
+      (no new generator needed at the time — reuses the same `ConstructorGenerator`
+      `@Data`/`@AllArgsConstructor` already use; a new `"immutable"` generator was
+      added later, see below) — never generates setters, unlike `@Data`, which
+      only omits them when `frozen=True` is passed explicitly
 - [x] `decorators/value.pyi`: `typing.dataclass_transform` stub (PEP 681, same
       pattern as `data.pyi`/`all_args_constructor.pyi`) — pyright gets a
       correctly-typed constructor with no inito-specific plugin needed
@@ -352,6 +361,17 @@ unimplemented.
 - [x] Docs: `docs/api.md`, `docs/quickstart.md`, `docs/examples.md`,
       `docs/troubleshooting.md` (added to the pyright `dataclass_transform`
       exception list), README Status section
+- [x] **Revised in 0.0.8-beta**: initially `@Value` only omitted setters, same as
+      `@Data(frozen=True)` — it did *not* block direct attribute assignment
+      without also stacking a real `@dataclass(frozen=True)` underneath, which
+      didn't match Lombok's `@Value` (unconditionally immutable, no extra
+      annotation). A real user hit this via `@Value @Builder class Person: ...`
+      then `person.name = "Bob"` silently succeeding. Fixed by adding a new
+      `"immutable"` generator capability (`generators/immutability.py`) that
+      `@Value` now always attaches (and `@Data(frozen=True)` attaches too, see
+      Phase 12) — a generated `__setattr__`/`__delattr__` pair unconditionally
+      raising `FrozenInstanceError`. `@dataclass(frozen=True)` stacking still
+      works but is no longer required for either decorator
 
 ## Phase 19 — Dependency injection: @Service/@Inject/@Singleton
 

@@ -126,10 +126,10 @@ Also exported as `inito.equals_and_hash_code` (the same object).
 ```
 
 Also exported as `inito.value` (the same object). Generates a constructor,
-`__repr__`, `__eq__`, `__hash__`, and `get_` accessors — never setters.
-Stack with `@dataclass(frozen=True)` for genuine attribute-write
-immutability; on its own `@Value` only omits setters, it doesn't block
-direct attribute assignment.
+`__repr__`, `__eq__`, `__hash__`, and `get_` accessors — never setters, and
+genuinely immutable: attribute assignment/deletion always raise
+`dataclasses.FrozenInstanceError` after construction. No
+`@dataclass(frozen=True)` stacking is needed.
 
 ## Dependency injection: Container, @Service, @Singleton, @Inject
 

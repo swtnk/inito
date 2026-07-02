@@ -1,19 +1,12 @@
-"""Runnable example: @Value, an immutable-style data class with no setters."""
+"""Runnable example: @Value, a genuinely immutable data class with no setters."""
 
-from dataclasses import dataclass
+from dataclasses import FrozenInstanceError
 
 from inito import Value
 
 
 @Value
 class Point:
-    x: int
-    y: int
-
-
-@Value
-@dataclass(frozen=True)
-class FrozenPoint:
     x: int
     y: int
 
@@ -25,8 +18,10 @@ def main() -> None:
     print(point == Point(1, 2))
     print(not hasattr(point, "set_x"))
 
-    frozen_point = FrozenPoint(1, 2)
-    print(frozen_point)
+    try:
+        point.x = 5  # no @dataclass(frozen=True) stacking needed - @Value enforces this itself
+    except FrozenInstanceError as error:
+        print(f"blocked: {error}")
 
 
 if __name__ == "__main__":

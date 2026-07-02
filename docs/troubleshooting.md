@@ -28,6 +28,31 @@ same technique a real frozen dataclass's own `__init__` uses). If you see
 setter, please [open an issue](https://github.com/swtnk/inito/issues) —
 that would be a genuine regression, not expected behavior.
 
+## `FrozenInstanceError` from `@Value`/`@Data(frozen=True)` alone (no `@dataclass` needed)
+
+```python
+from inito import Value
+
+
+@Value
+class Point:
+    x: int
+    y: int
+
+
+point = Point(1, 2)
+point.x = 5   # raises dataclasses.FrozenInstanceError - expected
+```
+
+Also expected: `@Value` and `@Data(frozen=True)` are genuinely immutable
+on their own, generating a `__setattr__`/`__delattr__` pair that
+unconditionally raises `dataclasses.FrozenInstanceError` — no
+`@dataclass(frozen=True)` stacking required. This applies regardless of
+how the instance was built (`Point(1, 2)`, `@Builder`'s `build()`,
+`.to_builder()`, ...), since every inito constructor assigns fields via
+`object.__setattr__`, bypassing the generated `__setattr__` only for
+that one internal call.
+
 ## `AnnotationResolutionError` on a field annotation
 
 ```python

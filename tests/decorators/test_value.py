@@ -1,8 +1,9 @@
 from dataclasses import FrozenInstanceError, dataclass
+from datetime import date
 
 import pytest
 
-from inito import Value
+from inito import Builder, Value
 from inito.decorators.value import ValueOptions
 from inito.exceptions.errors import DecoratorConfigurationError
 
@@ -22,6 +23,36 @@ def test_bare_value_generates_constructor_repr_eq_hash_getters_no_setters():
     assert user.get_name() == "Ada"
     assert not hasattr(user, "set_name")
     assert not hasattr(user, "set_age")
+
+
+def test_value_is_genuinely_immutable_with_no_dataclass_stacking():
+    @Value
+    class Point:
+        x: int
+        y: int
+
+    point = Point(1, 2)
+    with pytest.raises(FrozenInstanceError):
+        point.x = 5
+    with pytest.raises(FrozenInstanceError):
+        del point.x
+
+
+def test_value_with_builder_is_immutable_after_build():
+    # Regression test for the exact reported scenario: @Value + @Builder,
+    # no @dataclass(frozen=True) stacking - direct attribute assignment on
+    # the built instance must raise, not silently succeed.
+    @Value
+    @Builder
+    class Person:
+        name: str
+        dob: date
+        address: str
+
+    person = Person.builder().name("Alice").dob(date(1990, 1, 1)).address("123 Main St").build()
+    assert person.name == "Alice"
+    with pytest.raises(FrozenInstanceError):
+        person.name = "Bob"
 
 
 def test_value_include_getters_false_omits_getters():

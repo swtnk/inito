@@ -27,20 +27,18 @@ parameter ordering rules.
 ### Options
 
 ```python
-@Data(frozen=True)             # omit setters
+@Data(frozen=True)             # genuinely immutable: no setters, assignment/deletion raise
 @Data(include_getters=False)   # omit getters
-@Data(include_setters=False)   # omit setters, keep getters
+@Data(include_setters=False)   # omit setters, keep getters (not immutable - direct assignment still works)
 ```
 
-## @Value: an immutable-style data class
+## @Value: a genuinely immutable data class
 
 ```python
-from dataclasses import dataclass
 from inito import Value
 
 
 @Value
-@dataclass(frozen=True)
 class Point:
     x: int
     y: int
@@ -49,14 +47,15 @@ class Point:
 point = Point(1, 2)
 print(point)              # Point(x=1, y=2)
 print(point.get_x())      # 1
+point.x = 5                # raises dataclasses.FrozenInstanceError
 ```
 
-`@Value` is `@Data` without setters: constructor, `__repr__`, `__eq__`,
-`__hash__`, and `get_<field>()` accessors — no `set_<field>(value)` is ever
-generated. Stack with `@dataclass(frozen=True)` for genuine attribute-write
-immutability; on its own `@Value` only omits setters, it doesn't block
-direct attribute assignment (`point.x = 5` would still work without the
-`@dataclass(frozen=True)` stack).
+`@Value` is `@Data` without setters, and genuinely immutable: constructor,
+`__repr__`, `__eq__`, `__hash__`, and `get_<field>()` accessors — no
+`set_<field>(value)` is ever generated, and attribute assignment/deletion
+always raise `dataclasses.FrozenInstanceError` after construction. No
+`@dataclass(frozen=True)` stacking is needed — `@Value` enforces this
+itself. `@Data(frozen=True)` gets the same real enforcement.
 
 ## Dependency injection
 

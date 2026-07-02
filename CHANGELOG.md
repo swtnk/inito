@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8-beta] - 2026-07-02
+
+### Fixed
+- `@Value` and `@Data(frozen=True)` are now **genuinely immutable**, not
+  just setter-free. A user-reported bug showed direct attribute assignment
+  (`person.name = "Bob"`) silently succeeding on a `@Value`-decorated class
+  built via `@Builder` — previously, real immutability only existed if you
+  additionally stacked a real `@dataclass(frozen=True)` underneath, which
+  wasn't obvious and didn't match Lombok's `@Value` contract (unconditional
+  immutability, no extra annotation needed). Both decorators now attach a
+  generated `__setattr__`/`__delattr__` pair (new `immutable` generator
+  capability) that unconditionally raises `dataclasses.FrozenInstanceError`
+  after construction — every inito constructor (`@Data`'s `__init__`,
+  `@Builder`'s `build()`, `@NoArgsConstructor`/`@RequiredArgsConstructor`)
+  already assigns fields via `object.__setattr__`, so this required no
+  change to any of them and adds no construction-time or attribute-read
+  overhead. `@dataclass(frozen=True)` stacking still works (doubly frozen)
+  but is no longer required for either decorator.
+
 ## [0.0.7-beta] - 2026-07-02
 
 ### Added

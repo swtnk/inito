@@ -13,8 +13,10 @@ from inito.utils.decorator_factory import make_decorator
 class DataOptions:
     """Configuration surface for the @Data decorator.
 
-    Note: frozen=True only skips setter generation in this release; it does
-    not yet enforce attribute-write immutability (tracked in TASKS.md).
+    frozen=True skips setter generation and makes every field genuinely
+    immutable: attribute assignment/deletion always raise
+    dataclasses.FrozenInstanceError after construction, no
+    @dataclass(frozen=True) stacking required.
     """
 
     frozen: bool = False
@@ -30,7 +32,9 @@ def _apply_data(cls: type, options: DataOptions) -> type:
     attach_capability(cls, metadata, "hash")
     if options.include_getters:
         attach_capability(cls, metadata, "getter")
-    if options.include_setters and not options.frozen:
+    if options.frozen:
+        attach_capability(cls, metadata, "immutable")
+    elif options.include_setters:
         attach_capability(cls, metadata, "setter")
     return cls
 

@@ -9,7 +9,7 @@ import pytest
 from inito import Data, builder
 
 
-def test_data_frozen_true_produces_a_working_immutable_looking_instance():
+def test_data_frozen_true_is_genuinely_immutable_without_stacking_dataclass():
     @Data(frozen=True)
     class Point:
         x: int
@@ -18,6 +18,10 @@ def test_data_frozen_true_produces_a_working_immutable_looking_instance():
     point = Point(1, 2)
     assert point.get_x() == 1
     assert not hasattr(point, "set_x")
+    with pytest.raises(FrozenInstanceError):
+        point.x = 5
+    with pytest.raises(FrozenInstanceError):
+        del point.x
 
 
 def test_data_construction_succeeds_on_a_frozen_dataclass_in_either_stacking_order():

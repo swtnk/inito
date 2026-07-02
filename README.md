@@ -100,7 +100,8 @@ getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 repr without pulling in `@Data`'s constructor/eq/hash/accessors),
 `@EqualsAndHashCode` (`__eq__`/`__hash__` only), `@Value` (`@Data`
 without setters — constructor, `__repr__`, `__eq__`, `__hash__`, getters;
-stack with `@dataclass(frozen=True)` for genuine immutability), and a
+genuinely immutable on its own, no `@dataclass(frozen=True)` stacking
+required), and a
 dependency-injection subsystem: `@Service`/`@Component` (registers a
 class's constructor dependencies into a `Container`), `@Singleton`
 (sugar for singleton-scoped `@Service`), and `@Inject` (auto-wires a
@@ -142,19 +143,44 @@ gap for `get_x`/`set_x`/`@Builder` would need a different strategy (e.g. a
 companion stub generator); tracked in `TASKS.md` Phase 17, not required for
 this release.
 
+### Immutability: `@Value` and `@Data(frozen=True)`
+
+`@Value` and `@Data(frozen=True)` are genuinely immutable, on their own —
+no `@dataclass(frozen=True)` stacking needed. Attribute assignment and
+deletion always raise `dataclasses.FrozenInstanceError` after construction:
+
+```python
+from inito import Value
+
+
+@Value
+class Point:
+    x: int
+    y: int
+
+
+point = Point(1, 2)
+point.x = 5   # raises dataclasses.FrozenInstanceError
+del point.x   # also raises
+```
+
+Generated constructors (and `@Builder`'s `build()`) assign fields via
+`object.__setattr__` internally, bypassing the generated `__setattr__` —
+the exact technique a real frozen dataclass's own `__init__` uses — so
+construction always succeeds regardless. `@Data(frozen=True)` also skips
+generating setters; `@Value` never generates them in the first place.
+
 ### Composing with frozen dataclasses
 
 Stacking any inito constructor-generating decorator (`@Data`, `@Builder`,
-`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` works correctly
-in either stacking order: construction succeeds, and equality/hashing work
-as expected. Generated constructors assign fields via `object.__setattr__`
-internally — the same technique a real frozen dataclass's own `__init__`
-uses to bypass its blocking `__setattr__` for initial construction — so
-this isn't a special case, it's how frozen classes are meant to be built.
-Post-construction mutation (`point.set_x(5)`, `point.x = 5`) still
-correctly raises `FrozenInstanceError` either way, since setters remain
-plain attribute assignment — only construction is exempted from the
-frozen check, not general mutation.
+`@AllArgsConstructor`, ...) with `@dataclass(frozen=True)` also works
+correctly, in either stacking order: construction succeeds, and
+equality/hashing work as expected, for the same `object.__setattr__`
+reason above. This matters for decorators without their own `frozen`
+option (`@Builder`, `@AllArgsConstructor`, ...) — stack them under a real
+`@dataclass(frozen=True)` for immutability. Post-construction mutation
+still correctly raises `FrozenInstanceError` either way, since only
+construction is exempted from the frozen check, not general mutation.
 
 ### Self-referential fields
 
