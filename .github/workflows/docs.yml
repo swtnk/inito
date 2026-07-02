@@ -16,10 +16,12 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment; don't cancel an in-flight publish.
+# One deployment at a time; let the newest push supersede an in-flight one so
+# a stuck/overlapping deploy can't wedge the github-pages environment (the
+# latest docs content should always win).
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
