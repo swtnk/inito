@@ -62,17 +62,56 @@ bound to the same object.
 
 ## Where to next
 
-- New here? Read [the problem inito solves](concepts.md), then take the
-  [quick start](quickstart.md) tour.
-- Looking for one decorator? Every decorator has its own page in the
-  **Decorators** section of the sidebar, each with the specific problem it
-  solves, its options, and gotchas.
-- Building services? See [Dependency injection](dependency-injection.md).
-- Want copy-pasteable patterns? See [Recipes](recipes.md).
+::::{grid} 1 2 2 3
+:gutter: 3
+
+:::{grid-item-card} {octicon}`rocket;1.5em;sd-mr-1` Get started
+:link: quickstart
+:link-type: doc
+
+Install inito and tour every decorator in a few minutes.
+:::
+
+:::{grid-item-card} {octicon}`light-bulb;1.5em;sd-mr-1` Concepts
+:link: concepts
+:link-type: doc
+
+The boilerplate problem inito solves — and how it stays fast.
+:::
+
+:::{grid-item-card} {octicon}`package;1.5em;sd-mr-1` Decorators
+:link: decorators/index
+:link-type: doc
+
+A dedicated page per decorator: the problem it solves, options, gotchas.
+:::
+
+:::{grid-item-card} {octicon}`plug;1.5em;sd-mr-1` Dependency injection
+:link: dependency-injection
+:link-type: doc
+
+Wire object graphs with `@Service`/`@Singleton`/`@Inject` and a `Container`.
+:::
+
+:::{grid-item-card} {octicon}`book;1.5em;sd-mr-1` Recipes
+:link: recipes
+:link-type: doc
+
+Real-world, copy-pasteable patterns that combine several decorators.
+:::
+
+:::{grid-item-card} {octicon}`code-square;1.5em;sd-mr-1` API reference
+:link: api
+:link-type: doc
+
+Every public decorator, option, and exception.
+:::
+
+::::
 
 ```{toctree}
 :caption: Getting started
-:maxdepth: 1
+:hidden:
 
 installation
 concepts
@@ -81,27 +120,21 @@ quickstart
 
 ```{toctree}
 :caption: Decorators
-:maxdepth: 1
+:hidden:
 
-decorators/data
-decorators/value
-decorators/accessors
-decorators/to-string
-decorators/equals-and-hash-code
-decorators/constructors
-decorators/builder
+decorators/index
 ```
 
 ```{toctree}
 :caption: Dependency injection
-:maxdepth: 1
+:hidden:
 
 dependency-injection
 ```
 
 ```{toctree}
 :caption: Guides
-:maxdepth: 1
+:hidden:
 
 recipes
 examples
@@ -110,7 +143,7 @@ migration
 
 ```{toctree}
 :caption: Reference
-:maxdepth: 1
+:hidden:
 
 api
 performance

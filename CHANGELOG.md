@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <https://swetanksubham.com/inito/> (auto-deployed on every push to `main`
   via a new `docs.yml` workflow). Repointed the PyPI `Documentation` project
   URL and the README's doc links/badge to the hosted site.
+- Switched the docs theme from Furo to the **PyData Sphinx Theme** (the
+  theme NumPy/pandas/SciPy use) with `sphinx-design`: a top navbar with
+  search, light/dark toggle, and GitHub/PyPI links; a card-grid landing
+  page; a "Decorators" section index; and a right-hand on-this-page sidebar.
 
 ## [0.0.12-beta] - 2026-07-02
 
