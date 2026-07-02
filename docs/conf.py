@@ -30,7 +30,7 @@ myst_heading_anchors = 3
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# --- HTML theme: PyData Sphinx Theme (NumPy-style layout) -------------------
+# --- HTML theme: PyData Sphinx Theme ----------------------------------------
 html_theme = "pydata_sphinx_theme"
 # "InitO" is the display/brand name; the installable package is `inito`.
 html_title = "InitO"
@@ -75,7 +75,7 @@ html_context = {
 }
 
 # Left sidebar shows the section navigation; the landing page hides it so the
-# hero + cards get the full width (NumPy does the same on its front page).
+# hero + cards get the full width.
 html_sidebars = {
     "index": [],
 }

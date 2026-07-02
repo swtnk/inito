@@ -12,17 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <https://swetanksubham.com/inito/> (auto-deployed on every push to `main`
   via a new `docs.yml` workflow). Repointed the PyPI `Documentation` project
   URL and the README's doc links/badge to the hosted site.
-- Switched the docs theme from Furo to the **PyData Sphinx Theme** (the
-  theme NumPy/pandas/SciPy use) with `sphinx-design`: a top navbar with
-  search, light/dark toggle, and GitHub/PyPI links; a card-grid landing
-  page; and a right-hand on-this-page sidebar.
+- Switched the docs theme from Furo to the **PyData Sphinx Theme** with
+  `sphinx-design`: a top navbar with search, light/dark toggle, and
+  GitHub/PyPI links; a card-grid landing page; and a right-hand
+  on-this-page sidebar.
 - Restructured the docs into two navbar sections — **User Guide** and
-  **API reference** — each with its own grouped "Section Navigation"
-  (NumPy-style). The User Guide groups the decorator/DI/recipe pages under
-  captions (Getting started · Decorators · Dependency injection · Recipes
-  and guides · Help); the API reference is split into Decorators,
-  Dependency injection, and Exceptions pages. The docs now brand the project
-  as **InitO** (the installable package remains `inito`).
+  **API reference** — each with its own grouped "Section Navigation". The
+  User Guide groups the decorator/DI/recipe pages under captions (Getting
+  started · Decorators · Dependency injection · Recipes and guides · Help);
+  the API reference is split into Decorators, Dependency injection, and
+  Exceptions pages. The docs now brand the project as **InitO** (the
+  installable package remains `inito`).
 
 ## [0.0.12-beta] - 2026-07-02
 
