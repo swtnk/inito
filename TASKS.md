@@ -199,6 +199,17 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
 - [x] `benchmarks/memory_profile.py`: memory allocation comparison (tracemalloc-based)
 - [x] Publish results into `docs/performance.md` (added to the docs toctree in Phase 14); notes
       attrs' default `__slots__` memory edge and inito's decoration-time cost as known trade-offs
+- [x] **Performance pass in 0.0.11-beta** (prompted by a requested code review, written up in
+      `local_dev/review.md`): (1) generated constructors + `@Builder.build()` switched from
+      per-field `object.__setattr__` to a hoisted `self.__dict__["x"] = x` write for non-slotted
+      classes — ~2x faster construction (was ~2.5x handwritten, now ~1.2-1.3x), still
+      immutable-correct in every stacking order because a `__dict__` write bypasses `__setattr__`;
+      slotted classes fall back to a once-bound `object.__setattr__` (new
+      `generators/constructor.py::supports_dict_assignment`). (2) `@Inject` no longer calls
+      `Signature.bind_partial()` per call — precomputes each param's (name, positional-index,
+      resolved-type) once at decoration time, ~4x faster (~830ns → ~200ns). (3) `docs/performance.md`
+      construction/DI numbers re-measured and corrected — the old construction row predated the
+      0.0.4 `object.__setattr__` change and understated the cost
 
 ## Phase 14 — Documentation
 - [x] Switched doc tooling from mkdocs to **Sphinx + Furo** (user-requested deviation from
@@ -408,14 +419,15 @@ no cross-class coordination; a `Container` is process-wide and lazy.
       `get()` path is untouched (no lock acquired at all if the singleton
       is already cached), confirmed via `benchmarks/test_di_benchmark.py`
       showing no regression on the warm-cache numbers. `stdlib threading`
-      only, no new dependency. One narrow, documented residual limitation:
-      a genuinely circular dependency graph (already an invalid
-      configuration) resolved from *opposite ends concurrently by two
-      different threads* before either completes could deadlock instead
-      of raising `CircularDependencyError`, since cross-thread cycles
-      aren't visible to the existing single-call-stack `path` tracking —
-      accepted as out of scope, since the underlying graph is already
-      broken regardless of threading
+      only, no new dependency. **Further hardened in 0.0.11-beta**: the
+      original 0.0.10 version held a service's lock across its entire
+      recursive dependency resolution, which left a narrow cross-thread
+      deadlock (two threads resolving a cyclic graph from opposite ends).
+      Fixed by resolving dependencies *before* taking the service's lock, so
+      no thread ever holds two locks at once — each thread's own `path`
+      catches the cycle and raises `CircularDependencyError` cleanly, and
+      the critical section shrinks to just construct-and-cache. Verified with
+      a concurrent-cycle stress test that now raises instead of hanging
 - [x] `@Service`/`@Component` (`decorators/service.py`) registers a class's
       constructor dependency types into a container **at decoration time**
       (via `resolve_constructor_dependencies`, reusing `make_decorator`)

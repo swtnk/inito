@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from inito.exceptions.errors import BuilderValidationError
+from inito.generators.constructor import supports_dict_assignment
 from inito.metadata.class_metadata import ClassMetadata
 from inito.metadata.field import FieldMetadata
 from inito.utils.codegen import build_function
@@ -52,10 +53,11 @@ class BuilderGenerator:
                 {},
                 f"{metadata.qualified_name}.Builder.{method_name}",
             )
+        use_dict = supports_dict_assignment(metadata.owner)
         namespace[options.build_method_name] = build_function(
             options.build_method_name,
-            _render_build_method_source(fields, options.build_method_name),
-            _build_method_globals(metadata),
+            _render_build_method_source(fields, options.build_method_name, use_dict),
+            _build_method_globals(metadata, use_dict),
             f"{metadata.qualified_name}.Builder.{options.build_method_name}",
         )
         builder_class = type("Builder", (), namespace)
@@ -110,12 +112,21 @@ def _render_fluent_setter_source(field: FieldMetadata, method_name: str) -> str:
     return f"def {method_name}(self, value):\n    self._{field.name} = value\n    return self\n"
 
 
-def _render_build_method_source(fields: tuple[FieldMetadata, ...], build_method_name: str) -> str:
+def _render_build_method_source(
+    fields: tuple[FieldMetadata, ...], build_method_name: str, use_dict: bool
+) -> str:
     lines = [_render_unset_check(field, build_method_name) for field in fields if field.is_required]
     lines.append("    _instance = _owner_cls.__new__(_owner_cls)")
-    lines.extend(
-        f'    object.__setattr__(_instance, "{field.name}", self._{field.name})' for field in fields
-    )
+    if use_dict:
+        # A __dict__ write bypasses any __setattr__ (frozen dataclass or inito's
+        # own immutability blocker) and is faster than object.__setattr__; see
+        # generators/constructor.py for the full rationale.
+        lines.append("    _d = _instance.__dict__")
+        lines.extend(f'    _d["{field.name}"] = self._{field.name}' for field in fields)
+    else:
+        lines.extend(
+            f'    _setattr(_instance, "{field.name}", self._{field.name})' for field in fields
+        )
     lines.append("    return _instance")
     return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
 
@@ -127,12 +138,15 @@ def _render_unset_check(field: FieldMetadata, build_method_name: str) -> str:
     )
 
 
-def _build_method_globals(metadata: ClassMetadata) -> dict[str, Any]:
-    return {
+def _build_method_globals(metadata: ClassMetadata, use_dict: bool) -> dict[str, Any]:
+    globals_ns: dict[str, Any] = {
         "_unset": _UNSET,
         "_BuilderValidationError": BuilderValidationError,
         "_owner_cls": metadata.owner,
     }
+    if not use_dict:
+        globals_ns["_setattr"] = object.__setattr__
+    return globals_ns
 
 
 def _render_to_builder_source(fields: tuple[FieldMetadata, ...]) -> str:

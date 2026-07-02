@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11-beta] - 2026-07-02
+
+### Changed (performance — no behavior change)
+- Generated constructors (`@Data`, `@AllArgsConstructor`,
+  `@RequiredArgsConstructor`, `@NoArgsConstructor`, `@Value`) and
+  `@Builder`'s `build()` now assign fields via a direct
+  `self.__dict__["x"] = x` write for ordinary classes instead of
+  `object.__setattr__`. This is ~2x faster (construction went from ~2.5x
+  handwritten to ~1.2-1.3x) and, because a `__dict__` write bypasses
+  `__setattr__` entirely, it stays immutable-correct in every stacking
+  order — `@Value`, `@Data(frozen=True)`, and `@dataclass(frozen=True)`
+  (inner or outer) all keep working with no per-instance branching. Fully
+  slotted classes (no instance `__dict__`) fall back to a once-bound
+  `object.__setattr__`. The previously-published construction benchmark
+  had never been re-measured after `object.__setattr__` was introduced in
+  0.0.4-beta and understated the cost; `docs/performance.md` is corrected.
+- `@Inject` no longer calls `inspect.Signature.bind_partial()` on every
+  call. Each parameter's name, positional index, and resolved type are now
+  computed once at decoration time; the per-call path only checks which
+  arguments the caller already supplied. Measured ~4x faster (~830ns →
+  ~200ns per call), identical behavior. All signature/type-hint reflection
+  stays at decoration time, matching the rest of the library.
+
+### Fixed
+- The DI container now resolves a service's dependencies *before* taking
+  that service's construction lock, so no thread ever holds two singleton
+  locks at once. This eliminates a latent deadlock where two threads
+  resolving a cyclic graph from opposite ends could hang instead of raising
+  `CircularDependencyError`; concurrent resolution of a cycle now raises
+  cleanly. Single-construction-under-contention and the lock-free warm path
+  are both preserved.
+
 ## [0.0.10-beta] - 2026-07-02
 
 ### Fixed

@@ -143,18 +143,15 @@ Concurrent first-access to a singleton, from multiple threads, is safe:
 registered class) around singleton construction, so exactly one thread
 builds the instance and every other concurrent caller gets that same
 object back — none of them silently ends up with a second, independent
-instance, and construction never runs twice. This costs nothing on the
-already-resolved (warm) path: no lock is touched at all once a singleton
-is cached, so post-first-resolution `get()` calls and attribute access on
-resolved instances remain exactly as cheap as without any locking (see
-[Performance](performance.md)'s dependency-injection section for the
-measured numbers). One narrow limitation: a genuinely circular
-dependency graph (already an invalid configuration on its own) resolved
-from opposite ends *concurrently, by two different threads*, before
-either completes, can deadlock instead of cleanly raising
-`CircularDependencyError` — the existing cycle detection only tracks one
-thread's own call stack. Fix the cycle; this isn't something to route
-around.
+instance, and construction never runs twice. Dependencies are resolved
+*before* a service's construction lock is taken, so no thread ever holds
+two locks at once: a cyclic graph resolved concurrently from opposite ends
+raises `CircularDependencyError` cleanly rather than deadlocking. This
+costs nothing on the already-resolved (warm) path: no lock is touched at
+all once a singleton is cached, so post-first-resolution `get()` calls and
+attribute access on resolved instances remain exactly as cheap as without
+any locking (see [Performance](performance.md)'s dependency-injection
+section for the measured numbers).
 
 A `Container` is always **process-local** — this isn't an inito
 limitation, it's true of any in-memory Python object. Each OS process

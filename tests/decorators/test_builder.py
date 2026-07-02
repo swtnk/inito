@@ -79,3 +79,16 @@ def test_builder_options_defaults():
     assert BuilderOptions() == BuilderOptions(
         to_builder=False, setter_prefix="", build_method_name="build"
     )
+
+
+def test_builder_build_populates_a_slotted_class():
+    # Slotted classes have no instance __dict__, so build() must fall back to
+    # object.__setattr__ rather than a __dict__ write.
+    @builder
+    class Point:
+        __slots__ = ("x", "y")
+        x: int
+        y: int
+
+    point = Point.builder().x(1).y(2).build()
+    assert (point.x, point.y) == (1, 2)

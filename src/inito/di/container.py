@@ -93,13 +93,17 @@ class Container:
     def _resolve_singleton(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
     ) -> Any:  # noqa: ANN401
-        # Double-checked locking: the membership check above is lock-free (so an
-        # already-cached singleton costs nothing extra), only first construction
-        # pays for a lock - and only that one class's lock, not the whole container.
+        # Dependencies are resolved *before* taking cls's lock: each dependency is
+        # itself resolved (and, if a singleton, cached) under its own lock, so no
+        # thread ever holds two singleton locks at once. That keeps the critical
+        # section to just construct-and-cache and, unlike holding cls's lock across
+        # the whole recursive subtree, cannot deadlock two threads resolving a
+        # cyclic graph from opposite ends. Double-checked locking keeps the
+        # warm/cached path lock-free (checked in _resolve before we get here).
+        kwargs = self._resolve_dependencies(cls, registration, path)
         with self._lock_for(cls):
             if cls in self._singletons:
                 return self._singletons[cls]
-            kwargs = self._resolve_dependencies(cls, registration, path)
             instance = cls(**kwargs)
             self._singletons[cls] = instance
             return instance

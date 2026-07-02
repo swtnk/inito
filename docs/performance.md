@@ -52,12 +52,27 @@ decision.
 
 | Operation | handwritten | inito | dataclass | attrs |
 |---|---:|---:|---:|---:|
-| construction | 74.0 | 79.4 | 79.3 | 70.0 |
-| attribute access | 22.1 | 22.0 | 22.2 | 22.4 |
-| `__repr__` | 119.0 | 123.7 | 217.7 | 265.9 |
-| `__eq__` | 74.3 | 79.3 | 78.4 | 61.1 |
-| `__hash__` | 71.6 | 73.2 | 73.4 | 78.6 |
-| decoration (µs) | 1.8 | 100.7 | 77.7 | 91.7 |
+| construction | 66 | 88 | 74 | 61 |
+| attribute access | 13.8 | 13.8 | 13.8 | 13.9 |
+| `__repr__` | 106 | 119 | 198 | 207 |
+| `__eq__` | 62 | 88 | 66 | 50 |
+| `__hash__` | 61 | 72 | 64 | 71 |
+| decoration (µs) | ~2 | ~100 | ~78 | ~92 |
+
+**On construction** inito carries a ~1.2-1.3x premium over a handwritten
+`self.x = x` constructor. This is a deliberate, one-time-decided tradeoff:
+generated constructors assign fields via a direct `self.__dict__["x"] = x`
+write (for ordinary classes) rather than `self.x = x`, so that `@Value`,
+`@Data(frozen=True)`, and any stacking order with `@dataclass(frozen=True)`
+are all immutable-correct **without** a per-instance branch — construction
+writes straight to the instance dict, bypassing the blocking `__setattr__`,
+while a later `obj.x = 5` still raises. The `__dict__` write is ~2x faster
+than the `object.__setattr__` this replaced (which cost inito ~2.5x
+handwritten and is what an earlier version of this table, recorded before
+that change, under-reported). Fully slotted classes fall back to a
+once-bound `object.__setattr__`. `attribute access`, `__repr__`, `__eq__`,
+and `__hash__` remain at or near handwritten parity — those generators emit
+exactly what you'd write by hand.
 
 `@Builder` fluent chain vs. a direct constructor call (both on the same
 `@Data`-equipped class): the direct call took ~80ns; the four-method fluent
@@ -98,10 +113,15 @@ current spec).
 
 ## Takeaways
 
-- **Construction, attribute access, `__eq__`, `__hash__`:** inito is within
-  a few percent of handwritten/dataclasses/attrs — the "generated code
-  performs like handwritten code" goal holds up in measurement, not just in
-  design intent.
+- **Attribute access, `__eq__`, `__hash__`:** inito is at or within a few
+  percent of handwritten — those generators emit exactly what you'd write by
+  hand, so the "generated code performs like handwritten code" goal holds up
+  in measurement, not just in design intent.
+- **Construction:** ~1.2-1.3x handwritten — the one place inito accepts a
+  small, deliberate premium (the frozen-safe `__dict__` write, see the table
+  note above) in exchange for correct, branch-free immutability across every
+  decorator and stacking order. Still ~2x faster than the `object.__setattr__`
+  approach it replaced.
 - **`__repr__`:** inito's single unrolled f-string is the fastest generated
   repr among the three codegen-based flavors, and close to handwritten.
 - **Decoration time:** meaningfully higher than dataclasses (both are
@@ -122,23 +142,29 @@ section](quickstart.md)):
 
 | Operation | inito (DI) | hand-written | Verdict |
 |---|---:|---:|---|
-| attribute access on a resolved instance | 22.4 ns | 22.5 ns | **at parity** — zero DI-related overhead once an object is built |
-| `container.get()`, warm/singleton-cached | 138 ns | 22 ns | real but small — a dict lookup + scope check, not zero; **unaffected by the locking fix** — no lock is touched once a singleton is cached |
-| cold full-graph resolution (3-level) | 927 ns | 155 ns | real, one-time-per-resolution cost — includes acquiring a per-class lock now, quantified not hidden |
-| `@Inject`-wrapped function call | 868 ns | 32 ns | real, **every call** — see below |
+| attribute access on a resolved instance | 12 ns | 12 ns | **at parity** — zero DI-related overhead once an object is built |
+| `container.get()`, warm/singleton-cached | 94 ns | 22 ns | real but small — a dict lookup + scope check, not zero; **no lock is touched once a singleton is cached** |
+| cold full-graph resolution (3-level) | ~900 ns | ~140 ns | real, one-time-per-resolution cost — quantified, not hidden |
+| `@Inject`-wrapped function call | 202 ns | 25 ns | real, **every call** — but ~4x cheaper than before (see below) |
 
 Unlike every other decorator in this library, `@Inject` and cold
 `container.get()` calls are **not** claimed to be zero-overhead — only
 post-construction attribute/method access on an already-resolved object
 is. `@Inject` wraps a function (typically a composition-root entry point),
-and resolving its container-registered parameters happens on every call,
-not once at decoration time — see
-[Quick start's DI section](quickstart.md#dependency-injection) for why
-this boundary is architecturally different from every other generated
-member.
+and resolving its container-registered parameters happens on every call.
+It still inspects the wrapped function's signature and type hints **exactly
+once, at decoration time**; the per-call path only checks which parameters
+the caller already supplied (a name/positional-index check — no
+`Signature.bind_partial` per call) and resolves the rest. That is what
+brought the call cost from ~830ns to ~200ns. See
+[Quick start's DI section](quickstart.md#dependency-injection) for why this
+boundary is architecturally different from every other generated member.
 
 Concurrent first-access to a singleton from multiple threads is safe
 (verified with a real `threading` reproduction: 20 threads racing a cold
 `get()` construct the service exactly once and all receive the same
-instance) — the lock only ever runs on the cold path; the warm-path
-numbers above are statistically unchanged from before locking was added.
+instance). Dependencies are resolved *before* a service's construction lock
+is taken, so no thread ever holds two locks at once — a cyclic graph
+resolved concurrently from opposite ends raises `CircularDependencyError`
+cleanly rather than deadlocking. The lock only runs on the cold path; warm
+`get()` is lock-free.

@@ -81,3 +81,59 @@ def test_inject_works_with_partial_manual_args_partial_injected():
     name, repo = handler("Ada")
     assert name == "Ada"
     assert isinstance(repo, Repo)
+
+
+def test_inject_resolves_a_keyword_only_parameter():
+    @Service
+    class Repo:
+        pass
+
+    @Inject
+    def handler(*, repo: Repo) -> Repo:
+        return repo
+
+    assert isinstance(handler(), Repo)
+    sentinel = Repo()
+    assert handler(repo=sentinel) is sentinel
+
+
+def test_inject_injects_a_keyword_only_param_after_var_positional():
+    @Service
+    class Repo:
+        pass
+
+    @Inject
+    def handler(*args: int, repo: Repo) -> tuple:
+        return args, repo
+
+    args, repo = handler(1, 2, 3)
+    assert args == (1, 2, 3)
+    assert isinstance(repo, Repo)
+
+
+def test_inject_does_not_override_a_positionally_supplied_dependency():
+    @Service
+    class Repo:
+        pass
+
+    @Inject
+    def handler(repo: Repo) -> Repo:
+        return repo
+
+    sentinel = Repo()
+    assert handler(sentinel) is sentinel
+
+
+def test_inject_ignores_unannotated_params_and_var_keyword():
+    @Service
+    class Repo:
+        pass
+
+    @Inject
+    def handler(flag, repo: Repo, **extra: object) -> tuple:
+        return flag, repo, extra
+
+    flag, repo, extra = handler(True, note="x")
+    assert flag is True
+    assert isinstance(repo, Repo)
+    assert extra == {"note": "x"}
