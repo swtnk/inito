@@ -1,10 +1,57 @@
 # inito
 
+[![PyPI version](https://img.shields.io/pypi/v/inito.svg)](https://pypi.org/project/inito/)
+[![Python versions](https://img.shields.io/pypi/pyversions/inito.svg)](https://pypi.org/project/inito/)
+[![License: MIT](https://img.shields.io/pypi/l/inito.svg)](https://github.com/swtnk/inito/blob/main/LICENSE)
+[![CI](https://github.com/swtnk/inito/actions/workflows/ci.yml/badge.svg)](https://github.com/swtnk/inito/actions/workflows/ci.yml)
+
 A Lombok-inspired boilerplate-elimination library for Python. `inito`
 generates constructors, `repr`, equality/hashing, accessors, and fluent
 builders once at class-decoration time — never at instance construction or
 attribute-access time — so the generated classes perform like handwritten
 ones. Zero runtime dependencies.
+
+```python
+from inito import Data
+
+
+@Data
+class User:
+    name: str
+    age: int = 0
+
+
+# @Data wrote __init__, __repr__, __eq__, __hash__, get_name/set_name, ...
+user = User("Ada", age=30)
+print(user)              # User(name='Ada', age=30)
+print(user.get_name())   # Ada
+user.set_age(31)
+print(user == User("Ada", 31))   # True
+```
+
+Without inito, the class above is ~20 lines of hand-written `__init__`,
+`__repr__`, `__eq__`, `__hash__`, and accessor boilerplate. With inito it is
+the three lines you see, and the generated methods are the *same* Python you
+would have written by hand — [benchmarked](https://github.com/swtnk/inito/blob/main/docs/performance.md) at parity
+with handwritten classes and `dataclasses`.
+
+## Decorators at a glance
+
+| Decorator | Generates |
+|---|---|
+| `@Data` | constructor, `__repr__`, `__eq__`, `__hash__`, `get_x`/`set_x` — the all-in-one |
+| `@Value` | like `@Data` but **immutable** and setter-free (constructor, repr, eq/hash, getters) |
+| `@Getter` / `@Setter` | `get_x()` / `set_x(value)` accessors only |
+| `@ToString` | `__repr__` only |
+| `@EqualsAndHashCode` | `__eq__` + `__hash__` only |
+| `@NoArgsConstructor` | zero-argument constructor using each field's default |
+| `@AllArgsConstructor` | constructor taking every field |
+| `@RequiredArgsConstructor` | constructor taking only the fields without a default |
+| `@Builder` / `builder` | fluent `Cls.builder().x(1).build()`, optional `.to_builder()` |
+| `@Service` / `@Singleton` / `@Inject` | dependency-injection: register a class + auto-wire it from a `Container` |
+
+Every PascalCase decorator also has a lowercase alias (`data`, `builder`,
+`value`, ...) bound to the same object — use whichever reads better.
 
 ## Install
 
@@ -67,6 +114,41 @@ request = Request.builder().prompt("hello").build()
 revised = request.to_builder().temperature(0.9).build()
 ```
 
+`@Service`/`@Singleton`/`@Inject` add lightweight dependency injection —
+register a class, then let a `Container` autowire its constructor from
+other registered services:
+
+```python
+from inito import Service, Singleton, Inject, default_container
+
+
+@Singleton                       # one shared instance per container
+class Database:
+    def __init__(self) -> None:
+        self.users = {1: "Ada"}
+
+
+@Service                         # autowired from the container on demand
+class UserService:
+    def __init__(self, db: Database) -> None:
+        self.db = db
+
+    def name(self, user_id: int) -> str:
+        return self.db.users[user_id]
+
+
+@Inject                          # fills in `service` from the container
+def main(service: UserService) -> None:
+    print(service.name(1))       # Ada
+
+
+main()
+print(default_container.get(UserService).name(1))   # Ada — same wiring, explicit
+
+# @Service never rewrites the class: it's still an ordinary Python class.
+plain = UserService(Database())
+```
+
 ## Type checking
 
 inito ships a **mypy plugin** that synthesizes every generated member
@@ -108,14 +190,14 @@ class's constructor dependencies into a `Container`), `@Singleton`
 function's annotated parameters from a container per call). `@Service`
 never mutates the decorated class — it stays an ordinary, directly
 constructible Python class; `container.get(cls)` is the DI-aware,
-lazily-resolving path. See [Quick start](./docs/quickstart.md) for a
+lazily-resolving path. See [Quick start](https://github.com/swtnk/inito/blob/main/docs/quickstart.md) for a
 worked DI example.
 
 All of `inito.md`'s Initial Features (v1) are now implemented, plus
 `@Value` and dependency injection, both pulled forward from its Future
-Features list. See [docs/performance.md](./docs/performance.md) for
+Features list. See [docs/performance.md](https://github.com/swtnk/inito/blob/main/docs/performance.md) for
 benchmarks against handwritten classes, `dataclasses`, and `attrs`. See
-[TASKS.md](./TASKS.md) for what's left.
+[TASKS.md](https://github.com/swtnk/inito/blob/main/TASKS.md) for what's left.
 
 ### Known limitation: pyright doesn't see most generated members
 
@@ -229,8 +311,8 @@ union syntax isn't valid there before Python 3.10 (inito supports 3.9+).
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/swtnk/inito/blob/main/CONTRIBUTING.md).
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT — see [LICENSE](https://github.com/swtnk/inito/blob/main/LICENSE).
