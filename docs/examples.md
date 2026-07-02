@@ -76,3 +76,10 @@ The three patterns below mirror the original project spec exactly (modulo a
 .. literalinclude:: ../examples/value_basic.py
    :language: python
 ```
+
+## Dependency injection
+
+```{eval-rst}
+.. literalinclude:: ../examples/di_basic.py
+   :language: python
+```

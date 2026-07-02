@@ -111,3 +111,26 @@ current spec).
   steady-state performance since it happens once per class, not per object.
 - **Memory:** identical to handwritten/dataclasses; attrs' default slotted
   classes have a real, expected edge here.
+
+## Dependency injection (`@Service`/`@Singleton`/`@Inject`)
+
+`benchmarks/test_di_benchmark.py` compares the DI container against
+hand-written equivalents at four points. Measured on the same machine as
+above:
+
+| Operation | inito (DI) | hand-written | Verdict |
+|---|---:|---:|---|
+| attribute access on a resolved instance | 22.7 ns | 22.5 ns | **at parity** — zero DI-related overhead once an object is built |
+| `container.get()`, warm/singleton-cached | 137 ns | 22 ns | real but small — a dict lookup + scope check, not zero |
+| cold full-graph resolution (3-level) | 707 ns | 152 ns | real, one-time-per-resolution cost — quantified, not hidden |
+| `@Inject`-wrapped function call | 752 ns | 32 ns | real, **every call** — see below |
+
+Unlike every other decorator in this library, `@Inject` and cold
+`container.get()` calls are **not** claimed to be zero-overhead — only
+post-construction attribute/method access on an already-resolved object
+is. `@Inject` wraps a function (typically a composition-root entry point),
+and resolving its container-registered parameters happens on every call,
+not once at decoration time — see
+[Quick start's DI section](quickstart.md#dependency-injection) for why
+this boundary is architecturally different from every other generated
+member.

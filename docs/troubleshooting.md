@@ -106,3 +106,64 @@ you're calling internal machinery directly (`core.attach.attach_capability`)
 with a capability name that was never registered. This shouldn't happen
 through any public decorator — if it does, please
 [open an issue](https://github.com/swtnk/inito/issues).
+
+## `CircularDependencyError` from a DI `Container`
+
+```python
+from inito import Service, default_container
+
+
+@Service
+class A:
+    def __init__(self, b: "B"):
+        self.b = b
+
+
+@Service
+class B:
+    def __init__(self, a: A):
+        self.a = a
+
+
+default_container.get(A)   # raises CircularDependencyError: A -> B -> A
+```
+
+Two (or more) services depend on each other, directly or transitively —
+the container can't build either without first building the other. The
+error message lists the exact cycle in resolution order. There's no
+setter-injection or lazy-proxy escape hatch in this release (that would
+require exactly the kind of `__getattr__`/proxy machinery inito's core
+performance rule rules out); break the cycle by extracting the shared
+behavior both classes need into a third service they both depend on
+instead of on each other, or by restructuring one direction of the
+dependency away.
+
+## `UnresolvableDependencyError` from a DI `Container`
+
+Raised in two situations: (1) `container.get(cls)` was called for a `cls`
+that was never `@Service`/`@Singleton`-decorated (or registered manually
+via `container.register(cls)`) into that specific container; (2) one of
+`cls`'s constructor parameters has a type that isn't registered *and* has
+no default value, so the container has nothing to autowire and nothing to
+fall back to — see
+[Quick start's "mixing real dependencies with plain config"](quickstart.md#mixing-real-dependencies-with-plain-config)
+for how to fix the second case (either register the missing type, or give
+the parameter a default).
+
+## `DependencyRegistrationError` from `@Service`/`@Singleton`
+
+Raised at decoration time if a constructor parameter has no type
+annotation at all (`@Service` needs every parameter's type to build the
+dependency graph — an unannotated parameter can't be autowired or checked
+against a default), or if you `@Service`-decorate the same class into the
+same container twice.
+
+## `Container.get()`'s return type isn't `Any` under mypy/pyright
+
+`Container.get` is a plain generic method (`def get(self, cls: type[T]) ->
+T`), so `container.get(MyService)` is correctly inferred as `MyService` by
+both mypy and pyright natively — no plugin hook or `.pyi` stub needed here,
+unlike `get_x`/`set_x`/`@Builder`. `@Service`/`@Singleton` also never
+rewrite the decorated class's constructor, so `MyService`'s own `__init__`
+signature is exactly what you wrote, with no `dataclass_transform` marker
+needed either.

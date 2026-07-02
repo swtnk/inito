@@ -58,6 +58,81 @@ immutability; on its own `@Value` only omits setters, it doesn't block
 direct attribute assignment (`point.x = 5` would still work without the
 `@dataclass(frozen=True)` stack).
 
+## Dependency injection
+
+```python
+from inito import Inject, Service, Singleton
+
+
+@Singleton
+class Repo:
+    def __init__(self) -> None:
+        self.ages = {"Ada": 30}
+
+
+@Service
+class UserService:
+    def __init__(self, repo: Repo, retries: int = 3) -> None:
+        self.repo = repo
+        self.retries = retries
+
+
+@Inject
+def main(service: UserService) -> None:
+    print(service.repo.ages["Ada"])   # 30
+
+
+main()
+```
+
+`@Service` registers a class's constructor dependency types into a
+`Container` (`default_container` unless you pass `container=`) **at
+decoration time only** — it never instantiates anything and never mutates
+the class, so `UserService(repo=Repo(), retries=5)` still works exactly
+like an ordinary Python class. Dependency graphs are resolved and built
+lazily, bottom-up, on the first `container.get(cls)`/`@Inject`-resolved
+call. `@Singleton` is sugar for `@Service(scope=Scope.SINGLETON)` — the
+default scope; pass `@Service(scope=Scope.TRANSIENT)` for a fresh instance
+on every resolution instead.
+
+### Mixing real dependencies with plain config
+
+A constructor parameter is only autowired if its annotated type is itself
+a registered service (`repo: Repo` above). A parameter whose type isn't
+registered (`retries: int`) is left alone as long as it has a default
+value — the constructor's own default applies, exactly as if you'd called
+it directly. If such a parameter has **no** default, resolving it raises
+`UnresolvableDependencyError` — every constructor parameter must be either
+autowirable or have a default, there's no third option.
+
+### Singleton vs. transient scope
+
+`@Singleton`/`Scope.SINGLETON` (the default) builds an instance once and
+caches it — every `container.get(cls)` after the first returns the same
+object. `Scope.TRANSIENT` never caches: every `get()` rebuilds the whole
+subtree. One subtlety: if a transient service is itself a dependency of a
+singleton, it's only ever built once — at the singleton's first
+resolution — since the singleton itself is cached. This is standard DI
+behavior, not an inito-specific quirk, but it's easy to assume "transient"
+always means "fresh every time" when it actually means "fresh every time
+*it's resolved directly*."
+
+### `@Inject` has a real, per-call cost
+
+Every other inito decorator generates real methods once, at decoration
+time, with zero added cost afterward. `@Inject` is the one exception: it
+wraps a **function** (typically a composition-root entry point like
+`main()`, not a hot-path method), and resolving its unfilled,
+container-registered parameters happens on **every call** — a
+`container.get()` per unfilled parameter, not a full re-reflection (the
+function's signature and type hints are inspected once, at decoration
+time, and cached on the wrapper). This is architecturally unavoidable for
+a container whose registrations can grow over time, and is consistent
+with how other DI frameworks treat this exact boundary. Once you have a
+resolved object in hand — from `@Inject`, `container.get()`, or plain
+construction — using it is ordinary Python with no DI-related overhead at
+all; see [docs/performance.md](performance.md) for benchmark numbers.
+
 ## Composing atomic decorators
 
 Every capability `@Data` bundles is also available on its own, so you can

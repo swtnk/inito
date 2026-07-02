@@ -33,3 +33,15 @@ class DuplicateGeneratorError(InitoError):
 
 class BuilderValidationError(InitoError):
     """Raised when `.build()` is called before every required field is set."""
+
+
+class DependencyRegistrationError(InitoError):
+    """Raised when @Service/@Singleton registration or its constructor annotations are invalid."""
+
+
+class UnresolvableDependencyError(InitoError):
+    """Raised when a needed dependency type has no registration and no default value."""
+
+
+class CircularDependencyError(InitoError):
+    """Raised when resolving a dependency graph revisits a class already mid-resolution."""

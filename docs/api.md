@@ -131,6 +131,41 @@ Stack with `@dataclass(frozen=True)` for genuine attribute-write
 immutability; on its own `@Value` only omits setters, it doesn't block
 direct attribute assignment.
 
+## Dependency injection: Container, @Service, @Singleton, @Inject
+
+```{eval-rst}
+.. autoclass:: inito.Container
+   :members:
+
+.. autoclass:: inito.Scope
+   :members:
+
+.. data:: inito.default_container
+
+   The shared Container that @Service/@Singleton register into by default.
+
+.. autodata:: inito.Service
+   :annotation:
+
+.. autoclass:: inito.ServiceOptions
+   :members:
+
+.. autodata:: inito.Singleton
+   :annotation:
+
+.. autodata:: inito.Inject
+   :annotation:
+```
+
+Also exported as `inito.component`/`inito.Component` (a literal alias for
+`@Service`), `inito.singleton`, and `inito.inject`. `@Service`/`@Singleton`
+register a class's constructor dependency types at decoration time —
+they never mutate the class, so it remains an ordinary, directly
+constructible Python class; `container.get(cls)` is the DI-aware path
+that autowires and lazily builds it. See
+[Quick start](quickstart.md#dependency-injection) for a worked example
+and the per-call cost of `@Inject`.
+
 ## Exceptions
 
 ```{eval-rst}
@@ -156,5 +191,14 @@ direct attribute assignment.
    :members:
 
 .. autoclass:: inito.exceptions.BuilderValidationError
+   :members:
+
+.. autoclass:: inito.exceptions.DependencyRegistrationError
+   :members:
+
+.. autoclass:: inito.exceptions.UnresolvableDependencyError
+   :members:
+
+.. autoclass:: inito.exceptions.CircularDependencyError
    :members:
 ```

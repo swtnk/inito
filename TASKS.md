@@ -353,7 +353,7 @@ unimplemented.
       `docs/troubleshooting.md` (added to the pyright `dataclass_transform`
       exception list), README Status section
 
-## Phase 19 — Dependency injection: @Service/@Inject/@Singleton (post-v1, not blocking release)
+## Phase 19 — Dependency injection: @Service/@Inject/@Singleton
 
 `inito.md`'s "Future Features" list names `@Singleton`, `@Inject`, `@Lazy`,
 `@Factory` and says explicitly not to implement them yet, only to keep the
@@ -361,26 +361,79 @@ architecture extensible. Raised in conversation: Lombok's
 `@RequiredArgsConstructor` enables Spring-style constructor DI in Java, but
 that wiring is Spring's IoC container doing the work, not Lombok itself —
 so an equivalent in Python needs a real DI container, not just a
-constructor-generating decorator. Design sketch, to flesh out when this
-phase is picked up:
+constructor-generating decorator. Pulled forward (like `@Value` in Phase
+18) by explicit user request, ahead of the rest of the Future Features
+list. This is the library's **first genuinely new kind of state**: every
+prior decorator is purely per-class, computed once at decoration time with
+no cross-class coordination; a `Container` is process-wide and lazy.
 
-- [ ] A stateful `Container` registry (new kind of shared state — everything
-      built so far is per-class, no cross-class global state)
-- [ ] `@Service`/`@Component` registers a class's constructor dependency
-      types in the container **at decoration time** (cheap; matches the
-      "reflect once" rule) without instantiating anything yet
-- [ ] Lazy resolution: `container.get(MyService)` resolves the dependency
-      graph and builds instances bottom-up on first request — after
-      construction, using the object is ordinary Python with zero DI-related
-      overhead (proxies/`__getattr__`/per-call resolution are all
-      out-of-bounds, per the existing performance rules)
-- [ ] Scope semantics: singleton (cache the instance) vs. transient/prototype
-      (new instance per `get()`) — decide the default and how to override it
-- [ ] Discovery: Python has no classpath-scanning equivalent, so services
-      only register when their module is actually imported — decide between
-      explicit registration and an explicit "scan this package" helper
-- [ ] Circular-dependency detection at graph-build time, with a clear
-      `InitoError` subtype
-- [ ] Tests: resolution correctness, singleton caching, transient scope,
-      circular-dependency error, zero post-construction overhead
-      (benchmark-verified, per Phase 13's methodology)
+- [x] `src/inito/di/container.py`: a stateful `Container` (registrations
+      dict keyed by class object, singleton-instance cache dict, no
+      thread-locking in v1 — documented limitation, matches the project's
+      zero-runtime-dependency/no-locking-elsewhere posture) plus a shared
+      `default_container` singleton, mirroring `GeneratorRegistry`'s
+      register/get shape
+- [x] `@Service`/`@Component` (`decorators/service.py`) registers a class's
+      constructor dependency types into a container **at decoration time**
+      (via `resolve_constructor_dependencies`, reusing `make_decorator`)
+      without instantiating anything — never mutates the class, so it
+      remains an ordinary, directly-constructible Python class
+- [x] Lazy resolution: `container.get(cls)` resolves the dependency graph
+      and builds instances bottom-up on first request, via a private
+      `_resolve(cls, path)` that threads an explicit path tuple for
+      circular-dependency detection (not relying on set-iteration order).
+      `Container.get` is a real generic method (`type[T] -> T`), correctly
+      typed under mypy/pyright natively — no plugin/`.pyi` stub needed
+- [x] Scope semantics: `Scope.SINGLETON` (default, cached after first
+      resolution) vs. `Scope.TRANSIENT` (rebuilt every `get()`).
+      `@Singleton` is a standalone decorator (not a stacking requirement
+      on `@Service`) that rejects an explicit conflicting `scope=` kwarg
+      loudly rather than silently honoring it
+- [x] **Resolved design decision**: a constructor parameter is autowired
+      only if its annotated type is itself registered; if unregistered but
+      it has a default value, the default applies (the param is simply
+      omitted from the resolved kwargs); if unregistered with no default,
+      `UnresolvableDependencyError` at `get()`-time. Every parameter must
+      still be type-annotated - that's checked at `register()`/decoration
+      time via `DependencyRegistrationError`, since it's import-order
+      independent. This lets `@Service` classes mix real dependencies and
+      plain config (`DatabaseService(repo: UserRepo, port: int = 5432)`)
+- [x] Discovery: **explicit registration only in v1** (services register
+      purely as an import side effect) — no `scan_package()`/classpath-scan
+      helper, matching "Python has no classpath-scanning equivalent"
+- [x] Circular-dependency detection at graph-build time (`get()`-time, not
+      registration-time, since cycles can span services registered in any
+      order) — `CircularDependencyError`, message includes the full cycle
+      path. Covered for 2-node, 3-node, and self-referential cycles
+- [x] `@Inject` (`decorators/inject.py`) wraps a function (not a class) so
+      its type-annotated, unfilled parameters are resolved from a
+      container per call — explicitly **not** zero-overhead, unlike every
+      other decorator (documented in `docs/quickstart.md`/
+      `docs/performance.md`), since it's a composition-root/entry-point
+      boundary, not a hot-path generated method. Signature/hints are
+      inspected once at decoration time; only `bind_partial` + per-unfilled
+      -param `container.get()` happen per call
+- [x] Tests: `tests/di/test_container.py` (23 tests: roundtrip, duplicate
+      registration, singleton caching, transient scope, nested graphs,
+      2/3-node and self cycles, transient-under-singleton sharing,
+      mixed config/dependency resolution, unannotated-param rejection,
+      `reset()`, container independence), `tests/di/test_dependency_resolver.py`
+      (7 tests), `tests/decorators/test_service.py`/`test_singleton.py`/
+      `test_inject.py` (16 tests) — 100% line+branch coverage on every new
+      module. New `tests/conftest.py` autouse fixture resets
+      `default_container` before/after every test, since it's the first
+      process-wide mutable state in the test suite
+- [x] Benchmarks (`benchmarks/test_di_benchmark.py`): attribute access on a
+      container-resolved instance is at parity with hand-written (22.7ns vs
+      22.5ns - the real "zero overhead after construction" claim); warm
+      singleton `get()`, cold full-graph resolution, and `@Inject` call
+      overhead are all measured against hand-written equivalents and found
+      to have real, quantified (not hidden) costs - see
+      `docs/performance.md`'s dedicated DI section
+- [x] Docs: `docs/api.md`, `docs/quickstart.md` (new "Dependency injection"
+      section covering config-vs-dependency params, scope semantics, and
+      the `@Inject` overhead caveat), `docs/examples.md` +
+      `examples/di_basic.py`, `docs/troubleshooting.md` (new
+      `CircularDependencyError`/`UnresolvableDependencyError`/
+      `DependencyRegistrationError` entries), `docs/performance.md`,
+      README Status section, `CHANGELOG.md` (0.0.7-beta)

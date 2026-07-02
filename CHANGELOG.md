@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7-beta] - 2026-07-02
+
+### Added
+- A dependency-injection subsystem: `@Service`/`@Component` (registers a
+  class's constructor dependency types into a `Container` at decoration
+  time, without instantiating or mutating anything — the class stays an
+  ordinary, directly-constructible Python class), `@Singleton` (a
+  standalone decorator, sugar for `@Service(scope=Scope.SINGLETON)`), and
+  `@Inject` (wraps a function so its type-annotated, unfilled parameters
+  are resolved from a container on every call). `Container.get(cls)`
+  lazily resolves and builds the dependency graph bottom-up on first
+  request, caching singleton-scoped instances; a constructor parameter is
+  autowired only if its type is itself registered, otherwise its default
+  value (if any) applies, otherwise resolution raises
+  `UnresolvableDependencyError`. New `DependencyRegistrationError`,
+  `UnresolvableDependencyError`, and `CircularDependencyError` exception
+  types. This is the library's first process-wide mutable state — every
+  prior decorator was purely per-class. `Container.get` is a plain
+  generic method (`type[T] -> T`), so it's correctly typed under both
+  mypy and pyright natively, with no plugin or `.pyi` stub needed.
+  `@Inject` is the one decorator in this library with a real, documented
+  per-call cost (see `docs/quickstart.md`/`docs/performance.md`) — every
+  other generated member remains zero-overhead after construction, which
+  benchmarks confirm holds for DI-resolved instances too. Pulled forward
+  from `inito.md`'s Future Features list, following `@Value` in 0.0.6-beta.
+
 ## [0.0.6-beta] - 2026-07-02
 
 ### Added

@@ -13,6 +13,7 @@ from inito.decorators.equals_and_hash_code import (
     equals_and_hash_code,
 )
 from inito.decorators.getter import Getter, GetterOptions, getter
+from inito.decorators.inject import Inject, inject
 from inito.decorators.no_args_constructor import (
     NoArgsConstructor,
     NoArgsConstructorOptions,
@@ -23,7 +24,9 @@ from inito.decorators.required_args_constructor import (
     RequiredArgsConstructorOptions,
     required_args_constructor,
 )
+from inito.decorators.service import Component, Service, ServiceOptions, component, service
 from inito.decorators.setter import Setter, SetterOptions, setter
+from inito.decorators.singleton import Singleton, singleton
 from inito.decorators.to_string import ToString, ToStringOptions, to_string
 from inito.decorators.value import Value, ValueOptions, value
 
@@ -32,30 +35,39 @@ __all__ = [
     "AllArgsConstructorOptions",
     "Builder",
     "BuilderOptions",
+    "Component",
     "Data",
     "DataOptions",
     "EqualsAndHashCode",
     "EqualsAndHashCodeOptions",
     "Getter",
     "GetterOptions",
+    "Inject",
     "NoArgsConstructor",
     "NoArgsConstructorOptions",
     "RequiredArgsConstructor",
     "RequiredArgsConstructorOptions",
+    "Service",
+    "ServiceOptions",
     "Setter",
     "SetterOptions",
+    "Singleton",
     "ToString",
     "ToStringOptions",
     "Value",
     "ValueOptions",
     "all_args_constructor",
     "builder",
+    "component",
     "data",
     "equals_and_hash_code",
     "getter",
+    "inject",
     "no_args_constructor",
     "required_args_constructor",
+    "service",
     "setter",
+    "singleton",
     "to_string",
     "value",
 ]

@@ -98,15 +98,23 @@ getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 `@Builder`/`builder` (fluent builder, `to_builder=True` support),
 `@ToString` (`__repr__` only — pairs well with `@Builder` for a readable
 repr without pulling in `@Data`'s constructor/eq/hash/accessors),
-`@EqualsAndHashCode` (`__eq__`/`__hash__` only), and `@Value` (`@Data`
+`@EqualsAndHashCode` (`__eq__`/`__hash__` only), `@Value` (`@Data`
 without setters — constructor, `__repr__`, `__eq__`, `__hash__`, getters;
-stack with `@dataclass(frozen=True)` for genuine immutability).
+stack with `@dataclass(frozen=True)` for genuine immutability), and a
+dependency-injection subsystem: `@Service`/`@Component` (registers a
+class's constructor dependencies into a `Container`), `@Singleton`
+(sugar for singleton-scoped `@Service`), and `@Inject` (auto-wires a
+function's annotated parameters from a container per call). `@Service`
+never mutates the decorated class — it stays an ordinary, directly
+constructible Python class; `container.get(cls)` is the DI-aware,
+lazily-resolving path. See [Quick start](./docs/quickstart.md) for a
+worked DI example.
 
-All of `inito.md`'s Initial Features (v1) are now implemented, plus `@Value`
-from its Future Features list. See
-[docs/performance.md](./docs/performance.md) for benchmarks against
-handwritten classes, `dataclasses`, and `attrs`. See [TASKS.md](./TASKS.md)
-for what's left: docs, CI hardening, and release.
+All of `inito.md`'s Initial Features (v1) are now implemented, plus
+`@Value` and dependency injection, both pulled forward from its Future
+Features list. See [docs/performance.md](./docs/performance.md) for
+benchmarks against handwritten classes, `dataclasses`, and `attrs`. See
+[TASKS.md](./TASKS.md) for what's left.
 
 ### Known limitation: pyright doesn't see most generated members
 
