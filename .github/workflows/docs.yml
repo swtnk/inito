@@ -40,11 +40,9 @@ jobs:
       - name: Disable Jekyll (keep _static/_sources dirs)
         run: touch docs/_build/.nojekyll
       - name: Configure Pages
+        # Requires a one-time repo setup: Settings → Pages → Build and
+        # deployment → Source → "GitHub Actions".
         uses: actions/configure-pages@v5
-        with:
-          # Enable Pages (build type "GitHub Actions") on first run, so no
-          # manual Settings → Pages toggle is needed.
-          enablement: true
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
