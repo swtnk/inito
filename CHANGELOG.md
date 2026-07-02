@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5-beta] - 2026-07-02
+
+### Fixed
+- Self-referential forward references (e.g. a linked-list `next: Node`) now
+  resolve correctly instead of raising `AnnotationResolutionError`.
+  `resolve_type_hints` temporarily seeds the class's own module namespace
+  with the class itself just before resolution (restored immediately after
+  in a `finally`), only when that name isn't already bound to something
+  else. This is a decoration-time-only change — no added per-instance or
+  per-call cost, and genuinely unresolvable names still correctly raise.
+
 ## [0.0.4-beta] - 2026-07-02
 
 ### Fixed

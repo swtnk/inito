@@ -28,30 +28,27 @@ same technique a real frozen dataclass's own `__init__` uses). If you see
 setter, please [open an issue](https://github.com/swtnk/inito/issues) —
 that would be a genuine regression, not expected behavior.
 
-## `AnnotationResolutionError` on a self-referential field
+## `AnnotationResolutionError` on a field annotation
 
 ```python
-from __future__ import annotations
 from inito import Data
 
 
 @Data
-class Node:
-    value: int
-    next: Node | None = None   # raises AnnotationResolutionError
+class Sample:
+    value: DoesNotExist   # raises AnnotationResolutionError - DoesNotExist isn't defined
 ```
 
-`inito` resolves annotations eagerly, once, at decoration time — before the
-class's own name is bound in its module's globals (the core performance
-rule: reflection happens once, at decoration time, never later). A
-self-referential forward reference therefore can't resolve, unlike
-`dataclasses`, which only resolves annotations lazily if you explicitly
-call `typing.get_type_hints()` yourself.
+`inito` resolves annotations eagerly, once, at decoration time (the core
+performance rule: reflection happens once, at decoration time, never
+later). If a name in a field's annotation genuinely isn't defined
+anywhere reachable, this is the correct, expected error — fix the
+annotation or make sure the referenced name is actually importable/defined
+before the class is decorated.
 
-**Fix:** there isn't currently a workaround that preserves eager resolution
-for genuinely self-referential fields. If you need a linked structure, keep
-the self-referential field un-annotated for `inito`'s purposes, or manage
-that field outside the decorator-generated constructor.
+**Self-referential fields work fine** (e.g. a linked-list `next: Node`) —
+this used to be a limitation but no longer is; see the
+[README](https://github.com/swtnk/inito#self-referential-fields) for how.
 
 ## mypy flags `user.get_name()`, `Point.builder()`, etc. as unknown attributes
 

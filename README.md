@@ -145,13 +145,32 @@ correctly raises `FrozenInstanceError` either way, since setters remain
 plain attribute assignment — only construction is exempted from the
 frozen check, not general mutation.
 
-### Known limitation: self-referential fields
+### Self-referential fields
 
-Self-referential type hints (e.g. a linked-list `next: Node`) also aren't
-supported: inito resolves annotations eagerly, once, at decoration time —
-before the class's own name is bound in its module's globals — so a forward
-reference to the class currently being decorated can't resolve. Forward
-references to any other, already-defined class work normally.
+Self-referential type hints (e.g. a linked-list `next: Node`) work
+correctly:
+
+```python
+from __future__ import annotations
+from inito import Data
+
+
+@Data
+class Node:
+    value: int
+    next: Node | None = None
+```
+
+inito resolves annotations eagerly, once, at decoration time — before the
+class's own name is bound in its module's globals — so naively this would
+fail to resolve. Instead, `resolve_type_hints` temporarily seeds the
+module's namespace with the class itself just before resolution (and
+removes it immediately after), which only affects resolution of the class
+being decorated, not any other class in its inheritance chain. This is a
+one-time, decoration-time-only operation with no per-instance or per-call
+cost. Forward references to any other, already-defined class continue to
+work normally, and a genuinely undefined name still correctly raises
+`AnnotationResolutionError`.
 
 ## Contributing
 

@@ -86,14 +86,28 @@ def test_forward_reference_to_an_already_defined_class_resolves():
     assert person.name == "Ada"
 
 
-def test_self_referential_forward_reference_fails_at_decoration_time():
+def test_self_referential_forward_reference_resolves():
     # inito resolves annotations eagerly, once, at decoration time (the core
     # performance rule) - before the class's own name is bound in module
     # globals. A self-referential annotation (e.g. a linked-list `next: Node`)
-    # therefore cannot resolve, unlike dataclasses' lazier default behavior.
+    # would naively fail to resolve there, so resolve_type_hints temporarily
+    # seeds the module namespace with the class itself before resolving.
+    @Data
+    class Node:
+        value: int
+        next: Node | None = None
+
+    n1 = Node(1)
+    n2 = Node(2, n1)
+    assert n2.next is n1
+    assert n2.get_next() is n1
+
+
+def test_genuinely_unresolvable_annotation_still_fails():
+    # The self-reference fix above only seeds the class's own name - a truly
+    # undefined name must still fail, not be silently masked.
     with pytest.raises(AnnotationResolutionError):
 
         @Data
-        class Node:
-            value: int
-            next: Node | None = None
+        class Sample:
+            value: DoesNotExist  # noqa: F821 -- intentionally unresolvable

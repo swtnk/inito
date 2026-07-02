@@ -168,9 +168,10 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       post-construction mutation still correctly fails — only construction is exempted
 - [x] Edge cases (`tests/integration/test_edge_cases.py`): empty class, single field, 3-level
       inheritance, `__slots__` with required-only fields, `__slots__`+default conflicting natively
-      in Python (not an inito issue), forward ref to an already-defined class (works), and — newly
-      discovered and documented in README — self-referential forward refs fail at decoration time
-      since annotations resolve eagerly, before the class's own name is bound
+      in Python (not an inito issue), forward ref to an already-defined class (works), and
+      self-referential forward refs (e.g. linked-list `next: Node`) — fixed in 0.0.5-beta via a
+      temporary module-dict injection in `resolve_type_hints`, decoration-time-only, no added
+      per-instance/per-call cost; see README's "Self-referential fields" section
 - [x] Invalid usage tests across all 9 decorators, parametrized (`tests/integration/test_invalid_usage.py`):
       non-type/non-options argument, multiple positional arguments, bare vs. `()` call equivalence
 - [x] Compatibility tests: stacking with dataclasses covered per-decorator (Phase 2-10) and in
