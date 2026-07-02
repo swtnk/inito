@@ -32,7 +32,7 @@ from inito.decorators.value import Value, ValueOptions, value
 from inito.di.container import Container, Scope, default_container
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc1"
+__version__ = "1.0.0-rc2"
 
 __all__ = [
     "AllArgsConstructor",
