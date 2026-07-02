@@ -515,3 +515,56 @@ no cross-class coordination; a `Container` is process-wide and lazy.
       `CircularDependencyError`/`UnresolvableDependencyError`/
       `DependencyRegistrationError` entries), `docs/performance.md`,
       README Status section, `CHANGELOG.md` (0.0.7-beta)
+
+## Phase 20 — Production hardening for framework use (1.0.0-rc1)
+
+User goal: make inito production-ready for drop-in use in any Python project
+(Django, FastAPI, Sanic, ...). This phase is a hardening/verification pass, not
+new core features — plus one opt-in builder enhancement surfaced by the interop
+work. Cut as `1.0.0-rc1` (release candidate) ahead of a stable `1.0.0`,
+promoting the PyPI status from Alpha to Production/Stable.
+
+- [x] **Codegen robustness/security fix**: audited every generator for
+      untrusted-string interpolation into `exec()`'d source. Only `ReprGenerator`
+      baked the owning class's `__name__` into the source text; a class created
+      dynamically with an unusual `__name__` (framework metaclass via
+      `type(name, ...)`) could crash decoration or, with a hostile name, inject
+      statements into the function body. Fixed by passing the name through the
+      generated function's globals (`_cls_name`) instead of the source string —
+      zero behaviour change, names now render verbatim. Regression test added in
+      `tests/generators/test_repr_generator.py`. All `qualified_name` uses
+      elsewhere are only passed as the `qualname` *argument* to `build_function`
+      (compile-filename label + `__qualname__` attribute), never compiled as
+      code — confirmed safe.
+- [x] **Python 3.14 support (PEP 649/749 lazy annotations)**: `collect_ordered_field_names`
+      read `klass.__dict__.get("__annotations__")` directly, which misses fields
+      under 3.14's lazy annotation evaluation (the key may be unmaterialised).
+      Added `_own_annotation_names`, which uses `annotationlib.get_annotations`
+      with the forward-reference format on 3.14+ (names without evaluating any
+      value) and the `__dict__` read on <3.14. Full suite verified green on a
+      throwaway 3.14 venv. Added 3.14 to the CI matrix and package classifiers.
+- [x] **`@Builder(use_init=True)`**: opt-in build mode constructing via the
+      class's own `__init__` instead of the default `__new__`+`object.__setattr__`
+      bypass, so a validating framework model or hand-written constructor runs.
+      The builder becomes a kwargs accumulator (only set fields passed;
+      constructor owns defaults/required errors). Default behaviour unchanged.
+      New `BuilderOptions.use_init`; mypy plugin untouched (the option doesn't
+      change the synthesized Builder type). Unit tests in
+      `tests/decorators/test_builder.py`.
+- [x] **Framework interop test matrix** (`tests/integration/test_framework_interop.py`,
+      importorskip-guarded): Pydantic v2 (additive decorators + `use_init`
+      validation + documented default-bypass), SQLAlchemy 2.0 declarative
+      (`use_init` + instrumentation + repr), Django (additive decorators in a
+      configured process), custom-metaclass attachment, and async DI (concurrent
+      `@Inject` resolution stability + explicit-arg precedence). New `interop`
+      optional-dependency group; dedicated CI `interop` job on 3.12 (kept out of
+      the main matrix since no single framework version spans 3.9–3.14).
+- [x] **Security posture**: `SECURITY.md` (private disclosure process) + a
+      `docs/security.md` page explaining the single decoration-time `exec()`
+      site, that no user *values* reach compiled source, and the zero-dependency/
+      no-I/O/no-monkeypatch stance.
+- [x] **Docs**: new `docs/frameworks.md` (framework + async-DI usage guide),
+      `use_init` documented on `docs/decorators/builder.md`, both new pages wired
+      into the User Guide navigation; docs build clean under `-W`.
+- [ ] Promote `1.0.0-rc1` → `1.0.0` after the RC soak (drop the `-rc1` suffix,
+      new CHANGELOG entry, tag `v1.0.0`).

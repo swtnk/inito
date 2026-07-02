@@ -28,6 +28,7 @@ class BuilderOptions:
     to_builder: bool = False
     setter_prefix: str = ""
     build_method_name: str = "build"
+    use_init: bool = False
 
 
 class BuilderGenerator:
@@ -54,7 +55,7 @@ class BuilderGenerator:
             )
         namespace[options.build_method_name] = build_function(
             options.build_method_name,
-            _render_build_method_source(fields, options.build_method_name),
+            _render_build_method_source(fields, options.build_method_name, options.use_init),
             _build_method_globals(metadata),
             f"{metadata.qualified_name}.Builder.{options.build_method_name}",
         )
@@ -110,16 +111,36 @@ def _render_fluent_setter_source(field: FieldMetadata, method_name: str) -> str:
     return f"def {method_name}(self, value):\n    self._{field.name} = value\n    return self\n"
 
 
-def _render_build_method_source(fields: tuple[FieldMetadata, ...], build_method_name: str) -> str:
-    # build() constructs via __new__ + object.__setattr__ (bound once as
-    # _setattr), unconditionally: it bypasses __init__ and must stay correct
-    # when immutability is applied *after* the builder is generated (e.g.
-    # @Value @Builder), which can't be detected here. object.__setattr__ keeps
-    # the instance's key-sharing dict intact, so attribute reads stay fast.
+def _render_build_method_source(
+    fields: tuple[FieldMetadata, ...], build_method_name: str, use_init: bool
+) -> str:
+    if use_init:
+        return _render_use_init_build_source(fields, build_method_name)
+    # Default: build() constructs via __new__ + object.__setattr__ (bound once
+    # as _setattr), bypassing __init__. This must stay correct when immutability
+    # is applied *after* the builder is generated (e.g. @Value @Builder), which
+    # can't be detected here. object.__setattr__ keeps the instance's
+    # key-sharing dict intact, so attribute reads stay fast.
     lines = [_render_unset_check(field, build_method_name) for field in fields if field.is_required]
     lines.append("    _instance = _owner_cls.__new__(_owner_cls)")
     lines.extend(f'    _setattr(_instance, "{field.name}", self._{field.name})' for field in fields)
     lines.append("    return _instance")
+    return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
+
+
+def _render_use_init_build_source(fields: tuple[FieldMetadata, ...], build_method_name: str) -> str:
+    # use_init=True: construct through the class's own __init__ so a framework
+    # (Pydantic/SQLAlchemy/Django) or hand-written constructor runs its
+    # validation/instrumentation. The builder becomes a kwargs accumulator:
+    # only fields the caller actually set (not left at _unset) are passed, so
+    # the target constructor's own defaults and required-argument errors apply
+    # rather than inito's. No _unset "required field" check is emitted here -
+    # completeness is delegated entirely to __init__.
+    lines = ["    _kwargs = {}"]
+    for field in fields:
+        lines.append(f"    if self._{field.name} is not _unset:")
+        lines.append(f'        _kwargs["{field.name}"] = self._{field.name}')
+    lines.append("    return _owner_cls(**_kwargs)")
     return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
 
 

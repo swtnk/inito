@@ -33,6 +33,8 @@ all-in-one `@Data`.
 
 ## Recipes and guides
 
+- [Frameworks](frameworks.md) — using InitO with Django, FastAPI, Sanic,
+  Pydantic, and SQLAlchemy.
 - [Recipes](recipes.md) — real-world, combined-decorator patterns.
 - [Examples](examples.md) — the runnable scripts from the repository.
 - [Migration](migration.md) — coming from `dataclasses` or `attrs`.
@@ -40,6 +42,7 @@ all-in-one `@Data`.
 ## Help
 
 - [Performance](performance.md) — benchmarks vs. handwritten/`dataclasses`.
+- [Security & code generation](security.md) — how and when `exec()` runs.
 - [FAQ](faq.md) — common questions.
 - [Troubleshooting](troubleshooting.md) — errors and how to fix them.
 
@@ -76,6 +79,7 @@ dependency-injection
 :caption: Recipes and guides
 :hidden:
 
+frameworks
 recipes
 examples
 migration
@@ -86,6 +90,7 @@ migration
 :hidden:
 
 performance
+security
 faq
 troubleshooting
 ```

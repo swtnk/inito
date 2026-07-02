@@ -78,6 +78,7 @@ default.
 | `to_builder` | `False` | also generate `instance.to_builder()` for deriving copies |
 | `setter_prefix` | `""` | prefix the fluent setters, e.g. `"with_"` → `.with_name("x")` |
 | `build_method_name` | `"build"` | rename the terminal method, e.g. `"create"` → `.create()` |
+| `use_init` | `False` | construct via the class's own `__init__` instead of bypassing it |
 
 ```python
 @Builder(setter_prefix="with_", build_method_name="create")
@@ -89,12 +90,40 @@ class Widget:
 Widget.builder().with_name("x").create()
 ```
 
+### `use_init=True`: construct through the real constructor
+
+By default `build()` is fast because it bypasses `__init__` (see the gotcha
+below). When you need the class's own constructor to run — for a hand-written
+`__init__` with side effects, or a validating framework model (Pydantic,
+SQLAlchemy, Django) — pass `use_init=True`:
+
+```python
+from inito import Builder
+from pydantic import BaseModel
+
+
+@Builder(use_init=True)
+class User(BaseModel):
+    name: str
+    age: int = 0
+
+
+User.builder().name("Ada").build()               # runs Pydantic validation
+User.builder().name("Ada").age("nope").build()   # raises pydantic.ValidationError
+```
+
+In this mode the builder only passes the fields you actually set, so the
+constructor's own defaults and required-argument errors apply rather than
+InitO's `BuilderValidationError`. See [Using InitO with your
+framework](../frameworks.md) for the full guidance.
+
 ## Notes & gotchas
 
-- **`build()` bypasses `__init__`.** It creates the instance with
+- **`build()` bypasses `__init__` by default.** It creates the instance with
   `cls.__new__(cls)` and assigns fields directly, so any custom `__init__`
-  logic (validation, computed attributes) is *not* run by the builder. If
-  you rely on `__init__` side effects, construct normally instead.
+  logic (validation, computed attributes) is *not* run by the builder. Pass
+  `use_init=True` (see the option above) to construct through the real
+  constructor instead, or construct normally.
 - **No `repr` on its own.** `@Builder` only adds the builder machinery. Pair
   it with [@ToString](to-string.md) (or [@Data](data.md)) for a readable
   `repr`.

@@ -18,7 +18,11 @@ Builder = make_decorator(_apply_builder, BuilderOptions())
 Builder.__doc__ = (
     "Generate a nested fluent Builder class, a builder() classmethod, and "
     "(with to_builder=True) a to_builder() instance method. Accepts "
-    "BuilderOptions (to_builder, setter_prefix, build_method_name)."
+    "BuilderOptions (to_builder, setter_prefix, build_method_name, use_init). "
+    "By default build() assigns fields directly, bypassing __init__ for speed; "
+    "pass use_init=True to construct through the class's own __init__ so a "
+    "framework or hand-written constructor's validation runs (e.g. Pydantic, "
+    "SQLAlchemy, Django models)."
 )
 builder = Builder
 

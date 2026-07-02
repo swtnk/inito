@@ -200,6 +200,19 @@ Features list. See [the performance page](https://swetanksubham.com/inito/perfor
 benchmarks against handwritten classes, `dataclasses`, and `attrs`. See
 [TASKS.md](https://github.com/swtnk/inito/blob/main/TASKS.md) for what's left.
 
+### Works with your framework
+
+InitO has zero runtime dependencies and generates plain methods on plain
+classes, so it drops into any project — Django, FastAPI, Sanic, Flask, or no
+framework. On a framework's *model* class (Pydantic, SQLAlchemy, Django) prefer
+the additive decorators (`@Getter`/`@Setter`/`@ToString`/`@EqualsAndHashCode`)
+and let the framework own construction; use `@Builder(use_init=True)` when you
+want the builder to run the model's own validating constructor. The
+dependency-injection layer is safe to resolve from `async` request handlers.
+See [Using InitO with your framework](https://swetanksubham.com/inito/frameworks.html).
+Interoperability is verified in CI against Pydantic v2, SQLAlchemy 2.0, and
+Django, on Python 3.9–3.14.
+
 ### Known limitation: pyright doesn't see most generated members
 
 Every generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, the

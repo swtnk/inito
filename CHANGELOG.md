@@ -5,7 +5,51 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0-rc1] - 2026-07-02
+
+First release candidate for a stable **1.0.0**. All of `inito.md`'s Initial
+Features plus `@Value` and dependency injection are complete, and this release
+adds a production-hardening pass: framework interoperability, Python 3.14
+support, a code-generation robustness fix, and an opt-in framework-aware
+builder. The package's PyPI status is promoted from Alpha to
+**Production/Stable**.
+
+### Added
+- **`@Builder(use_init=True)`** — an opt-in build mode that constructs through
+  the class's own `__init__` instead of bypassing it, so a validating framework
+  model (Pydantic, SQLAlchemy, Django) or a hand-written constructor runs its
+  validation/instrumentation. In this mode `build()` passes only the fields you
+  actually set, deferring defaults and required-argument errors to the
+  constructor. The default (fast, `__init__`-bypassing) behaviour is unchanged.
+- **Python 3.14 support.** Added 3.14 to the CI matrix and the package
+  classifiers.
+- **Framework-interoperability test suite** (`tests/integration/test_framework_interop.py`)
+  verifying InitO composed with Pydantic v2, SQLAlchemy 2.0 declarative, Django,
+  a custom metaclass, and async dependency-injection resolution. Frameworks are
+  optional dev extras (`.[interop]`) and run in a dedicated CI job.
+- **`SECURITY.md`** with a private vulnerability-disclosure process, and a new
+  **Security & code generation** documentation page explaining how and when
+  `exec()` runs and why no user input reaches the compiled source.
+- **Using InitO with your framework** documentation page (Django/FastAPI/Sanic/
+  Pydantic/SQLAlchemy, async DI, and the additive-vs-constructor decorator
+  guidance).
+
+### Fixed
+- **Robust code generation for dynamically-named classes.** `__repr__` no longer
+  interpolates the owning class's `__name__` into the generated source; the name
+  is passed through the function's globals instead. A class created dynamically
+  with an unusual `__name__` (e.g. by a framework metaclass via `type(name,
+  ...)`) previously could crash decoration or, with a hostile name, inject
+  statements into the generated function body. Names now render verbatim with no
+  crash or injection.
+- **Python 3.14 lazy annotations (PEP 649/749).** Field discovery no longer reads
+  `__annotations__` directly from a class's `__dict__` (which may be unmaterialised
+  under 3.14's lazy evaluation); it uses `annotationlib` with the forward-reference
+  format on 3.14+, retrieving field names without evaluating any annotation value.
+
+### Changed
+- PyPI **Development Status** classifier promoted from `3 - Alpha` to
+  `5 - Production/Stable`.
 
 ### Documentation
 - The Sphinx docs are now published to GitHub Pages and served at

@@ -12,7 +12,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Swetank Subham", email = "swetanksubham.r@gmail.com" }]
 requires-python = ">=3.9"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Typing :: Typed",
     "Operating System :: OS Independent",
@@ -50,6 +51,16 @@ dev = [
     "attrs>=23",
     "pyperf>=2.6",
     "typing-extensions>=4.6",
+]
+# Third-party frameworks used only to verify interoperability in
+# tests/integration/test_framework_interop.py. Kept out of `dev` because no
+# single version of every framework supports the whole 3.9-3.14 matrix; the
+# interop tests are guarded with importorskip and run in a dedicated CI job on
+# a stable interpreter. inito itself has zero runtime dependencies.
+interop = [
+    "pydantic>=2",
+    "sqlalchemy>=2",
+    "django>=4.2",
 ]
 
 [tool.hatch.build.targets.wheel]

@@ -77,8 +77,54 @@ def test_builder_rejects_non_type_non_options_argument():
 
 def test_builder_options_defaults():
     assert BuilderOptions() == BuilderOptions(
-        to_builder=False, setter_prefix="", build_method_name="build"
+        to_builder=False, setter_prefix="", build_method_name="build", use_init=False
     )
+
+
+def test_use_init_builder_constructs_through_the_classs_init():
+    calls = []
+
+    @builder(use_init=True)
+    class Temperature:
+        celsius: float
+
+        def __init__(self, celsius: float) -> None:
+            calls.append(celsius)
+            self.celsius = round(celsius, 2)
+
+    result = Temperature.builder().celsius(3.14159).build()
+    assert result.celsius == 3.14
+    assert calls == [3.14159]  # __init__ actually ran
+
+
+def test_use_init_builder_omits_unset_fields_so_ctor_defaults_apply():
+    @builder(use_init=True)
+    class Config:
+        host: str
+        port: int
+
+        def __init__(self, host: str, port: int = 5432) -> None:
+            self.host = host
+            self.port = port
+
+    config = Config.builder().host("db").build()  # port left unset
+    assert (config.host, config.port) == ("db", 5432)
+
+
+def test_use_init_builder_propagates_ctor_errors():
+    @builder(use_init=True)
+    class Config:
+        host: str
+        port: int
+
+        def __init__(self, host: str, port: int) -> None:
+            self.host = host
+            self.port = port
+
+    # port never set and has no ctor default -> the ctor's own TypeError, not a
+    # BuilderValidationError (completeness is delegated to __init__).
+    with pytest.raises(TypeError):
+        Config.builder().host("db").build()
 
 
 def test_builder_build_populates_a_slotted_class():

@@ -15,9 +15,27 @@ def collect_ordered_field_names(cls: type) -> tuple[str, ...]:
     """Return every annotated field name across cls's MRO, in declaration order."""
     ordered: dict[str, None] = {}
     for klass in reversed(cls.__mro__[:-1]):
-        for name in klass.__dict__.get("__annotations__", {}):
+        for name in _own_annotation_names(klass):
             ordered.setdefault(name, None)
     return tuple(ordered)
+
+
+def _own_annotation_names(klass: type) -> tuple[str, ...]:
+    """Return the names klass annotates itself (not inherited), version-safely.
+
+    Python 3.14 (PEP 649/749) evaluates class annotations lazily: a class's
+    ``__annotations__`` may not be materialised in its ``__dict__`` until first
+    access, so the pre-3.14 ``klass.__dict__.get("__annotations__")`` read can
+    miss fields. From 3.14 the ``annotationlib`` module is used with the
+    forward-reference format, which returns the annotation *names* without
+    evaluating any annotation value (so an undefined forward reference can't
+    raise here - resolution happens later, in ``resolve_type_hints``).
+    """
+    if sys.version_info >= (3, 14):
+        import annotationlib
+
+        return tuple(annotationlib.get_annotations(klass, format=annotationlib.Format.FORWARDREF))
+    return tuple(klass.__dict__.get("__annotations__", {}))
 
 
 @contextmanager
