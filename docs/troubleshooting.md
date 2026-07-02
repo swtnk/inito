@@ -177,7 +177,7 @@ via `container.register(cls)`) into that specific container; (2) one of
 `cls`'s constructor parameters has a type that isn't registered *and* has
 no default value, so the container has nothing to autowire and nothing to
 fall back to — see
-[Quick start's "mixing real dependencies with plain config"](quickstart.md#mixing-real-dependencies-with-plain-config)
+[Dependency injection: how resolution works](dependency-injection.md#how-resolution-works)
 for how to fix the second case (either register the missing type, or give
 the parameter a default).
 

@@ -94,9 +94,9 @@ call. `@Singleton` is sugar for `@Service(scope=Scope.SINGLETON)` — the
 default scope; pass `@Service(scope=Scope.TRANSIENT)` for a fresh instance
 on every resolution instead.
 
-`@Service` also composes with `@RequiredArgsConstructor`/
-`@AllArgsConstructor`/`@Data`/`@NoArgsConstructor` — a plain field
-annotation (`repo: Repo`) is enough, no hand-written `__init__` required:
+`@Service` also composes with the [constructor
+decorators](decorators/constructors.md) — a plain field annotation
+(`repo: Repo`) is enough, no hand-written `__init__` required:
 
 ```python
 from inito import RequiredArgsConstructor, Service
@@ -114,68 +114,10 @@ class UserService:
     repo: Repo
 ```
 
-### Mixing real dependencies with plain config
-
-A constructor parameter is only autowired if its annotated type is itself
-a registered service (`repo: Repo` above). A parameter whose type isn't
-registered (`retries: int`) is left alone as long as it has a default
-value — the constructor's own default applies, exactly as if you'd called
-it directly. If such a parameter has **no** default, resolving it raises
-`UnresolvableDependencyError` — every constructor parameter must be either
-autowirable or have a default, there's no third option.
-
-### Singleton vs. transient scope
-
-`@Singleton`/`Scope.SINGLETON` (the default) builds an instance once and
-caches it — every `container.get(cls)` after the first returns the same
-object. `Scope.TRANSIENT` never caches: every `get()` rebuilds the whole
-subtree. One subtlety: if a transient service is itself a dependency of a
-singleton, it's only ever built once — at the singleton's first
-resolution — since the singleton itself is cached. This is standard DI
-behavior, not an inito-specific quirk, but it's easy to assume "transient"
-always means "fresh every time" when it actually means "fresh every time
-*it's resolved directly*."
-
-### Thread-safety and process-safety
-
-Concurrent first-access to a singleton, from multiple threads, is safe:
-`Container` uses double-checked locking (a lazily-created lock per
-registered class) around singleton construction, so exactly one thread
-builds the instance and every other concurrent caller gets that same
-object back — none of them silently ends up with a second, independent
-instance, and construction never runs twice. Dependencies are resolved
-*before* a service's construction lock is taken, so no thread ever holds
-two locks at once: a cyclic graph resolved concurrently from opposite ends
-raises `CircularDependencyError` cleanly rather than deadlocking. This
-costs nothing on the already-resolved (warm) path: no lock is touched at
-all once a singleton is cached, so post-first-resolution `get()` calls and
-attribute access on resolved instances remain exactly as cheap as without
-any locking (see [Performance](performance.md)'s dependency-injection
-section for the measured numbers).
-
-A `Container` is always **process-local** — this isn't an inito
-limitation, it's true of any in-memory Python object. Each OS process
-(each `multiprocessing.Process`, each pre-fork web worker, ...) gets its
-own independent copy of `default_container` and therefore its own,
-separate singleton instances. If you need one value truly shared across
-processes, that requires external state (a database, a file, shared
-memory) — no pure in-process container can provide it.
-
-### `@Inject` has a real, per-call cost
-
-Every other inito decorator generates real methods once, at decoration
-time, with zero added cost afterward. `@Inject` is the one exception: it
-wraps a **function** (typically a composition-root entry point like
-`main()`, not a hot-path method), and resolving its unfilled,
-container-registered parameters happens on **every call** — a
-`container.get()` per unfilled parameter, not a full re-reflection (the
-function's signature and type hints are inspected once, at decoration
-time, and cached on the wrapper). This is architecturally unavoidable for
-a container whose registrations can grow over time, and is consistent
-with how other DI frameworks treat this exact boundary. Once you have a
-resolved object in hand — from `@Inject`, `container.get()`, or plain
-construction — using it is ordinary Python with no DI-related overhead at
-all; see [docs/performance.md](performance.md) for benchmark numbers.
+That is the tour. The **[Dependency injection guide](dependency-injection.md)**
+covers the rest in depth: autowiring vs. plain config, singleton vs.
+transient scope, custom containers, the error types, and the thread-safety
+and performance guarantees.
 
 ## Composing atomic decorators
 

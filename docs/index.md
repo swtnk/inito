@@ -38,7 +38,7 @@ print(user.get_name())   # Ada
   `mypy --strict` see every generated member; `@Data`/`@Value`/
   `@AllArgsConstructor` also type-check under pyright via a
   `dataclass_transform` stub.
-- **Batteries for services.** A small [dependency-injection](quickstart.md#dependency-injection)
+- **Batteries for services.** A small [dependency-injection](dependency-injection.md)
   layer (`@Service`/`@Singleton`/`@Inject` + a `Container`) wires
   constructors together lazily and thread-safely.
 
@@ -62,24 +62,57 @@ bound to the same object.
 
 ## Where to next
 
-- [Installation](installation.md) — install, supported versions, mypy setup.
-- [Quick start](quickstart.md) — a guided tour of every decorator.
-- [Recipes](recipes.md) — real-world, copy-pasteable patterns.
-- [Examples](examples.md) — the runnable scripts from the repo.
-- [API reference](api.md) — every public symbol.
-- [Migration](migration.md) — coming from `dataclasses` or `attrs`.
-- [Performance](performance.md) · [FAQ](faq.md) · [Troubleshooting](troubleshooting.md)
+- New here? Read [the problem inito solves](concepts.md), then take the
+  [quick start](quickstart.md) tour.
+- Looking for one decorator? Every decorator has its own page in the
+  **Decorators** section of the sidebar, each with the specific problem it
+  solves, its options, and gotchas.
+- Building services? See [Dependency injection](dependency-injection.md).
+- Want copy-pasteable patterns? See [Recipes](recipes.md).
 
 ```{toctree}
-:maxdepth: 2
-:hidden:
+:caption: Getting started
+:maxdepth: 1
 
 installation
+concepts
 quickstart
+```
+
+```{toctree}
+:caption: Decorators
+:maxdepth: 1
+
+decorators/data
+decorators/value
+decorators/accessors
+decorators/to-string
+decorators/equals-and-hash-code
+decorators/constructors
+decorators/builder
+```
+
+```{toctree}
+:caption: Dependency injection
+:maxdepth: 1
+
+dependency-injection
+```
+
+```{toctree}
+:caption: Guides
+:maxdepth: 1
+
 recipes
-api
 examples
 migration
+```
+
+```{toctree}
+:caption: Reference
+:maxdepth: 1
+
+api
 performance
 faq
 troubleshooting

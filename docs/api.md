@@ -163,7 +163,7 @@ register a class's constructor dependency types at decoration time —
 they never mutate the class, so it remains an ordinary, directly
 constructible Python class; `container.get(cls)` is the DI-aware path
 that autowires and lazily builds it. See
-[Quick start](quickstart.md#dependency-injection) for a worked example
+[Dependency injection](dependency-injection.md) for a worked example
 and the per-call cost of `@Inject`.
 
 ## Exceptions

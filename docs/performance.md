@@ -137,8 +137,7 @@ current spec).
 `benchmarks/test_di_benchmark.py` compares the DI container against
 hand-written equivalents at four points. Measured on the same machine as
 above, after 0.0.10-beta added double-checked per-class locking around
-singleton construction (see [Quick start's thread-safety
-section](quickstart.md)):
+singleton construction (see the [Dependency injection guide](dependency-injection.md#performance-and-safety)):
 
 | Operation | inito (DI) | hand-written | Verdict |
 |---|---:|---:|---|
@@ -157,7 +156,7 @@ once, at decoration time**; the per-call path only checks which parameters
 the caller already supplied (a name/positional-index check — no
 `Signature.bind_partial` per call) and resolves the rest. That is what
 brought the call cost from ~830ns to ~200ns. See
-[Quick start's DI section](quickstart.md#dependency-injection) for why this
+[the Dependency injection guide](dependency-injection.md) for why this
 boundary is architecturally different from every other generated member.
 
 Concurrent first-access to a singleton from multiple threads is safe

@@ -12,12 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Reworked the README (PyPI/GitHub) with badges, a "decorators at a glance"
   table, an inline dependency-injection example, and absolute links that
-  resolve on PyPI. Added a new **Recipes** page to the Sphinx docs with
-  real-world, combined-decorator patterns (immutable value objects, config
-  with default factories, fluent request builders, a DI service layer,
-  transient scope, atomic composition, inheritance) — every recipe block is
-  executed by the test suite (`tests/integration/test_recipes_run.py`) so it
-  can't drift. Expanded the docs landing page with a feature overview.
+  resolve on PyPI.
+- Restructured the Sphinx docs into grouped, captioned navigation (Getting
+  started · Decorators · Dependency injection · Guides · Reference) with a
+  **dedicated page per decorator** — `@Data`, `@Value`, accessors,
+  `@ToString`, `@EqualsAndHashCode`, a grouped **Constructors** page
+  (`@NoArgsConstructor`/`@AllArgsConstructor`/`@RequiredArgsConstructor`),
+  `@Builder`, and a full **Dependency injection** page. Each page opens with
+  the specific problem it solves, then usage, options, and gotchas. Added a
+  **Concepts** page ("the problem inito solves") and a **Recipes** page of
+  real-world combined patterns; every recipe block is executed by the test
+  suite (`tests/integration/test_recipes_run.py`) so it can't drift.
 
 ### Fixed
 - **Reverted a performance regression from 0.0.11-beta.** That release

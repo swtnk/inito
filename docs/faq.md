@@ -48,7 +48,7 @@ since decoration always attaches its generated version last.
 
 ## Why does `@Builder` alone not give me a nice `repr`?
 
-By design — see the [`@ToString`/`@Builder` composition example](quickstart.md#builder-a-fluent-builder).
+By design — see the [`@ToString` + `@Builder` example](decorators/to-string.md).
 Each decorator does one focused thing, matching Lombok; stack `@ToString`
 (or `@Data`) alongside `@Builder` for a readable repr.
 
