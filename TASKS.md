@@ -318,7 +318,42 @@ Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to i
       executed at runtime — it was already a transitive dependency of `mypy` itself, but made explicit
       for dev-environment clarity rather than silently relying on another package's dependency chain)
 
-## Phase 18 — Dependency injection: @Service/@Inject/@Singleton (post-v1, not blocking release)
+## Phase 18 — @Value (from Future Features, implemented ahead of the rest)
+
+`inito.md`'s "Future Features" list marks `@Value` (and the rest of that
+list) "should not be implemented yet." User explicitly requested `@Value`
+be built anyway, ahead of Phase 19's DI work, since it's a thin composition
+of already-registered capabilities (no new generator needed) rather than a
+new subsystem. The other Future Features (`@Immutable`, `@Singleton`,
+`@Inject`, `@Lazy`, `@Factory`, `@Proxy`, `@Delegate`, `@Validate`,
+`@Observable`, `@Cached`, `@Retry`, `@Timed`) remain deliberately
+unimplemented.
+
+- [x] `decorators/value.py`: `ValueOptions` (`include_getters`), `_apply_value`
+      wiring the existing `constructor`/`repr`/`eq`/`hash`/`getter` capabilities
+      (no new generator — reuses the same `ConstructorGenerator` `@Data`/
+      `@AllArgsConstructor` already use) — never generates setters, unlike
+      `@Data`, which only omits them when `frozen=True` is passed explicitly
+- [x] `decorators/value.pyi`: `typing.dataclass_transform` stub (PEP 681, same
+      pattern as `data.pyi`/`all_args_constructor.pyi`) — pyright gets a
+      correctly-typed constructor with no inito-specific plugin needed
+- [x] mypy plugin: `transform_value` in `constructors.py` (reuses `add_init`/
+      `add_getters`), registered under both `Value`/`value` fullnames in
+      `mypy_plugin/__init__.py`
+- [x] Exported from `decorators/__init__.py` and top-level `inito/__init__.py`
+- [x] `examples/value_basic.py`: plain-class and `@dataclass(frozen=True)`-stacked
+      usage (auto-picked-up by the `tests/mypy_plugin/test_examples_regression.py`
+      glob and mypy-plugin coverage)
+- [x] Tests: `tests/decorators/test_value.py` (bare usage, `include_getters=False`,
+      inheritance, stacking with `@dataclass(frozen=True)` confirming real
+      immutability, invalid-argument rejection, options defaults) and
+      `tests/mypy_plugin/test_value.py` (init/getter typing, missing-arg error,
+      setters never generated, `include_getters=False`, inheritance)
+- [x] Docs: `docs/api.md`, `docs/quickstart.md`, `docs/examples.md`,
+      `docs/troubleshooting.md` (added to the pyright `dataclass_transform`
+      exception list), README Status section
+
+## Phase 19 — Dependency injection: @Service/@Inject/@Singleton (post-v1, not blocking release)
 
 `inito.md`'s "Future Features" list names `@Singleton`, `@Inject`, `@Lazy`,
 `@Factory` and says explicitly not to implement them yet, only to keep the

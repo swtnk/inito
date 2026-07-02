@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6-beta] - 2026-07-02
+
+### Added
+- `@Value`/`value`: an immutable-style data class decorator — constructor,
+  `__repr__`, `__eq__`, `__hash__`, and `get_<field>()` accessors, but
+  *never* `set_<field>(value)` (unlike `@Data`, which only omits setters
+  when `frozen=True` is passed explicitly). Stack with
+  `@dataclass(frozen=True)` for genuine attribute-write immutability.
+  Reuses the same constructor/repr/eq/hash/getter generators `@Data` and
+  `@AllArgsConstructor` already use — no new generator was needed. Comes
+  with mypy plugin support and a `dataclass_transform`-marked `.pyi` stub
+  for pyright, matching `@Data`/`@AllArgsConstructor`'s existing typing
+  support. Pulled forward from `inito.md`'s Future Features list ahead of
+  the rest of that list (including the `@Service`/`@Inject`/`@Singleton`
+  dependency-injection work), since it's a thin composition of existing
+  capabilities rather than a new subsystem.
+
 ## [0.0.5-beta] - 2026-07-02
 
 ### Fixed

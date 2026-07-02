@@ -32,6 +32,32 @@ parameter ordering rules.
 @Data(include_setters=False)   # omit setters, keep getters
 ```
 
+## @Value: an immutable-style data class
+
+```python
+from dataclasses import dataclass
+from inito import Value
+
+
+@Value
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+
+point = Point(1, 2)
+print(point)              # Point(x=1, y=2)
+print(point.get_x())      # 1
+```
+
+`@Value` is `@Data` without setters: constructor, `__repr__`, `__eq__`,
+`__hash__`, and `get_<field>()` accessors — no `set_<field>(value)` is ever
+generated. Stack with `@dataclass(frozen=True)` for genuine attribute-write
+immutability; on its own `@Value` only omits setters, it doesn't block
+direct attribute assignment (`point.x = 5` would still work without the
+`@dataclass(frozen=True)` stack).
+
 ## Composing atomic decorators
 
 Every capability `@Data` bundles is also available on its own, so you can

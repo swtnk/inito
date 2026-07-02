@@ -97,10 +97,13 @@ getters, setters), `@Getter` (getters only), `@Setter` (setters only),
 `@RequiredArgsConstructor` (constructor only accepting required fields),
 `@Builder`/`builder` (fluent builder, `to_builder=True` support),
 `@ToString` (`__repr__` only — pairs well with `@Builder` for a readable
-repr without pulling in `@Data`'s constructor/eq/hash/accessors), and
-`@EqualsAndHashCode` (`__eq__`/`__hash__` only).
+repr without pulling in `@Data`'s constructor/eq/hash/accessors),
+`@EqualsAndHashCode` (`__eq__`/`__hash__` only), and `@Value` (`@Data`
+without setters — constructor, `__repr__`, `__eq__`, `__hash__`, getters;
+stack with `@dataclass(frozen=True)` for genuine immutability).
 
-All of `inito.md`'s Initial Features (v1) are now implemented. See
+All of `inito.md`'s Initial Features (v1) are now implemented, plus `@Value`
+from its Future Features list. See
 [docs/performance.md](./docs/performance.md) for benchmarks against
 handwritten classes, `dataclasses`, and `attrs`. See [TASKS.md](./TASKS.md)
 for what's left: docs, CI hardening, and release.

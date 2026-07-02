@@ -69,3 +69,10 @@ The three patterns below mirror the original project spec exactly (modulo a
 .. literalinclude:: ../examples/equals_and_hash_code_basic.py
    :language: python
 ```
+
+## @Value
+
+```{eval-rst}
+.. literalinclude:: ../examples/value_basic.py
+   :language: python
+```

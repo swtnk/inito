@@ -25,6 +25,7 @@ from inito.decorators.required_args_constructor import (
 )
 from inito.decorators.setter import Setter, SetterOptions, setter
 from inito.decorators.to_string import ToString, ToStringOptions, to_string
+from inito.decorators.value import Value, ValueOptions, value
 
 __all__ = [
     "AllArgsConstructor",
@@ -45,6 +46,8 @@ __all__ = [
     "SetterOptions",
     "ToString",
     "ToStringOptions",
+    "Value",
+    "ValueOptions",
     "all_args_constructor",
     "builder",
     "data",
@@ -54,4 +57,5 @@ __all__ = [
     "required_args_constructor",
     "setter",
     "to_string",
+    "value",
 ]

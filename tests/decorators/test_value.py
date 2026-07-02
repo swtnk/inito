@@ -1,0 +1,72 @@
+from dataclasses import FrozenInstanceError, dataclass
+
+import pytest
+
+from inito import Value
+from inito.decorators.value import ValueOptions
+from inito.exceptions.errors import DecoratorConfigurationError
+
+
+def test_bare_value_generates_constructor_repr_eq_hash_getters_no_setters():
+    @Value
+    class User:
+        name: str
+        age: int = 0
+
+    user = User("Ada", age=30)
+    assert user.name == "Ada"
+    assert user.age == 30
+    assert repr(user) == "User(name='Ada', age=30)"
+    assert user == User("Ada", 30)
+    assert hash(user) == hash(User("Ada", 30))
+    assert user.get_name() == "Ada"
+    assert not hasattr(user, "set_name")
+    assert not hasattr(user, "set_age")
+
+
+def test_value_include_getters_false_omits_getters():
+    @Value(include_getters=False)
+    class Point:
+        x: int
+
+    point = Point(1)
+    assert point.x == 1
+    assert not hasattr(point, "get_x")
+
+
+def test_value_with_inheritance_includes_base_fields():
+    @Value
+    class Base:
+        a: int
+
+    @Value
+    class Sub(Base):
+        b: int
+
+    instance = Sub(1, 2)
+    assert instance.a == 1
+    assert instance.b == 2
+    assert repr(instance) == "Sub(a=1, b=2)"
+
+
+def test_value_stacked_on_frozen_dataclass_enforces_real_immutability():
+    @Value
+    @dataclass(frozen=True)
+    class Point:
+        x: int
+        y: int
+
+    point = Point(1, 2)
+    assert repr(point) == "Point(x=1, y=2)"
+    assert point == Point(1, 2)
+    with pytest.raises(FrozenInstanceError):
+        point.x = 5
+
+
+def test_value_rejects_non_type_non_options_argument():
+    with pytest.raises(DecoratorConfigurationError):
+        Value("not a class")
+
+
+def test_value_options_defaults():
+    assert ValueOptions() == ValueOptions(include_getters=True)

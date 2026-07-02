@@ -84,6 +84,19 @@ def transform_required_args_constructor(ctx: ClassDefContext) -> bool:
     return True
 
 
+def transform_value(ctx: ClassDefContext) -> bool:
+    """Synthesize @Value's __init__ and (per options) get_<field>() accessors."""
+    fields = collect_fields(ctx)
+    if fields is None:
+        return False
+    include_getters = bool_option(ctx, "include_getters", True)
+
+    add_init(ctx, fields)
+    if include_getters:
+        add_getters(ctx, fields)
+    return True
+
+
 def add_init(ctx: ClassDefContext, fields: list[InitoField]) -> None:
     """Add an __init__ accepting fields, required ones ordered before defaulted ones."""
     ordered = [f for f in fields if not f.has_default] + [f for f in fields if f.has_default]

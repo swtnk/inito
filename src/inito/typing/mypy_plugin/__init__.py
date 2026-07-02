@@ -20,6 +20,7 @@ from inito.typing.mypy_plugin.constructors import (
     transform_no_args_constructor,
     transform_required_args_constructor,
     transform_setter,
+    transform_value,
 )
 
 _DECORATOR_MODULE = "inito.decorators"
@@ -63,6 +64,7 @@ def _build_transforms() -> dict[str, Callable[[ClassDefContext], bool]]:
         transform_required_args_constructor,
     )
     _register(transforms, "builder", "Builder", "builder", transform_builder)
+    _register(transforms, "value", "Value", "value", transform_value)
     return transforms
 
 

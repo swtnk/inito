@@ -76,8 +76,8 @@ correctly regardless, but pyright can't verify it statically. See the
 [README's known limitations section](https://github.com/swtnk/inito#known-limitation-pyright-doesnt-see-most-generated-members)
 for more, and `TASKS.md` Phase 17 for what closing this would require.
 
-**Exception:** `@Data` and `@AllArgsConstructor`'s constructors *are*
-correctly typed under pyright too, via a `.pyi` stub marked with the
+**Exception:** `@Data`, `@AllArgsConstructor`, and `@Value`'s constructors
+*are* correctly typed under pyright too, via a `.pyi` stub marked with the
 standard `typing.dataclass_transform` (PEP 681) — no inito-specific plugin
 needed there, since both tools understand this marker natively. This
 doesn't extend to `@NoArgsConstructor`/`@RequiredArgsConstructor`, whose
