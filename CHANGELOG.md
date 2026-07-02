@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10-beta] - 2026-07-02
+
+### Fixed
+- `@Singleton`/`Container` singleton resolution is now thread-safe. A user
+  asked whether it was thread- and process-safe; verified empirically with
+  real `threading`/`multiprocessing` reproductions that concurrent
+  first-access from multiple threads was **not** safe — 20 threads racing
+  a cold `get()` produced 20 separate constructions and 20 distinct
+  "singleton" instances, a genuine check-then-act race with no lock
+  (`TASKS.md` Phase 19 had originally documented "no thread-locking in
+  v1" as a deliberate scope decision). Fixed via double-checked locking: a
+  lazily-created lock per registered class, acquired only on the cold
+  path — the already-benchmarked warm/cached `get()` path is completely
+  unaffected (confirmed via `benchmarks/test_di_benchmark.py`, no
+  regression on the warm-cache numbers). Uses `threading` from the
+  standard library only, no new dependency. As expected (and confirmed
+  via a real `multiprocessing` reproduction, not something to fix), a
+  `Container` remains process-local — no in-memory Python object can be
+  shared across OS processes without external state.
+
 ## [0.0.9-beta] - 2026-07-02
 
 ### Fixed

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import enum
+import threading
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
 
@@ -37,12 +38,22 @@ class ServiceRegistration:
 
 
 class Container:
-    """Registers services at decoration time; resolves and builds instances lazily on get()."""
+    """Registers services at decoration time; resolves and builds instances lazily on get().
+
+    Singleton construction is thread-safe: concurrent first-access to the
+    same singleton from multiple threads is serialized via a per-class
+    lock, so a service is never constructed more than once and every
+    caller receives the same instance. Already-cached singletons cost
+    nothing extra - no lock is touched once resolved. A Container is
+    always process-local; it is not shared across separate OS processes.
+    """
 
     def __init__(self) -> None:
         """Create an empty container with no registrations."""
         self._registrations: dict[type, ServiceRegistration] = {}
         self._singletons: dict[type, Any] = {}
+        self._singleton_locks: dict[type, threading.Lock] = {}
+        self._locks_guard = threading.Lock()
 
     def register(self, cls: type, *, scope: Scope = Scope.SINGLETON) -> None:
         """Register cls's constructor dependency types under scope, without instantiating it."""
@@ -74,11 +85,32 @@ class Container:
             raise CircularDependencyError(
                 "Circular dependency detected: " + " -> ".join(step.__qualname__ for step in cycle)
             )
-        kwargs = self._resolve_dependencies(cls, registration, path)
-        instance = cls(**kwargs)
         if registration.scope is Scope.SINGLETON:
+            return self._resolve_singleton(cls, registration, path)
+        kwargs = self._resolve_dependencies(cls, registration, path)
+        return cls(**kwargs)
+
+    def _resolve_singleton(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        # Double-checked locking: the membership check above is lock-free (so an
+        # already-cached singleton costs nothing extra), only first construction
+        # pays for a lock - and only that one class's lock, not the whole container.
+        with self._lock_for(cls):
+            if cls in self._singletons:
+                return self._singletons[cls]
+            kwargs = self._resolve_dependencies(cls, registration, path)
+            instance = cls(**kwargs)
             self._singletons[cls] = instance
-        return instance
+            return instance
+
+    def _lock_for(self, cls: type) -> threading.Lock:
+        with self._locks_guard:
+            lock = self._singleton_locks.get(cls)
+            if lock is None:
+                lock = threading.Lock()
+                self._singleton_locks[cls] = lock
+            return lock
 
     def _resolve_dependencies(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]

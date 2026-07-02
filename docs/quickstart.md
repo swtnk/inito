@@ -136,6 +136,34 @@ behavior, not an inito-specific quirk, but it's easy to assume "transient"
 always means "fresh every time" when it actually means "fresh every time
 *it's resolved directly*."
 
+### Thread-safety and process-safety
+
+Concurrent first-access to a singleton, from multiple threads, is safe:
+`Container` uses double-checked locking (a lazily-created lock per
+registered class) around singleton construction, so exactly one thread
+builds the instance and every other concurrent caller gets that same
+object back — none of them silently ends up with a second, independent
+instance, and construction never runs twice. This costs nothing on the
+already-resolved (warm) path: no lock is touched at all once a singleton
+is cached, so post-first-resolution `get()` calls and attribute access on
+resolved instances remain exactly as cheap as without any locking (see
+[Performance](performance.md)'s dependency-injection section for the
+measured numbers). One narrow limitation: a genuinely circular
+dependency graph (already an invalid configuration on its own) resolved
+from opposite ends *concurrently, by two different threads*, before
+either completes, can deadlock instead of cleanly raising
+`CircularDependencyError` — the existing cycle detection only tracks one
+thread's own call stack. Fix the cycle; this isn't something to route
+around.
+
+A `Container` is always **process-local** — this isn't an inito
+limitation, it's true of any in-memory Python object. Each OS process
+(each `multiprocessing.Process`, each pre-fork web worker, ...) gets its
+own independent copy of `default_container` and therefore its own,
+separate singleton instances. If you need one value truly shared across
+processes, that requires external state (a database, a file, shared
+memory) — no pure in-process container can provide it.
+
 ### `@Inject` has a real, per-call cost
 
 Every other inito decorator generates real methods once, at decoration

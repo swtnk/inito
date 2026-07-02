@@ -1,3 +1,4 @@
+import threading
 from typing import Optional
 
 import pytest
@@ -207,3 +208,52 @@ def test_container_instances_are_independent():
     a.register(Repo)
     assert a.is_registered(Repo)
     assert not b.is_registered(Repo)
+
+
+def test_concurrent_singleton_resolution_constructs_exactly_once():
+    # Regression test: Container._resolve used to check-then-construct-then-cache
+    # with no lock, so concurrent first-access from multiple threads could each
+    # construct their own instance and race to populate the cache. A barrier
+    # forces every thread to call get() at (as close to) the same instant.
+    construct_count = 0
+    construct_lock = threading.Lock()
+    thread_count = 20
+    start_barrier = threading.Barrier(thread_count)
+
+    class Slow:
+        def __init__(self):
+            nonlocal construct_count
+            with construct_lock:
+                construct_count += 1
+
+    container = Container()
+    container.register(Slow)
+    results: list[object] = []
+    results_lock = threading.Lock()
+
+    def worker():
+        start_barrier.wait()
+        instance = container.get(Slow)
+        with results_lock:
+            results.append(instance)
+
+    threads = [threading.Thread(target=worker) for _ in range(thread_count)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert construct_count == 1
+    assert len({id(instance) for instance in results}) == 1
+
+
+def test_resolve_singleton_double_check_returns_already_cached_instance():
+    # White-box test for the inner double-check inside the per-class lock:
+    # if another thread finishes constructing while this one was waiting for
+    # the lock, it must return that instance rather than building a second one.
+    container = Container()
+    container.register(Repo)
+    registration = container._registrations[Repo]
+    sentinel = Repo()
+    container._singletons[Repo] = sentinel
+    assert container._resolve_singleton(Repo, registration, ()) is sentinel

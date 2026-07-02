@@ -388,11 +388,34 @@ prior decorator is purely per-class, computed once at decoration time with
 no cross-class coordination; a `Container` is process-wide and lazy.
 
 - [x] `src/inito/di/container.py`: a stateful `Container` (registrations
-      dict keyed by class object, singleton-instance cache dict, no
-      thread-locking in v1 — documented limitation, matches the project's
-      zero-runtime-dependency/no-locking-elsewhere posture) plus a shared
-      `default_container` singleton, mirroring `GeneratorRegistry`'s
+      dict keyed by class object, singleton-instance cache dict) plus a
+      shared `default_container` singleton, mirroring `GeneratorRegistry`'s
       register/get shape
+- [x] **Revised in 0.0.10-beta**: originally shipped with no thread-locking
+      ("matches the project's zero-runtime-dependency/no-locking-elsewhere
+      posture"), documented as a known v1 limitation. A user explicitly
+      asked whether `@Singleton` was thread/process-safe; verified
+      empirically with real `threading`/`multiprocessing` reproductions
+      that it was **not** thread-safe (20 concurrent threads racing a cold
+      `get()` produced 20 separate constructions and 20 distinct
+      instances — a genuine check-then-act race with no lock) before
+      confirming (as expected, and inherent to any pure in-memory Python
+      object, not something to "fix") that a singleton is always
+      per-process, never shared across OS processes. Fixed the thread
+      race via double-checked locking: a per-class `threading.Lock`
+      (lazily created behind a small shared "lock of locks" guard),
+      acquired only on the cold path — the already-benchmarked warm/cached
+      `get()` path is untouched (no lock acquired at all if the singleton
+      is already cached), confirmed via `benchmarks/test_di_benchmark.py`
+      showing no regression on the warm-cache numbers. `stdlib threading`
+      only, no new dependency. One narrow, documented residual limitation:
+      a genuinely circular dependency graph (already an invalid
+      configuration) resolved from *opposite ends concurrently by two
+      different threads* before either completes could deadlock instead
+      of raising `CircularDependencyError`, since cross-thread cycles
+      aren't visible to the existing single-call-stack `path` tracking —
+      accepted as out of scope, since the underlying graph is already
+      broken regardless of threading
 - [x] `@Service`/`@Component` (`decorators/service.py`) registers a class's
       constructor dependency types into a container **at decoration time**
       (via `resolve_constructor_dependencies`, reusing `make_decorator`)
