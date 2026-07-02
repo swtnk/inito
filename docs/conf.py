@@ -31,6 +31,12 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = "inito"
 
+# Served as a GitHub Pages project site under the account's custom domain,
+# i.e. https://swetanksubham.com/inito/. Sphinx uses relative links for
+# navigation and assets, so the site works under this subpath; html_baseurl
+# only sets the canonical URL (SEO) and any absolute references.
+html_baseurl = "https://swetanksubham.com/inito/"
+
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 napoleon_google_docstring = True
