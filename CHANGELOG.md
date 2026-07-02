@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.9-beta] - 2026-07-02
+
+### Fixed
+- `@Service`/`@Singleton` now correctly compose with `@RequiredArgsConstructor`,
+  `@AllArgsConstructor`, `@Data`, and `@NoArgsConstructor`. A user-reported
+  bug showed `@Service @RequiredArgsConstructor class UserService: helper:
+  Helper` raising `DependencyRegistrationError: ... has no type annotation`
+  even though `helper: Helper` is a perfectly normal field annotation —
+  these decorators' generated `__init__` source carries no annotations at
+  all (they only ever needed parameter *names* for their own codegen), so
+  `resolve_constructor_dependencies` couldn't see a type for `helper` by
+  inspecting `__init__` alone. It now falls back to the `ClassMetadata`
+  that decorator already cached on the class at its own decoration time
+  (reusing, not re-deriving, that reflection) whenever `__init__` itself
+  has no annotation for a given parameter name.
+
 ## [0.0.8-beta] - 2026-07-02
 
 ### Fixed

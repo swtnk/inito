@@ -94,6 +94,26 @@ call. `@Singleton` is sugar for `@Service(scope=Scope.SINGLETON)` — the
 default scope; pass `@Service(scope=Scope.TRANSIENT)` for a fresh instance
 on every resolution instead.
 
+`@Service` also composes with `@RequiredArgsConstructor`/
+`@AllArgsConstructor`/`@Data`/`@NoArgsConstructor` — a plain field
+annotation (`repo: Repo`) is enough, no hand-written `__init__` required:
+
+```python
+from inito import RequiredArgsConstructor, Service
+
+
+@Service
+@RequiredArgsConstructor
+class Repo:
+    pass
+
+
+@Service
+@RequiredArgsConstructor
+class UserService:
+    repo: Repo
+```
+
 ### Mixing real dependencies with plain config
 
 A constructor parameter is only autowired if its annotated type is itself

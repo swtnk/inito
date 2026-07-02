@@ -1,6 +1,6 @@
 import pytest
 
-from inito import Service
+from inito import RequiredArgsConstructor, Service
 from inito.decorators.service import Component, ServiceOptions, service
 from inito.di.container import Container, Scope, default_container
 from inito.exceptions.errors import DecoratorConfigurationError
@@ -23,6 +23,31 @@ def test_service_decorated_class_is_still_directly_constructible():
 
     point = Point(1, 2)
     assert (point.x, point.y) == (1, 2)
+
+
+def test_service_stacked_on_required_args_constructor_autowires():
+    # Regression test: @RequiredArgsConstructor's generated __init__ carries
+    # no annotations in its own source, so @Service must fall back to the
+    # ClassMetadata @RequiredArgsConstructor already cached on the class.
+    @Service
+    @RequiredArgsConstructor
+    class Helper:
+        def greet(self, name: str) -> str:
+            return f"Hello, {name}!"
+
+    @Service
+    @RequiredArgsConstructor
+    class MyClass:
+        helper: Helper
+
+        def greet_person(self, name: str) -> str:
+            return self.helper.greet(name)
+
+    my_class = MyClass(helper=Helper())
+    assert my_class.greet_person("Alice") == "Hello, Alice!"
+
+    resolved = default_container.get(MyClass)
+    assert resolved.greet_person("Bob") == "Hello, Bob!"
 
 
 def test_service_with_explicit_container_option():

@@ -183,6 +183,34 @@ dependency graph — an unannotated parameter can't be autowired or checked
 against a default), or if you `@Service`-decorate the same class into the
 same container twice.
 
+Stacking `@Service` on top of another inito constructor decorator works
+correctly and needs no extra annotations of your own:
+
+```python
+from inito import RequiredArgsConstructor, Service
+
+
+@Service
+@RequiredArgsConstructor
+class Repo:
+    pass
+
+
+@Service
+@RequiredArgsConstructor
+class UserService:
+    repo: Repo   # a plain field annotation, not a hand-written __init__
+```
+
+`@RequiredArgsConstructor`'s (and `@AllArgsConstructor`'s/`@Data`'s/
+`@NoArgsConstructor`'s) generated `__init__` carries no annotations in its
+own source at all — `@Service` falls back to the `ClassMetadata` that
+decorator already cached on the class (from the field's own annotation,
+`repo: Repo` above) rather than requiring you to hand-write an annotated
+`__init__` yourself. This only works when `@Service` is stacked directly
+on a class that was itself already decorated — a plain, undecorated class
+with an unannotated `__init__` parameter still needs a real annotation.
+
 ## `Container.get()`'s return type isn't `Any` under mypy/pyright
 
 `Container.get` is a plain generic method (`def get(self, cls: type[T]) ->

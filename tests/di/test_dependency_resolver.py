@@ -3,6 +3,7 @@ import typing
 
 import pytest
 
+from inito import RequiredArgsConstructor
 from inito.di.dependency_resolver import (
     Dependency,
     registrable_type,
@@ -81,6 +82,35 @@ def test_inherited_init_is_resolved_via_mro():
         pass
 
     assert resolve_constructor_dependencies(Sub) == {"a": Dependency(int, False)}
+
+
+def test_falls_back_to_cached_field_metadata_for_a_generated_constructor():
+    # @RequiredArgsConstructor's generated __init__ source carries no
+    # annotations at all - resolve_constructor_dependencies must fall back
+    # to the ClassMetadata @RequiredArgsConstructor already cached on the
+    # class, rather than requiring a hand-annotated __init__.
+    class Repo:
+        pass
+
+    @RequiredArgsConstructor
+    class Sample:
+        repo: Repo
+
+    assert resolve_constructor_dependencies(Sample) == {"repo": Dependency(Repo, False)}
+
+
+def test_cached_field_metadata_fallback_only_applies_to_missing_annotations():
+    # A hand-written, correctly annotated __init__ takes precedence over any
+    # cached field metadata (there is none here, since this class was never
+    # itself decorated) - this just re-confirms the ordinary path still wins.
+    class Repo:
+        pass
+
+    class Sample:
+        def __init__(self, repo: Repo):
+            self.repo = repo
+
+    assert resolve_constructor_dependencies(Sample) == {"repo": Dependency(Repo, False)}
 
 
 def test_registrable_type_leaves_a_bare_type_unchanged():

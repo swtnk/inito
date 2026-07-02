@@ -418,6 +418,18 @@ no cross-class coordination; a `Container` is process-wide and lazy.
       time via `DependencyRegistrationError`, since it's import-order
       independent. This lets `@Service` classes mix real dependencies and
       plain config (`DatabaseService(repo: UserRepo, port: int = 5432)`)
+- [x] **Revised in 0.0.9-beta**: `resolve_constructor_dependencies` originally
+      only inspected `__init__`'s own annotations, which works for a
+      hand-written constructor but not for one *generated* by
+      `@RequiredArgsConstructor`/`@AllArgsConstructor`/`@Data`/
+      `@NoArgsConstructor` — their `exec()`'d source never carries
+      annotations (they only ever needed parameter names). A real user hit
+      this stacking `@Service @RequiredArgsConstructor`. Fixed by falling
+      back to the `ClassMetadata` that decorator already cached on the
+      class (`cls.__dict__[METADATA_ATTRIBUTE]`) whenever a parameter name
+      has no `__init__` annotation — reuses existing decoration-time
+      reflection rather than re-deriving anything, and requires no new
+      per-call or per-instance work
 - [x] Discovery: **explicit registration only in v1** (services register
       purely as an import side effect) — no `scan_package()`/classpath-scan
       helper, matching "Python has no classpath-scanning equivalent"
