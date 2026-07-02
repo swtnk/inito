@@ -1,31 +1,32 @@
 name: Docs
 
-# Build the Sphinx docs and publish them to GitHub Pages. Because the
-# account's user site (swtnk.github.io) has the custom domain
-# swetanksubham.com, this project site is served at
-# https://swetanksubham.com/inito/ automatically — no CNAME file is needed
-# in this repo.
+# Build the Sphinx docs and publish the HTML to the `gh-pages` branch. Pages is
+# served from that branch ("Deploy from a branch" mode), not via the GitHub
+# Actions Pages-deployment API. Because the account's user site
+# (swtnk.github.io) has the custom domain swetanksubham.com, this project site
+# is served at https://swetanksubham.com/inito/ automatically — no CNAME file is
+# needed in this repo (the custom domain belongs to the user site).
+#
+# One-time repo setup: Settings → Pages → Build and deployment → Source →
+# "Deploy from a branch" → Branch: gh-pages, folder / (root).
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+# Pushing the built site to the gh-pages branch needs write access to the repo.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# One deployment at a time; let the newest push supersede an in-flight one so
-# a stuck/overlapping deploy can't wedge the github-pages environment (the
-# latest docs content should always win).
+# One publish at a time; newest push wins.
 concurrency:
-  group: pages
+  group: docs-pages
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build docs
+  build-and-publish:
+    name: Build and publish docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -39,25 +40,18 @@ jobs:
           uv pip install -e ".[dev]"
       - name: Build docs (warnings-as-errors)
         run: uv run sphinx-build -b html docs docs/_build -W
-      - name: Disable Jekyll (keep _static/_sources dirs)
-        run: touch docs/_build/.nojekyll
-      - name: Configure Pages
-        # Requires a one-time repo setup: Settings → Pages → Build and
-        # deployment → Source → "GitHub Actions".
-        uses: actions/configure-pages@v6
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: docs/_build
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Publish to gh-pages branch
+        run: |
+          # .nojekyll keeps Sphinx's _static/_sources directories from being
+          # stripped by Pages' Jekyll processing.
+          touch docs/_build/.nojekyll
+          cd docs/_build
+          git init -q
+          git checkout -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "docs: publish ${GITHUB_SHA}"
+          git push -f \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" \
+            gh-pages:gh-pages
