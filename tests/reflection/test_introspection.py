@@ -50,7 +50,10 @@ def test_resolve_type_hints_raises_on_unresolvable_forward_ref():
 def test_resolve_type_hints_resolves_self_referential_annotation():
     class Node:
         value: int
-        next: "Node | None" = None
+        # Optional[Node], not "Node | None": the string is eval'd by
+        # get_type_hints at runtime, and PEP 604 syntax isn't valid there
+        # before Python 3.10 (this project supports 3.9+).
+        next: "typing.Optional[Node]" = None
 
     assert resolve_type_hints(Node)["next"] == typing.Optional[Node]
 
@@ -58,7 +61,7 @@ def test_resolve_type_hints_resolves_self_referential_annotation():
 def test_resolve_type_hints_does_not_leak_the_temporary_self_reference():
     class Node:
         value: int
-        next: "Node | None" = None
+        next: "typing.Optional[Node]" = None
 
     resolve_type_hints(Node)
     module = sys.modules[Node.__module__]

@@ -151,14 +151,14 @@ Self-referential type hints (e.g. a linked-list `next: Node`) work
 correctly:
 
 ```python
-from __future__ import annotations
+from typing import Optional
 from inito import Data
 
 
 @Data
 class Node:
     value: int
-    next: Node | None = None
+    next: Optional[Node] = None
 ```
 
 inito resolves annotations eagerly, once, at decoration time — before the
@@ -171,6 +171,10 @@ one-time, decoration-time-only operation with no per-instance or per-call
 cost. Forward references to any other, already-defined class continue to
 work normally, and a genuinely undefined name still correctly raises
 `AnnotationResolutionError`.
+
+Use `Optional[Node]` rather than `Node | None` for a self-referential field:
+the annotation is evaluated at runtime by `get_type_hints`, and the `|`
+union syntax isn't valid there before Python 3.10 (inito supports 3.9+).
 
 ## Contributing
 

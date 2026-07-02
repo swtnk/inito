@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 import pytest
 
 from inito import Data, builder
@@ -92,10 +94,12 @@ def test_self_referential_forward_reference_resolves():
     # globals. A self-referential annotation (e.g. a linked-list `next: Node`)
     # would naively fail to resolve there, so resolve_type_hints temporarily
     # seeds the module namespace with the class itself before resolving.
+    # Optional[Node], not `Node | None`: the latter is eval'd by get_type_hints
+    # at runtime and PEP 604 syntax isn't valid there before Python 3.10.
     @Data
     class Node:
         value: int
-        next: Node | None = None
+        next: Optional[Node] = None  # noqa: UP045 -- eval'd at runtime, `|` needs 3.10+
 
     n1 = Node(1)
     n2 = Node(2, n1)
