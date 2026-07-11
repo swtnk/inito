@@ -26,6 +26,20 @@ _MISSING = object()
 """Sentinel for 'no cached instance' - distinct from a legitimately falsy one."""
 
 
+def _safe_issubclass(child: type, parent: Any) -> bool:  # noqa: ANN401 -- arbitrary base type
+    """Return whether child subclasses parent, False if issubclass can't judge parent.
+
+    A dependency's registrable type may be a parameterized generic (``list[int]``)
+    or a non-runtime-checkable Protocol: ``issubclass(child, parent)`` raises
+    TypeError for those (and, quirkily, ``isinstance(list[int], type)`` is True on
+    some Python versions), so such a type is simply not an injectable interface.
+    """
+    try:
+        return issubclass(child, parent)
+    except TypeError:
+        return False
+
+
 class Scope(enum.Enum):
     """How a registered service's lifetime is managed."""
 
@@ -254,7 +268,7 @@ class Container:
         candidates = [
             registration.cls
             for registration in self._registrations.values()
-            if registration.cls is not base_type and issubclass(registration.cls, base_type)
+            if registration.cls is not base_type and _safe_issubclass(registration.cls, base_type)
         ]
         if len(candidates) == 1:
             return candidates[0]
