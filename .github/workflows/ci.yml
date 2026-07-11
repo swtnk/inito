@@ -62,7 +62,7 @@ jobs:
         run: uv run pytest tests/integration/test_framework_interop.py -v --no-cov
 
   examples:
-    name: framework examples (fastapi, redis, boto3)
+    name: framework examples (fastapi, aiohttp, sanic, django, redis, ...)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
