@@ -340,6 +340,22 @@ A small, lazy, thread-safe DI layer with the same zero-dependency,
 annotation-native design — no XML, no `Provide[]` markers, no provider objects.
 You annotate constructors; a `Container` wires them.
 
+**A `Container` is a registry and a resolver in one.** It records which classes
+are available for injection and what each one's constructor needs, then on demand
+builds instances, wires their dependencies bottom-up, caches them by scope, and
+hands them back. A shared `default_container` already exists, so you rarely
+create one by hand.
+
+| Concept | What it is |
+|---|---|
+| `@Service` / `@Component` | Marks a class as **available for injection** — registers it and the types its constructor needs. Never instantiates or mutates the class. |
+| `@Singleton` | `@Service` with singleton lifetime (the default). |
+| `@Inject` | Wraps a **function** so a container fills its annotated parameters the caller didn't supply. |
+| `Container` | The **registry + resolver + lifetime manager**. `container.get(cls)` builds `cls` — wiring its dependencies — and returns it. |
+| `default_container` | The shared `Container` that `@Service`/`@Singleton` use unless you pass `container=`. |
+| `Scope` | A service's **lifetime**: `SINGLETON` (one cached instance), `TRANSIENT` (fresh every time), `THREAD_LOCAL` (one per thread). |
+| `Qualifier` | Picks **which implementation** to inject when several share a base type. |
+
 ### `@Service` / `@Singleton` / `@Inject`
 
 ```python
