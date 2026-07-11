@@ -1,17 +1,21 @@
 """Resolve inito services inside Sanic request handlers.
 
-Handlers are async; the service is resolved from the container per request.
+The services declare dependencies as fields and let inito write the constructor
+(`@RequiredArgsConstructor`). Handlers are async; the service is resolved from
+the container per request.
 
 Run:  sanic examples.di.sanic.app:app
 """
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from sanic import Sanic, json
 from sanic.request import Request
 from sanic.response import JSONResponse
 
-from inito import Config, Container, Service, Singleton
+from inito import Config, Container, RequiredArgsConstructor, Service, Singleton
 
 container = Container()
 
@@ -24,21 +28,20 @@ class Settings:
 
 @Singleton(container=container)
 class UserRepo:
-    def __init__(self) -> None:
-        self._names = {1: "Ada", 2: "Linus"}
+    _NAMES: ClassVar[dict[int, str]] = {1: "Ada", 2: "Linus"}
 
     def name(self, user_id: int) -> str | None:
-        return self._names.get(user_id)
+        return self._NAMES.get(user_id)
 
 
 @Service(container=container)
+@RequiredArgsConstructor
 class Greeter:
-    def __init__(self, settings: Settings, repo: UserRepo) -> None:
-        self._settings = settings
-        self._repo = repo
+    settings: Settings
+    repo: UserRepo
 
     def greet(self, user_id: int) -> str:
-        return f"{self._settings.greeting}, {self._repo.name(user_id) or 'stranger'}!"
+        return f"{self.settings.greeting}, {self.repo.name(user_id) or 'stranger'}!"
 
 
 app = Sanic("inito_example")

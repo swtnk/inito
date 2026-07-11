@@ -1,11 +1,15 @@
 """Configuration injection: load settings from the environment, autowire by type.
 
+`Settings` is loaded from the environment by `@Config`; `Report` declares its
+dependency as a field and lets inito write the constructor
+(`@RequiredArgsConstructor`) — no hand-written `def __init__(self, ...)`.
+
 Run:  APP_DATABASE_URL=postgres://db APP_PORT=9000 python -m examples.di.settings.app
 """
 
 from __future__ import annotations
 
-from inito import Config, Container, Service
+from inito import Config, Container, RequiredArgsConstructor, Service
 
 container = Container()
 
@@ -19,9 +23,9 @@ class Settings:
 
 
 @Service(container=container)
+@RequiredArgsConstructor
 class Report:
-    def __init__(self, settings: Settings) -> None:
-        self.settings = settings
+    settings: Settings
 
     def describe(self) -> str:
         return (

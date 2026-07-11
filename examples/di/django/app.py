@@ -1,8 +1,9 @@
 """Resolve inito services inside a Django view.
 
-inito wires your domain/service objects; Django owns models and requests. The
-view pulls a service from the container and returns a response - the same
-pattern scales to class-based views and DRF.
+inito wires your domain/service objects — declared as fields, with the
+constructor written by `@RequiredArgsConstructor` — while Django owns models and
+requests. The view pulls a service from the container and returns a response;
+the same pattern scales to class-based views and DRF.
 
 Run:  python -m examples.di.django.app runserver
 """
@@ -10,12 +11,13 @@ Run:  python -m examples.di.django.app runserver
 from __future__ import annotations
 
 import sys
+from typing import ClassVar
 
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.urls import path
 
-from inito import Config, Container, Service, Singleton
+from inito import Config, Container, RequiredArgsConstructor, Service, Singleton
 
 if not settings.configured:
     settings.configure(
@@ -39,21 +41,20 @@ class Settings:
 
 @Singleton(container=container)
 class UserRepo:
-    def __init__(self) -> None:
-        self._names = {1: "Ada", 2: "Linus"}
+    _NAMES: ClassVar[dict[int, str]] = {1: "Ada", 2: "Linus"}
 
     def name(self, user_id: int) -> str | None:
-        return self._names.get(user_id)
+        return self._NAMES.get(user_id)
 
 
 @Service(container=container)
+@RequiredArgsConstructor
 class Greeter:
-    def __init__(self, config: Settings, repo: UserRepo) -> None:
-        self._config = config
-        self._repo = repo
+    config: Settings
+    repo: UserRepo
 
     def greet(self, user_id: int) -> str:
-        return f"{self._config.greeting}, {self._repo.name(user_id) or 'stranger'}!"
+        return f"{self.config.greeting}, {self.repo.name(user_id) or 'stranger'}!"
 
 
 def greet(request: HttpRequest, user_id: int) -> JsonResponse:

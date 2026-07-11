@@ -1,19 +1,21 @@
 """Wire inito services into FastAPI routes via a Depends bridge to the container.
 
-The ``provide()`` helper turns any registered service into a FastAPI dependency
-(``Depends``), so routes stay ordinary FastAPI functions. A future ``Injected[T]``
-helper (DI 2.0 phase 4) will make this a one-liner and add per-request scope.
+The service classes below declare their dependencies as fields and let inito
+write the constructor (`@RequiredArgsConstructor`) — no hand-written
+`def __init__(self, ...)`. The ``provide()`` helper turns any registered service
+into a FastAPI dependency (``Depends``). A future ``Injected[T]`` helper
+(DI 2.0 phase 4) will make this a one-liner and add per-request scope.
 
 Run:  uvicorn examples.di.fastapi.app:app
 """
 
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from fastapi import Depends, FastAPI
 
-from inito import Config, Container, Service, Singleton
+from inito import Config, Container, RequiredArgsConstructor, Service, Singleton
 
 container = Container()
 
@@ -37,21 +39,20 @@ class Settings:
 
 @Singleton(container=container)
 class UserRepo:
-    def __init__(self) -> None:
-        self._names = {1: "Ada", 2: "Linus"}
+    _NAMES: ClassVar[dict[int, str]] = {1: "Ada", 2: "Linus"}
 
     def name(self, user_id: int) -> str | None:
-        return self._names.get(user_id)
+        return self._NAMES.get(user_id)
 
 
 @Service(container=container)
+@RequiredArgsConstructor
 class Greeter:
-    def __init__(self, settings: Settings, repo: UserRepo) -> None:
-        self._settings = settings
-        self._repo = repo
+    settings: Settings
+    repo: UserRepo
 
     def greet(self, user_id: int) -> str:
-        return f"{self._settings.greeting}, {self._repo.name(user_id) or 'stranger'}!"
+        return f"{self.settings.greeting}, {self.repo.name(user_id) or 'stranger'}!"
 
 
 app = FastAPI()

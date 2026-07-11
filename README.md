@@ -101,7 +101,7 @@ Optional extras (dev-time only):
 ## Quick start
 
 ```python
-from inito import Data, Value, builder, Service, Singleton, Inject
+from inito import Data, Value, builder, RequiredArgsConstructor, Service, Singleton, Inject
 
 @Data                       # constructor + repr + eq + hash + get_x/set_x
 class User:
@@ -120,13 +120,12 @@ class Request:
 
 @Singleton                  # DI: one shared instance per container
 class Db:
-    def __init__(self) -> None:
-        self.users = {1: "Ada"}
+    users = {1: "Ada"}      # seed data — no constructor needed
 
 @Service                    # DI: autowired from the container on demand
+@RequiredArgsConstructor    # inito writes __init__(self, db) — you don't
 class Users:
-    def __init__(self, db: Db) -> None:
-        self.db = db
+    db: Db
 
 @Inject                     # fills in `users` from the container
 def main(users: Users) -> None:
@@ -359,19 +358,18 @@ create one by hand.
 ### `@Service` / `@Singleton` / `@Inject`
 
 ```python
-from inito import Service, Singleton, Inject, default_container
+from inito import Inject, RequiredArgsConstructor, Service, Singleton, default_container
 
 
 @Singleton                       # one shared instance per container
 class Database:
-    def __init__(self) -> None:
-        self.users = {1: "Ada"}
+    users = {1: "Ada"}           # seed data — no constructor needed
 
 
 @Service                         # registered; autowired from its constructor types
+@RequiredArgsConstructor         # inito writes __init__(self, db) from the field
 class UserService:
-    def __init__(self, db: Database) -> None:
-        self.db = db
+    db: Database
 
     def name(self, user_id: int) -> str:
         return self.db.users[user_id]
@@ -436,15 +434,15 @@ class SqliteRepo(Repo): ...
 
 
 @Service
+@RequiredArgsConstructor
 class Users:
-    def __init__(self, repo: Annotated[Repo, Qualifier("postgres")]) -> None:
-        self.repo = repo          # -> PostgresRepo
+    repo: Annotated[Repo, Qualifier("postgres")]     # -> PostgresRepo
 
 
 @Service
+@RequiredArgsConstructor
 class Reports:
-    def __init__(self, repo: Repo) -> None:   # bare interface -> the `primary`
-        self.repo = repo          # -> PostgresRepo
+    repo: Repo                                        # bare interface -> the `primary`
 ```
 
 A bare interface with several implementations and no `primary` raises
@@ -464,9 +462,9 @@ class Settings:
 
 
 @Service
+@RequiredArgsConstructor
 class App:
-    def __init__(self, settings: Settings) -> None:
-        self.settings = settings          # loaded from the environment
+    settings: Settings                    # loaded from the environment, autowired
 ```
 
 ### Testing with overrides
@@ -540,25 +538,33 @@ snippets below all reuse this block:
 
 ```python
 # services.py — shared by every example below
-from inito import Container, Service, Singleton
+from inito import Container, RequiredArgsConstructor, Service, Singleton
 
 container = Container()
 
 
 @Singleton(container=container)          # one shared instance per container
 class UserRepo:
-    def __init__(self) -> None:
-        self.names = {1: "Ada", 2: "Linus"}
+    _NAMES = {1: "Ada", 2: "Linus"}      # seed data — no constructor needed
+
+    def name(self, user_id: int) -> str | None:
+        return self._NAMES.get(user_id)
 
 
 @Service(container=container)            # autowired from its constructor types
+@RequiredArgsConstructor                 # inito writes __init__(self, repo) — you don't
 class Greeter:
-    def __init__(self, repo: UserRepo) -> None:
-        self.repo = repo
+    repo: UserRepo
 
     def greet(self, user_id: int) -> str:
-        return f"Hello, {self.repo.names.get(user_id, 'stranger')}!"
+        return f"Hello, {self.repo.name(user_id) or 'stranger'}!"
 ```
+
+> **Dogfooding note:** the services declare their dependencies as fields and let
+> inito write the constructor (`@RequiredArgsConstructor`) — the same
+> boilerplate this library removes. A hand-written `__init__` remains only where
+> it does real work (building an external client below), not mere field
+> forwarding.
 
 ### FastAPI
 
@@ -649,17 +655,17 @@ class AwsSettings:
 
 @Singleton(container=container)
 class S3Client:
-    def __init__(self, settings: AwsSettings) -> None:
+    def __init__(self, settings: AwsSettings) -> None:   # builds the client — real work
         self.client = boto3.client("s3", region_name=settings.region)
 
 
 @Service(container=container)
+@RequiredArgsConstructor                                 # inito writes the constructor
 class Storage:
-    def __init__(self, s3: S3Client) -> None:
-        self._s3 = s3.client
+    s3: S3Client
 
     def bucket_names(self) -> list[str]:
-        return [b["Name"] for b in self._s3.list_buckets()["Buckets"]]
+        return [b["Name"] for b in self.s3.client.list_buckets()["Buckets"]]
 
 
 storage = container.get(Storage)         # S3Client built once, injected
