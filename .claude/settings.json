@@ -1,0 +1,33 @@
+{
+  "$comment": "Shared project settings (tracked). Personal overrides live in settings.local.json. Allowlist = the common safe dev-loop commands so routine steps don't prompt (fewer round-trips, lower token cost). Outward/irreversible actions (git push, git tag, publish) are intentionally NOT here — they should prompt.",
+  "permissions": {
+    "allow": [
+      "Bash(ruff check *)",
+      "Bash(ruff format *)",
+      "Bash(mypy *)",
+      "Bash(pytest *)",
+      "Bash(sphinx-build *)",
+      "Bash(uv build *)",
+      "Bash(uv pip *)",
+      "Bash(uv venv *)",
+      "Bash(uv run *)",
+      "Bash(uv python *)",
+      "Bash(uvx twine *)",
+      "Bash(./scripts/check_all.sh)",
+      "Bash(git status*)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch*)",
+      "Bash(git add *)",
+      "Bash(git mv *)",
+      "Bash(git restore *)",
+      "Bash(python3 -c *)",
+      "Bash(python -c *)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:python-dependency-injector.ets-labs.org)"
+    ]
+  }
+}

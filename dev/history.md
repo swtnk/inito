@@ -1,4 +1,10 @@
-# Inito — Implementation Roadmap
+# Inito — Implementation History (Phases 0–22, archived)
+
+> **Archive.** This is the completed record of inito's build through
+> `1.0.0-rc3`. It is kept for durability and reference but is **not** the active
+> work list — do not scan it every session. Active work lives in
+> [`dev/roadmap.md`](roadmap.md) and [`dev/tasks/`](tasks/); start from
+> [`dev/README.md`](README.md).
 
 Legend: `[x]` done, `[ ]` not started, `[~]` in progress (leave a note next to it)
 

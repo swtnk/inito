@@ -105,7 +105,7 @@ pyright has no third-party mypy-plugin equivalent, so the plugin above
 doesn't help it. This is a real, currently-unresolved gap — your code runs
 correctly regardless, but pyright can't verify it statically. See the
 [README's known limitations section](https://github.com/swtnk/inito#known-limitation-pyright-doesnt-see-most-generated-members)
-for more, and `TASKS.md` Phase 17 for what closing this would require.
+for more, and `dev/history.md` Phase 17 for what closing this would require.
 
 **Exception:** `@Data`, `@AllArgsConstructor`, and `@Value`'s constructors
 *are* correctly typed under pyright too, via a `.pyi` stub marked with the

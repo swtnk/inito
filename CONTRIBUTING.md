@@ -28,8 +28,10 @@ See [CLAUDE.md](./CLAUDE.md) for the architecture map and naming conventions.
 
 ## Progress tracking
 
-[TASKS.md](./TASKS.md) is the single source of truth for what's implemented
-versus planned. Update its checkboxes as work lands.
+[dev/README.md](./dev/README.md) is the entry point for ongoing work — it links
+the roadmap, active task checklists, and decision log. Update the active
+`dev/tasks/phase-*.md` checkboxes and `dev/README.md` as work lands. The finished
+build history lives in [dev/history.md](./dev/history.md).
 
 ## Versioning
 

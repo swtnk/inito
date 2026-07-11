@@ -122,6 +122,23 @@ sample classes per test file (DRY).
 
 ## Progress tracking
 
-`TASKS.md` is the single source of truth for what's implemented versus
-planned across sessions. Always update its checkboxes as work completes —
-a future session should be able to resume by finding the first unchecked box.
+`dev/` (git-tracked) is the source of truth for ongoing work — **start every
+session at [`dev/README.md`](dev/README.md)** (or run the `resume` skill). It
+links the active phase, the roadmap, the task checklists, plan mirrors, and the
+decision log. Update the active `dev/tasks/phase-*.md` checkboxes and
+`dev/README.md`'s status as work lands; record non-obvious decisions in
+`dev/decisions.md`. The finished build history (Phases 0–22) is archived in
+[`dev/history.md`](dev/history.md) — reference only, don't scan it each session.
+
+## Tooling (`.claude/`)
+
+- **Rules** (`.claude/rules/python.md`): the coding standards every change must
+  meet (architecture rules + engineering standards). Read before writing code.
+- **Skills** (`.claude/skills/`): `resume` (restore context), `gate` (run the
+  full check), `di-feature` (add a DI capability the inito way), `release` (cut
+  an rc). Invoke via the Skill tool when the situation matches.
+- **Agents** (`.claude/agents/`): `explorer`, `convention-reviewer`,
+  `test-author`, `doc-writer`, `di-designer`. **Opt-in only — never spawn an
+  agent unless the user explicitly asks for it (or names it).** They cold-spawn
+  and re-derive context, so they are the expensive path; default to doing the
+  work inline.

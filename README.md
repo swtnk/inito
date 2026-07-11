@@ -198,7 +198,7 @@ All of `inito.md`'s Initial Features (v1) are now implemented, plus
 `@Value` and dependency injection, both pulled forward from its Future
 Features list. See [the performance page](https://swetanksubham.com/inito/performance.html) for
 benchmarks against handwritten classes, `dataclasses`, and `attrs`. See
-[TASKS.md](https://github.com/swtnk/inito/blob/main/TASKS.md) for what's left.
+[dev/roadmap.md](https://github.com/swtnk/inito/blob/main/dev/roadmap.md) for what's next.
 
 ### Works with your framework
 
@@ -236,7 +236,7 @@ from `__init__` entirely rather than making them optional) — applying the
 marker there would make pyright silently *accept* calls the real runtime
 rejects, which is worse than the current honest gap. Closing the remaining
 gap for `get_x`/`set_x`/`@Builder` would need a different strategy (e.g. a
-companion stub generator); tracked in `TASKS.md` Phase 17, not required for
+companion stub generator); tracked in `dev/history.md` Phase 17, not required for
 this release.
 
 ### Immutability: `@Value` and `@Data(frozen=True)`
