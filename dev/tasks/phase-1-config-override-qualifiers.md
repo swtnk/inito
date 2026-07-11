@@ -18,14 +18,18 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress
 - [ ] Docs: a "testing with overrides" section.
 
 ## 2. Config injection (zero-dep core, Pydantic optional)
-- [ ] `@Config` decorator: populate a class's annotated fields from env vars
-      (name mapping + prefix) and optionally a YAML/JSON file — **stdlib only**
-      (no yaml dep; JSON via stdlib, YAML only if `pyyaml` present, duck-typed).
-- [ ] Register a `@Config` class (or a Pydantic `BaseSettings`) as a service so
-      it autowires by type into constructors.
-- [ ] Type coercion from strings (int/bool/float/str) at load time, once.
-- [ ] Tests: env mapping + prefix; defaults; missing-required error; Pydantic
-      `BaseSettings` path (interop job); coercion.
+- [x] `@Config` decorator (`decorators/config.py`): generates a zero-arg
+      `__init__` loading each field from `os.environ` (UPPER_SNAKE + optional
+      prefix), coerced, via the sanctioned `build_function` + `attach_method`.
+      Reflect-once: field/key/coercer/default plan computed at decoration; loader
+      reads env at construction. **stdlib only.** (File sources deferred to a
+      follow-up; Pydantic `BaseSettings` already autowires with no new code.)
+- [x] Registering a `@Config` class as a `@Service` autowires it by type.
+- [x] Coercion str/int/float/bool + `Optional[X]`, once; unsupported/ambiguous
+      types pass the raw string; new `ConfigResolutionError`.
+- [x] Tests (`tests/decorators/test_config.py`, 17): env+prefix, defaults,
+      missing-required, invalid coercion, bool parsing, float, fallback. 100% cov.
+- [ ] Pydantic `BaseSettings` autowire interop test (docs/interop pass).
 - [ ] Docs: "configuration injection" section.
 
 ## 3. Qualifiers for multiple implementations

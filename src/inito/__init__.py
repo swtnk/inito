@@ -6,6 +6,7 @@ from inito.decorators.all_args_constructor import (
     all_args_constructor,
 )
 from inito.decorators.builder import Builder, BuilderOptions, builder
+from inito.decorators.config import Config, ConfigOptions, config
 from inito.decorators.data import Data, DataOptions, data
 from inito.decorators.equals_and_hash_code import (
     EqualsAndHashCode,
@@ -40,6 +41,8 @@ __all__ = [
     "Builder",
     "BuilderOptions",
     "Component",
+    "Config",
+    "ConfigOptions",
     "Container",
     "Data",
     "DataOptions",
@@ -67,6 +70,7 @@ __all__ = [
     "all_args_constructor",
     "builder",
     "component",
+    "config",
     "data",
     "default_container",
     "equals_and_hash_code",

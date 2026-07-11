@@ -45,3 +45,11 @@ class UnresolvableDependencyError(InitoError):
 
 class CircularDependencyError(InitoError):
     """Raised when resolving a dependency graph revisits a class already mid-resolution."""
+
+
+class ConfigResolutionError(InitoError):
+    """Raised when a @Config field has no environment value and no default."""
+
+
+class AmbiguousDependencyError(InitoError):
+    """Raised when a dependency type has several registered implementations and no primary."""
