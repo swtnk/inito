@@ -51,6 +51,7 @@ parity](#performance) with handwritten classes and `dataclasses`.
   - [Configuration injection](#configuration-injection) · [Testing with overrides](#testing-with-overrides)
 - [Type checking](#type-checking)
 - [Using inito with frameworks](#using-inito-with-frameworks)
+- [Framework examples](#framework-examples) — [FastAPI](#fastapi) · [Django](#django) · [Sanic](#sanic) · [aiohttp](#aiohttp) · [Clients (boto3, Redis, …)](#clients-boto3-redis-)
 - [Immutability](#immutability)
 - [Self-referential fields](#self-referential-fields)
 - [Performance](#performance)
@@ -516,11 +517,160 @@ validation layer.
   `@Builder(use_init=True)` to build through the real constructor.
 - The DI layer is safe to resolve from `async` request handlers.
 
-Runnable, override-tested examples live in
-[`examples/di/`](https://github.com/swtnk/inito/tree/main/examples/di) — FastAPI,
-Django, Sanic, aiohttp, Redis, Valkey, boto3, RabbitMQ, and config. Interop is
-verified in CI against Pydantic v2, SQLAlchemy 2.0, and Django on Python
-3.9–3.14. See [Using inito with your
+## Framework examples
+
+Define your services once, then wire the same container into any framework. The
+snippets below all reuse this block:
+
+```python
+# services.py — shared by every example below
+from inito import Container, Service, Singleton
+
+container = Container()
+
+
+@Singleton(container=container)          # one shared instance per container
+class UserRepo:
+    def __init__(self) -> None:
+        self.names = {1: "Ada", 2: "Linus"}
+
+
+@Service(container=container)            # autowired from its constructor types
+class Greeter:
+    def __init__(self, repo: UserRepo) -> None:
+        self.repo = repo
+
+    def greet(self, user_id: int) -> str:
+        return f"Hello, {self.repo.names.get(user_id, 'stranger')}!"
+```
+
+### FastAPI
+
+A tiny `provide()` helper turns any registered service into a `Depends`, so
+routes stay ordinary FastAPI functions:
+
+```python
+from fastapi import Depends, FastAPI
+from services import Greeter, container
+
+app = FastAPI()
+
+
+def provide(service_type):
+    return Depends(lambda: container.get(service_type))
+
+
+@app.get("/greet/{user_id}")
+def greet(user_id: int, greeter: Greeter = provide(Greeter)):
+    return {"message": greeter.greet(user_id)}
+```
+
+### Django
+
+A view pulls the service from the container and returns a response:
+
+```python
+from django.http import JsonResponse
+from django.urls import path
+from services import Greeter, container
+
+
+def greet(request, user_id: int):
+    return JsonResponse({"message": container.get(Greeter).greet(user_id)})
+
+
+urlpatterns = [path("greet/<int:user_id>", greet)]
+```
+
+### Sanic
+
+```python
+from sanic import Sanic, json
+from services import Greeter, container
+
+app = Sanic("example")
+
+
+@app.get("/greet/<user_id:int>")
+async def greet(request, user_id: int):
+    return json({"message": container.get(Greeter).greet(user_id)})
+```
+
+### aiohttp
+
+```python
+from aiohttp import web
+from services import Greeter, container
+
+
+async def greet(request: web.Request) -> web.Response:
+    user_id = int(request.match_info["user_id"])
+    return web.json_response({"message": container.get(Greeter).greet(user_id)})
+
+
+app = web.Application()
+app.router.add_get("/greet/{user_id}", greet)
+```
+
+### Clients (boto3, Redis, …)
+
+Wire an external client as a `@Singleton` built from `@Config` settings, then
+inject it by type. The same shape works for boto3, Redis, Valkey, RabbitMQ, a
+database pool — anything:
+
+```python
+import boto3
+from inito import Config, Container, Service, Singleton
+
+container = Container()
+
+
+@Service(container=container)
+@Config(prefix="AWS_")
+class AwsSettings:
+    region: str = "us-east-1"          # reads AWS_REGION
+
+
+@Singleton(container=container)
+class S3Client:
+    def __init__(self, settings: AwsSettings) -> None:
+        self.client = boto3.client("s3", region_name=settings.region)
+
+
+@Service(container=container)
+class Storage:
+    def __init__(self, s3: S3Client) -> None:
+        self._s3 = s3.client
+
+    def bucket_names(self) -> list[str]:
+        return [b["Name"] for b in self._s3.list_buckets()["Buckets"]]
+
+
+storage = container.get(Storage)         # S3Client built once, injected
+```
+
+```python
+# Redis is the same shape — swap the client and the @Config prefix:
+import redis
+
+
+@Singleton(container=container)
+class Cache:
+    def __init__(self, settings: RedisSettings) -> None:
+        self.client = redis.Redis.from_url(settings.url)
+```
+
+**In tests**, swap any real client for a fake with no monkeypatching:
+
+```python
+container.override(S3Client, FakeS3Client())   # get(Storage) now uses the fake
+```
+
+Full, runnable, override-tested versions of all of these — plus RabbitMQ, Valkey,
+and env-config — live in
+[`examples/di/`](https://github.com/swtnk/inito/tree/main/examples/di). Interop
+is verified in CI against Pydantic v2, SQLAlchemy 2.0, and Django on Python
+3.9–3.14. See also [Using inito with your
 framework](https://swetanksubham.com/inito/frameworks.html).
 
 ## Immutability
