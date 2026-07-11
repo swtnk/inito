@@ -1,5 +1,13 @@
 # Quick start
 
+A five-minute tour of inito: install it, meet the all-in-one `@Data`, the
+immutable `@Value`, the fluent `@Builder`, dependency injection, and how to
+compose the atomic decorators yourself. Every example is copy-paste runnable.
+
+```bash
+pip install inito       # or:  uv add inito
+```
+
 ## @Data: the all-in-one decorator
 
 ```python
