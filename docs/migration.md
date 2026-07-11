@@ -55,11 +55,9 @@ runtime overhead. The differences:
   (`@Getter`, `@ToString`, ...) you compose explicitly.
 - `attrs` has mature mypy *and* pyright plugin support for every generated
   attribute; `inito` ships an equivalent [mypy plugin](installation.md#type-checking-mypy)
-  covering all of it, plus a `dataclass_transform`-based `.pyi` stub that
-  gets `@Data`/`@AllArgsConstructor`'s constructors correctly typed under
-  pyright too — but `get_x`/`set_x` and `@Builder`'s fluent chain remain a
-  pyright-only gap (see
-  [Troubleshooting](troubleshooting.md#pyright-still-flags-get_xset_xbuilder-members-as-unknown)).
+  covering all of it, and for pyright the `inito-stubgen` tool generates `.pyi`
+  files that expose every generated member (see
+  [Troubleshooting](troubleshooting.md#pyright-flags-get_xset_xbuilder-members-as-unknown)).
 
 If you're coming from Java/Lombok and want that naming/mental model
 directly in Python, `inito` will feel more familiar. If per-instance memory

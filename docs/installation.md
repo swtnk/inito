@@ -26,11 +26,21 @@ If you use mypy, enable inito's bundled plugin so `get_x`/`set_x`,
 plugins = ["inito.typing.mypy_plugin"]
 ```
 
-This is mypy-only — pyright has no equivalent plugin mechanism, though
-`@Data`/`@AllArgsConstructor`'s constructors are typed correctly under
-pyright too (via a standard `dataclass_transform`-marked stub, no
-inito-specific setup needed). See [Troubleshooting](troubleshooting.md) for
-the remaining pyright gap.
+## Type checking (pyright / Pylance)
+
+pyright has no plugin mechanism, so it sees `@Data`/`@Value`/
+`@AllArgsConstructor` constructors natively (via `dataclass_transform` stubs)
+but not accessors, `@Builder`, or the other constructors. For **full**
+coverage, generate stub files with the bundled tool:
+
+```bash
+pip install "inito[stubgen]"     # pulls mypy, used only for the base stub
+inito-stubgen src/               # writes a .pyi beside each module with inito classes
+```
+
+pyright then reads the sibling `.pyi` and sees every generated member. Re-run
+it when your decorated classes change (or wire it into pre-commit). Only
+pyright users need this step; mypy users rely on the plugin above.
 
 ## Development install
 

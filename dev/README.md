@@ -8,6 +8,9 @@ we" from one small read instead of scanning the codebase.
 
 - **Released:** `1.0.0-rc3` on PyPI (Pydantic v2 support). All Initial Features
   + `@Value` + DI v1 complete. CI green on Python 3.9–3.14 + framework interop.
+- **pyright gap closed:** `inito-stubgen` generates `.pyi` stubs giving pyright
+  full visibility of every generated member (see
+  [`tasks/pyright-stubgen.md`](tasks/pyright-stubgen.md)).
 - **Active work:** **DI 2.0** — cover the cases `dependency-injector` solves, in
   inito's zero-dependency, annotation-native way. See [`roadmap.md`](roadmap.md).
 - **Active phase:** **Phase 1** — test overriding · config injection · `Annotated`

@@ -213,31 +213,29 @@ See [Using InitO with your framework](https://swetanksubham.com/inito/frameworks
 Interoperability is verified in CI against Pydantic v2, SQLAlchemy 2.0, and
 Django, on Python 3.9–3.14.
 
-### Known limitation: pyright doesn't see most generated members
+### pyright / Pylance: full support via `inito-stubgen`
 
-Every generated member (`get_x`, `set_x`, `.builder()`, `.to_builder()`, the
-generated constructor's parameters, ...) is attached to your class via
-`setattr` at decoration time — real attributes at runtime. **mypy** sees
-all of them correctly once you enable [the bundled plugin](#type-checking)
-(the same approach `attrs`/Pydantic use). **pyright** has no equivalent
-third-party plugin mechanism, so `get_x`/`set_x` and `@Builder`'s fluent
-chain still show up as unknown attributes there — your code runs correctly
-regardless, this is a pyright-only static-typing gap.
+Every generated member (`get_x`, `set_x`, `.builder()`, the generated
+constructor's parameters, ...) is attached to your class via `setattr` at
+decoration time — real attributes at runtime. **mypy** sees all of them via
+[the bundled plugin](#type-checking) with no extra step. **pyright** has no
+third-party plugin mechanism and sees `@Data`/`@Value`/`@AllArgsConstructor`
+constructors natively (via `dataclass_transform` `.pyi` stubs), but not
+accessors, `@Builder`, or the `@NoArgsConstructor`/`@RequiredArgsConstructor`
+constructors — `dataclass_transform` can only model constructors.
 
-`@Data`'s and `@AllArgsConstructor`'s constructors are the exception:
-**pyright does see these correctly**, via a `.pyi` stub marked with the
-standard `typing.dataclass_transform` (no inito-specific plugin needed —
-this is a mechanism pyright supports natively). This doesn't extend to
-`@NoArgsConstructor`/`@RequiredArgsConstructor`: both were deliberately left
-unmarked, since their real signatures diverge from what `dataclass_transform`
-can express (`@NoArgsConstructor` truly accepts zero arguments rather than
-"all fields optional"; `@RequiredArgsConstructor` excludes defaulted fields
-from `__init__` entirely rather than making them optional) — applying the
-marker there would make pyright silently *accept* calls the real runtime
-rejects, which is worse than the current honest gap. Closing the remaining
-gap for `get_x`/`set_x`/`@Builder` would need a different strategy (e.g. a
-companion stub generator); tracked in `dev/history.md` Phase 17, not required for
-this release.
+To give pyright **full** visibility, generate stub files with the bundled tool:
+
+```bash
+pip install "inito[stubgen]"     # pulls mypy (used for the base stub)
+inito-stubgen src/               # writes a .pyi next to each module with inito classes
+```
+
+pyright then reads the sibling `.pyi` and sees every generated member —
+`user.get_name()`, `Request.builder().path("/x").build()`, the exact
+per-decorator constructor signatures, all of it. Re-run `inito-stubgen` when
+your decorated classes change (or wire it into pre-commit). It's a build step
+only pyright users need; mypy users rely on the zero-step plugin.
 
 ### Immutability: `@Value` and `@Data(frozen=True)`
 

@@ -77,6 +77,22 @@ jobs:
       - name: Example smoke tests
         run: uv run pytest examples/di -v --no-cov
 
+  pyright:
+    name: stub generator end-to-end (pyright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          python-version: "3.12"
+      - name: Install project (dev extras) + pyright
+        run: |
+          uv venv --python 3.12
+          uv pip install -e ".[dev]" pyright
+      - name: inito-stubgen + pyright end-to-end
+        run: uv run pytest tests/stubs -v --no-cov
+
   build:
     name: build sdist and wheel
     runs-on: ubuntu-latest

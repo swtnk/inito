@@ -29,6 +29,9 @@ classifiers = [
 keywords = ["lombok", "boilerplate", "codegen", "dataclass", "builder"]
 dependencies = []
 
+[project.scripts]
+inito-stubgen = "inito.stubs.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/swtnk/inito"
 Repository = "https://github.com/swtnk/inito"
@@ -70,6 +73,11 @@ examples = [
     "httpx>=0.27",
     "redis>=5",
     "boto3>=1.34",
+]
+# The inito-stubgen tool uses mypy's stubgen for the base stub. Opt-in and
+# dev-time only; inito's runtime stays zero-dependency.
+stubgen = [
+    "mypy>=1.11,<2",
 ]
 
 [tool.hatch.build.targets.wheel]
