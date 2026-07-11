@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from inito.core.attach import attach_capability
 from inito.metadata.extractor import default_extractor
+from inito.reflection.introspection import reject_pydantic_target
 from inito.utils.decorator_factory import make_decorator
 
 
@@ -25,6 +26,7 @@ class DataOptions:
 
 
 def _apply_data(cls: type, options: DataOptions) -> type:
+    reject_pydantic_target(cls, "@Data")
     metadata = default_extractor.extract(cls)
     # Immutability is attached before the constructor so the constructor
     # generator sees the blocking __setattr__ and assigns fields via

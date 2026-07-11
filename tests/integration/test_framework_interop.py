@@ -72,21 +72,65 @@ def test_builder_use_init_runs_pydantic_validation():
         User.builder().name("Ada").age("not-an-int").build()
 
 
-def test_default_builder_bypasses_pydantic_validation_as_documented():
-    # The fast default build() intentionally bypasses __init__; on a validating
-    # model that means no validation runs. This is the documented reason
-    # use_init=True exists, pinned here so the tradeoff can't silently change.
-    pytest.importorskip("pydantic")
+def test_bare_builder_auto_validates_and_reads_defaults_on_pydantic():
+    # Bare @Builder on a Pydantic model is auto-detected: it constructs through
+    # Pydantic's validating __init__ (no need for use_init=True) and reads
+    # defaults/required from model_fields, so a Pydantic-defaulted field is
+    # optional in the builder rather than wrongly required.
+    pydantic = pytest.importorskip("pydantic")
     from pydantic import BaseModel
 
     @Builder
     class User(BaseModel):
         name: str
-        age: int
+        age: int = 0  # Pydantic default -> optional in the builder
 
-    built = User.builder().name("Ada").age(30).build()
-    assert (built.name, built.age) == ("Ada", 30)
-    assert not hasattr(built, "__pydantic_fields_set__")  # ctor never ran
+    user = User.builder().name("Ada").build()  # age omitted; not required
+    assert user.age == 0
+    assert user.__pydantic_fields_set__ == {"name"}  # fully-initialised model
+
+    with pytest.raises(pydantic.ValidationError):
+        User.builder().name("Ada").age("not-an-int").build()
+
+
+def test_default_builder_still_bypasses_init_on_a_plain_class():
+    # Auto-validation is Pydantic-specific: on an ordinary class the fast default
+    # build() still bypasses __init__ (the documented zero-overhead path).
+    ran = []
+
+    @Builder
+    class Point:
+        x: int
+        y: int
+
+        def __init__(self, x: int, y: int) -> None:
+            ran.append((x, y))
+            self.x, self.y = x, y
+
+    point = Point.builder().x(1).y(2).build()
+    assert (point.x, point.y) == (1, 2)
+    assert ran == []  # __init__ was bypassed
+
+
+def test_constructor_generating_decorators_rejected_on_pydantic_model():
+    pytest.importorskip("pydantic")
+    from pydantic import BaseModel
+
+    from inito import (
+        AllArgsConstructor,
+        Data,
+        NoArgsConstructor,
+        RequiredArgsConstructor,
+        Value,
+    )
+    from inito.exceptions.errors import DecoratorConfigurationError
+
+    for decorator in (Data, Value, AllArgsConstructor, NoArgsConstructor, RequiredArgsConstructor):
+        with pytest.raises(DecoratorConfigurationError):
+
+            @decorator
+            class Model(BaseModel):
+                x: int = 0
 
 
 # --- SQLAlchemy 2.0 declarative --------------------------------------------

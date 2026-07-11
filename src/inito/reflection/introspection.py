@@ -8,7 +8,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
 
-from inito.exceptions.errors import AnnotationResolutionError
+from inito.exceptions.errors import AnnotationResolutionError, DecoratorConfigurationError
 
 
 def collect_ordered_field_names(cls: type) -> tuple[str, ...]:
@@ -79,3 +79,35 @@ def resolve_type_hints(cls: type) -> dict[str, Any]:
 def is_class_var(type_hint: Any) -> bool:  # noqa: ANN401 -- inspects an arbitrary resolved hint
     """Whether type_hint is a typing.ClassVar annotation."""
     return typing.get_origin(type_hint) is typing.ClassVar
+
+
+def is_pydantic_model(cls: type) -> bool:
+    """Whether cls is a Pydantic v2 model, detected without importing Pydantic.
+
+    inito has no runtime dependency on Pydantic, so this duck-types the two
+    stable class-level markers of a ``pydantic.BaseModel`` subclass: a
+    ``model_fields`` dict (name -> FieldInfo) and a ``__pydantic_validator__``.
+    Used to read a model's real field defaults from ``model_fields`` (Pydantic
+    keeps them there, not as class attributes) and to route ``@Builder``
+    through Pydantic's validating constructor.
+    """
+    model_fields = getattr(cls, "model_fields", None)
+    return isinstance(model_fields, dict) and hasattr(cls, "__pydantic_validator__")
+
+
+def reject_pydantic_target(cls: type, decorator_name: str) -> None:
+    """Raise if a constructor-generating decorator is applied to a Pydantic model.
+
+    ``@Data``/``@Value``/``@AllArgsConstructor``/``@NoArgsConstructor``/
+    ``@RequiredArgsConstructor`` all generate an ``__init__``; on a Pydantic
+    model that would silently overwrite Pydantic's validating constructor and
+    disable validation. Fail loud instead, pointing at the safe alternatives.
+    """
+    if is_pydantic_model(cls):
+        raise DecoratorConfigurationError(
+            f"{decorator_name} cannot decorate the Pydantic model "
+            f"{cls.__qualname__!r}: it would overwrite Pydantic's validating "
+            "__init__. Use @Builder (it constructs through Pydantic's "
+            "constructor) plus the additive decorators "
+            "(@Getter/@Setter/@ToString/@EqualsAndHashCode) instead."
+        )

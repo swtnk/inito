@@ -83,3 +83,40 @@ def test_unresolvable_annotation_raises_annotation_resolution_error():
 
     with pytest.raises(AnnotationResolutionError):
         MetadataExtractor().extract(Sample)
+
+
+class _FakeFieldInfo:
+    # Duck-typed stand-in for pydantic's FieldInfo, so these tests read a
+    # model's field model without depending on pydantic being installed.
+    def __init__(self, annotation, *, default=MISSING, default_factory=None, required=False):
+        self.annotation = annotation
+        self.default = default
+        self.default_factory = default_factory
+        self._required = required
+
+    def is_required(self) -> bool:
+        return self._required
+
+
+def _fake_pydantic_model(**model_fields):
+    return type(
+        "FakeModel",
+        (),
+        {"model_fields": dict(model_fields), "__pydantic_validator__": object()},
+    )
+
+
+def test_pydantic_fields_read_required_default_and_factory_from_model_fields():
+    model = _fake_pydantic_model(
+        name=_FakeFieldInfo(str, required=True),
+        age=_FakeFieldInfo(int, default=0),
+        tags=_FakeFieldInfo(list, default_factory=list),
+    )
+    fields = {field.name: field for field in MetadataExtractor().extract(model).fields}
+
+    assert fields["name"].type_hint is str
+    assert fields["name"].is_required  # required -> no default
+    assert fields["age"].default == 0  # literal default read from FieldInfo
+    assert not fields["age"].is_required
+    assert fields["tags"].default_factory is list  # factory read from FieldInfo
+    assert not fields["tags"].is_required

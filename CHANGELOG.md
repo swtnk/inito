@@ -5,6 +5,35 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc3] - 2026-07-03
+
+### Added
+- **First-class Pydantic v2 support** — InitO now detects a Pydantic model (by
+  duck-typing; it still never imports Pydantic, so the zero-runtime-dependency
+  promise holds) and adapts:
+  - **`@Builder` just works on a Pydantic model.** Bare `@Builder` constructs
+    through Pydantic's validating `__init__` automatically (no `use_init=True`
+    needed) and reads each field's default and required-ness from the model, so
+    a Pydantic-defaulted field is optional in the builder instead of being
+    wrongly reported as required. The built instance is fully valid
+    (`__pydantic_fields_set__` reflects exactly the fields you set, and passing
+    a bad value raises `pydantic.ValidationError`).
+  - The additive decorators (`@Getter`/`@Setter`/`@ToString`/
+    `@EqualsAndHashCode`) compose with Pydantic models as before.
+
+### Changed
+- **Constructor-generating decorators now fail loud on a Pydantic model.**
+  `@Data`, `@Value`, `@AllArgsConstructor`, `@NoArgsConstructor`, and
+  `@RequiredArgsConstructor` would overwrite Pydantic's validating `__init__`
+  and silently disable validation, so they now raise
+  `DecoratorConfigurationError` at decoration time, pointing at `@Builder` plus
+  the additive decorators. (Previously this was a silent footgun.)
+- `@Builder(use_init=True)` no longer pre-populates inito-visible field defaults
+  into the builder; only the fields the caller actually sets are passed to the
+  constructor, so the target constructor's own defaults always apply. This makes
+  the Pydantic/framework behavior consistent and keeps `__pydantic_fields_set__`
+  accurate.
+
 ## [1.0.0-rc2] - 2026-07-03
 
 ### Changed (performance — no behavior change)

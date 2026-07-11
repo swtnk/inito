@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from inito.core.attach import attach_capability
 from inito.metadata.extractor import default_extractor
+from inito.reflection.introspection import reject_pydantic_target
 from inito.utils.decorator_factory import make_decorator
 
 
@@ -17,6 +18,7 @@ class ValueOptions:
 
 
 def _apply_value(cls: type, options: ValueOptions) -> type:
+    reject_pydantic_target(cls, "@Value")
     metadata = default_extractor.extract(cls)
     # Immutability is attached before the constructor so the constructor
     # assigns via object.__setattr__ (bypassing the blocking __setattr__)

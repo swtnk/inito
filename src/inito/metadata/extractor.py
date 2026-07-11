@@ -10,6 +10,7 @@ from inito.metadata.field import MISSING, FieldMetadata
 from inito.reflection.introspection import (
     collect_ordered_field_names,
     is_class_var,
+    is_pydantic_model,
     resolve_type_hints,
 )
 
@@ -29,9 +30,39 @@ class MetadataExtractor:
         return metadata
 
     def _extract_fields(self, cls: type) -> tuple[FieldMetadata, ...]:
+        if is_pydantic_model(cls):
+            return self._fields_from_pydantic(cls)
         if dataclasses.is_dataclass(cls):
             return self._fields_from_dataclass(cls)
         return self._fields_from_annotations(cls)
+
+    def _fields_from_pydantic(self, cls: type) -> tuple[FieldMetadata, ...]:
+        """Read fields from a Pydantic v2 model's ``model_fields``.
+
+        Pydantic keeps a field's default in its ``FieldInfo`` (in
+        ``model_fields``), not as a class attribute, so the annotation path's
+        ``getattr(cls, name, MISSING)`` would miss it and treat every defaulted
+        field as required. Every attribute here is duck-typed - inito never
+        imports Pydantic.
+        """
+        model_fields: dict[str, typing.Any] = cls.model_fields  # type: ignore[attr-defined]
+        fields = []
+        for name, info in model_fields.items():
+            if info.default_factory is not None:
+                default, default_factory = MISSING, info.default_factory
+            elif not info.is_required():
+                default, default_factory = info.default, None
+            else:
+                default, default_factory = MISSING, None
+            fields.append(
+                FieldMetadata(
+                    name=name,
+                    type_hint=info.annotation,
+                    default=default,
+                    default_factory=default_factory,
+                )
+            )
+        return tuple(fields)
 
     def _fields_from_dataclass(self, cls: type) -> tuple[FieldMetadata, ...]:
         hints = resolve_type_hints(cls)

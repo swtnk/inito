@@ -3,12 +3,21 @@ import typing
 
 import pytest
 
-from inito.exceptions.errors import AnnotationResolutionError
+from inito.exceptions.errors import AnnotationResolutionError, DecoratorConfigurationError
 from inito.reflection.introspection import (
     collect_ordered_field_names,
     is_class_var,
+    is_pydantic_model,
+    reject_pydantic_target,
     resolve_type_hints,
 )
+
+
+def _fake_pydantic_model() -> type:
+    # Duck-typed stand-in for a pydantic.BaseModel subclass, so these tests
+    # don't depend on pydantic being installed. is_pydantic_model checks these
+    # two class-level markers.
+    return type("FakeModel", (), {"model_fields": {}, "__pydantic_validator__": object()})
 
 
 def test_collect_ordered_field_names_walks_mro_base_first():
@@ -84,3 +93,37 @@ def test_is_class_var_true_for_class_var_annotation():
 
 def test_is_class_var_false_for_plain_type():
     assert is_class_var(int) is False
+
+
+def test_is_pydantic_model_true_for_duck_typed_model():
+    assert is_pydantic_model(_fake_pydantic_model()) is True
+
+
+def test_is_pydantic_model_false_for_plain_class():
+    class Plain:
+        pass
+
+    assert is_pydantic_model(Plain) is False
+
+
+def test_is_pydantic_model_false_without_validator_marker():
+    # model_fields alone (e.g. an unrelated class attribute) is not enough.
+    partial = type("Partial", (), {"model_fields": {}})
+    assert is_pydantic_model(partial) is False
+
+
+def test_is_pydantic_model_false_when_model_fields_not_a_dict():
+    weird = type("Weird", (), {"model_fields": [], "__pydantic_validator__": object()})
+    assert is_pydantic_model(weird) is False
+
+
+def test_reject_pydantic_target_raises_for_model():
+    with pytest.raises(DecoratorConfigurationError, match="@Data"):
+        reject_pydantic_target(_fake_pydantic_model(), "@Data")
+
+
+def test_reject_pydantic_target_is_noop_for_plain_class():
+    class Plain:
+        pass
+
+    reject_pydantic_target(Plain, "@Data")  # must not raise

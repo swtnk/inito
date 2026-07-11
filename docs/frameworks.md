@@ -44,28 +44,67 @@ For your own **domain / DTO / service** objects — the classes that aren't a
 framework base class — use the full set (`@Data`, `@Value`, `@Builder`) exactly
 as you would anywhere.
 
+## Pydantic v2 is auto-detected
+
+InitO recognizes a Pydantic v2 model (by duck-typing — it never imports
+Pydantic, so the zero-dependency promise holds) and adapts so the right thing
+happens automatically:
+
+- **`@Builder` just works** — bare `@Builder` on a Pydantic model constructs
+  through Pydantic's validating `__init__` (no need to pass `use_init=True`) and
+  reads each field's default and required-ness from the model, so a
+  Pydantic-defaulted field is *optional* in the builder rather than wrongly
+  required:
+
+  ```python
+  from inito import Builder
+  from pydantic import BaseModel
+
+
+  @Builder
+  class User(BaseModel):
+      name: str
+      age: int = 0          # Pydantic default -> optional in the builder
+
+
+  user = User.builder().name("Ada").build()     # age -> Pydantic's default (0)
+  user.__pydantic_fields_set__                    # {"name"} — a fully-valid model
+  User.builder().name("Ada").age("nope").build()  # raises pydantic.ValidationError
+  ```
+
+- **Constructor-owning decorators are rejected** — applying `@Data`, `@Value`,
+  `@AllArgsConstructor`, `@NoArgsConstructor`, or `@RequiredArgsConstructor` to
+  a Pydantic model would overwrite Pydantic's validating `__init__` and silently
+  disable validation, so InitO raises `DecoratorConfigurationError` at decoration
+  time and points you at `@Builder` plus the additive decorators.
+
+- **Additive decorators** (`@Getter`/`@Setter`/`@ToString`/`@EqualsAndHashCode`)
+  compose freely, as shown above.
+
 ## Builders that respect a framework constructor: `use_init=True`
+
+For a Pydantic model this is automatic (above). For **SQLAlchemy**, **Django**,
+or any hand-written `__init__`, opt in explicitly with `use_init=True`.
 
 By default `@Builder`'s `build()` assigns fields directly and **bypasses
 `__init__`** — this is what keeps it fast and lets it work with InitO's own
-immutable classes. On a validating model that means the framework's validation
+immutable classes. On a class whose constructor does real work that means it
 would be skipped. Pass **`use_init=True`** and `build()` instead constructs
-through the class's own `__init__`, so the framework's validation and
-instrumentation run:
+through the class's own `__init__`, so that logic runs:
 
 ```python
 from inito import Builder
-from pydantic import BaseModel
 
 
 @Builder(use_init=True)
-class User(BaseModel):
-    name: str
-    age: int = 0        # Pydantic default (InitO can't see it)
+class Temperature:
+    celsius: float
+
+    def __init__(self, celsius: float) -> None:
+        self.celsius = round(celsius, 2)   # constructor logic must run
 
 
-User.builder().name("Ada").build()          # age -> Pydantic's default (0)
-User.builder().name("Ada").age("nope").build()   # raises pydantic.ValidationError
+Temperature.builder().celsius(3.14159).build().celsius   # 3.14
 ```
 
 In `use_init=True` mode the builder is a keyword-argument accumulator: only the

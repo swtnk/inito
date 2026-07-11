@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from inito.builders.builder_generator import BuilderOptions
 from inito.core.attach import attach_builder
 from inito.metadata.extractor import default_extractor
+from inito.reflection.introspection import is_pydantic_model
 from inito.utils.decorator_factory import make_decorator
 
 
 def _apply_builder(cls: type, options: BuilderOptions) -> type:
+    if is_pydantic_model(cls) and not options.use_init:
+        # A Pydantic model owns a validating __init__; construct through it so
+        # build() runs validation and returns a fully-initialised model, rather
+        # than the default __new__/setattr path that would bypass validation.
+        options = replace(options, use_init=True)
     metadata = default_extractor.extract(cls)
     attach_builder(cls, metadata, options)
     return cls

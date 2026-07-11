@@ -566,5 +566,37 @@ promoting the PyPI status from Alpha to Production/Stable.
 - [x] **Docs**: new `docs/frameworks.md` (framework + async-DI usage guide),
       `use_init` documented on `docs/decorators/builder.md`, both new pages wired
       into the User Guide navigation; docs build clean under `-W`.
-- [ ] Promote `1.0.0-rc1` → `1.0.0` after the RC soak (drop the `-rc1` suffix,
-      new CHANGELOG entry, tag `v1.0.0`).
+- [x] Published `1.0.0-rc1` to PyPI (status promoted Alpha → Production/Stable).
+
+## Phase 21 — DI cold-resolution optimization (1.0.0-rc2)
+- [x] Faster cold dependency-graph resolution (~900ns → ~700ns for a 3-level
+      graph), warm path unchanged, by keeping inito's "reflect once" rule: each
+      dependency's autowire type (Optional-unwrapped) is computed once at
+      `@Service` registration and stored on `Dependency` (was re-derived via
+      `typing.get_origin`/`get_args` on every `get()`); each singleton's
+      construction lock is created at registration, so the cold path reads it
+      with a plain dict lookup instead of guarding a lazily-built lock table.
+- [x] Published `1.0.0-rc2` to PyPI; CI matrix + interop job green.
+
+## Phase 22 — First-class Pydantic v2 support (1.0.0-rc3)
+- [x] `reflection/introspection.py`: `is_pydantic_model` (duck-typed on
+      `model_fields` + `__pydantic_validator__`; no pydantic import, zero-dep
+      preserved) and a shared `reject_pydantic_target` guard.
+- [x] `metadata/extractor.py`: `_fields_from_pydantic` reads defaults/required
+      from `model_fields` (Pydantic keeps defaults there, not as class
+      attributes), so a Pydantic-defaulted field is correctly optional.
+- [x] `@Builder` auto-detects a Pydantic model and constructs through its
+      validating `__init__` (implicit `use_init`); `_render_init_source` is now
+      `use_init`-aware (leaves every field `_unset` so the target constructor
+      owns all defaults, keeping `__pydantic_fields_set__` accurate).
+- [x] Constructor-generating decorators (`@Data`/`@Value`/`@AllArgsConstructor`/
+      `@NoArgsConstructor`/`@RequiredArgsConstructor`) raise
+      `DecoratorConfigurationError` on a Pydantic model instead of silently
+      overwriting its validating `__init__` (fail-loud, guard runs before any
+      class mutation).
+- [x] Tests: dep-free unit tests for detection/extraction/builder (duck-typed
+      fakes, run on the full 3.9–3.14 matrix) + real-Pydantic interop tests in
+      the `interop` CI job; full suite green, 97% coverage. Docs: new Pydantic
+      section in `docs/frameworks.md`.
+- [ ] Promote `1.0.0-rc3` → `1.0.0` after the RC soak (drop the suffix, new
+      CHANGELOG entry, tag `v1.0.0`).

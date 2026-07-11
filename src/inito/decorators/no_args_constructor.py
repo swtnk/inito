@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from inito.core.attach import attach_capability
 from inito.metadata.extractor import default_extractor
+from inito.reflection.introspection import reject_pydantic_target
 from inito.utils.decorator_factory import make_decorator
 
 
@@ -15,6 +16,7 @@ class NoArgsConstructorOptions:
 
 
 def _apply_no_args_constructor(cls: type, options: NoArgsConstructorOptions) -> type:
+    reject_pydantic_target(cls, "@NoArgsConstructor")
     metadata = default_extractor.extract(cls)
     attach_capability(cls, metadata, "no_args_constructor")
     return cls

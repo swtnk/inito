@@ -40,8 +40,8 @@ class BuilderGenerator:
         namespace: dict[str, Any] = {
             "__init__": build_function(
                 "__init__",
-                _render_init_source(fields),
-                _init_globals(fields),
+                _render_init_source(fields, options.use_init),
+                _init_globals(fields, options.use_init),
                 f"{metadata.qualified_name}.Builder.__init__",
             )
         }
@@ -82,14 +82,22 @@ class BuilderGenerator:
         )
 
 
-def _render_init_source(fields: tuple[FieldMetadata, ...]) -> str:
+def _render_init_source(fields: tuple[FieldMetadata, ...], use_init: bool) -> str:
     if not fields:
         return "def __init__(self):\n    pass\n"
-    lines = (f"    self._{field.name} = {_initial_value_reference(field)}" for field in fields)
+    lines = (
+        f"    self._{field.name} = {_initial_value_reference(field, use_init)}" for field in fields
+    )
     return "def __init__(self):\n" + "\n".join(lines) + "\n"
 
 
-def _initial_value_reference(field: FieldMetadata) -> str:
+def _initial_value_reference(field: FieldMetadata, use_init: bool) -> str:
+    # In use_init mode every field starts _unset so build() passes only the
+    # fields the caller actually set and the target constructor owns all
+    # defaults (see _render_use_init_build_source). Otherwise pre-populate
+    # inito-visible defaults, which build() reads directly.
+    if use_init:
+        return "_unset"
     if field.default_factory is not None:
         return f"_factory_{field.name}()"
     if field.has_default:
@@ -97,8 +105,10 @@ def _initial_value_reference(field: FieldMetadata) -> str:
     return "_unset"
 
 
-def _init_globals(fields: tuple[FieldMetadata, ...]) -> dict[str, Any]:
+def _init_globals(fields: tuple[FieldMetadata, ...], use_init: bool) -> dict[str, Any]:
     globals_ns: dict[str, Any] = {"_unset": _UNSET}
+    if use_init:
+        return globals_ns
     for field in fields:
         if field.default_factory is not None:
             globals_ns[f"_factory_{field.name}"] = field.default_factory
