@@ -95,7 +95,12 @@ def test_optional_field_type_is_rendered():
     class Cfg:
         nick: Optional[str] = None
 
-    assert "def get_nick(self) -> Optional[str]: ..." in member_stub_source(Cfg)
+    source = member_stub_source(Cfg)
+    # str(Optional[str]) renders as "Optional[str]" up to 3.13 and "str | None"
+    # on 3.14+ (PEP 604 repr); both are valid in a .pyi for any type-checker.
+    assert "def get_nick(self) -> Optional[str]: ..." in source or (
+        "def get_nick(self) -> str | None: ..." in source
+    )
 
 
 def test_class_without_metadata_yields_no_members():
