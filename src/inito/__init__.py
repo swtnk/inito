@@ -34,7 +34,7 @@ from inito.di.container import Container, Scope, default_container
 from inito.di.dependency_resolver import Qualifier
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc3"
+__version__ = "1.0.0-rc4"
 
 __all__ = [
     "AllArgsConstructor",

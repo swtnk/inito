@@ -5,6 +5,46 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc4] - 2026-07-03
+
+### Added
+
+- **Dependency injection — new capabilities (all zero-dependency,
+  annotation-native, reflect-once):**
+  - **Test overrides.** `Container.override(cls, instance)`,
+    `override_factory(cls, factory)`, `clear_override`/`clear_overrides`, and a
+    `with container.overrides({T: obj}):` context manager. An override wins over
+    the singleton cache and needs no prior registration; `reset()` clears
+    overrides too. The warm `get()` path is unregressed.
+  - **`Scope.THREAD_LOCAL`** — one instance per thread.
+  - **`@Config`** — load a class's fields from environment variables (with an
+    optional prefix), coerced to the annotated type; register it as a `@Service`
+    to autowire it by type. New `ConfigResolutionError`.
+  - **Qualifiers for multiple implementations** — `@Service(qualifier="name",
+    primary=...)` + `typing.Annotated[Repo, Qualifier("name")]` (or a bare
+    string). A bare interface resolves the sole or `primary` implementation;
+    several with no primary raise `AmbiguousDependencyError`. New `Qualifier`.
+- **`inito-stubgen`** — a stub generator that emits `.pyi` files exposing every
+  generated member to **pyright / Pylance** (accessors, the `@Builder` chain,
+  and all constructor signatures), closing the long-standing pyright gap. Opt-in
+  and dev-time only (`pip install inito[stubgen]`); inito's runtime stays
+  zero-dependency.
+- **Framework examples gallery** (`examples/di/`) — runnable, override-tested
+  apps wiring inito's DI into FastAPI, Django, Sanic, aiohttp, Redis, Valkey,
+  boto3, RabbitMQ, and env-config, each with a smoke test and a dedicated CI job.
+
+### Documentation
+
+- Reworked the README into a comprehensive PyPI landing page: a declarative
+  intro (no longer led by "Lombok"), a table of contents, a section per decorator
+  with options, a full dependency-injection walkthrough (including a plain-English
+  "what a Container is"), inline framework examples, type-checking, performance,
+  design, and an exceptions reference.
+- Documented every DI 2.0 feature on the docs site (thread-local scope,
+  qualifiers, configuration injection, overrides) and added a `@Config`
+  decorator page; scrubbed "Lombok" from the docs, keeping a single factual FAQ
+  note.
+
 ## [1.0.0-rc3] - 2026-07-03
 
 ### Added
