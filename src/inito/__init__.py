@@ -31,6 +31,7 @@ from inito.decorators.singleton import Singleton, singleton
 from inito.decorators.to_string import ToString, ToStringOptions, to_string
 from inito.decorators.value import Value, ValueOptions, value
 from inito.di.container import Container, Scope, default_container
+from inito.di.dependency_resolver import Qualifier
 from inito.exceptions.errors import InitoError
 
 __version__ = "1.0.0-rc3"
@@ -54,6 +55,7 @@ __all__ = [
     "Inject",
     "NoArgsConstructor",
     "NoArgsConstructorOptions",
+    "Qualifier",
     "RequiredArgsConstructor",
     "RequiredArgsConstructorOptions",
     "Scope",

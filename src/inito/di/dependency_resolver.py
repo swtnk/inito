@@ -16,23 +16,46 @@ _UNION_TYPE = getattr(types, "UnionType", None)
 """types.UnionType (X | Y's runtime type) only exists on Python 3.10+."""
 
 
-def registrable_type(type_hint: Any) -> Any:  # noqa: ANN401 -- accepts/returns an arbitrary type hint
-    """Unwrap Optional[X]/X | None to X, so an optional dependency can still autowire.
+@dataclass(frozen=True)
+class Qualifier:
+    """Names the desired implementation of an Annotated dependency.
 
-    typing.get_type_hints also has version-dependent "implicit Optional"
-    behavior for None-defaulted parameters (Python <= 3.10 wraps a bare
-    ``X = None`` annotation as ``Optional[X]`` automatically); unwrapping
-    here makes resolution consistent regardless of that quirk, and lets
-    genuinely-written ``Optional[X] = None`` dependencies resolve too.
-    Broader unions (Union[X, Y]) are left as-is - there's no single
-    unambiguous type to autowire.
+    Use as ``Annotated[Repo, Qualifier("postgres")]`` to autowire the service
+    registered with ``@Service(qualifier="postgres")`` when several implement
+    the same base type. A bare string in the ``Annotated`` metadata
+    (``Annotated[Repo, "postgres"]``) is accepted too.
     """
+
+    name: str
+
+
+def registrable_type(type_hint: Any) -> Any:  # noqa: ANN401 -- accepts/returns an arbitrary type hint
+    """Reduce a hint to its autowire lookup type: strip Annotated, then Optional.
+
+    ``Annotated[X, ...]`` -> ``X`` (the metadata is read separately by
+    ``qualifier_of``); ``Optional[X]``/``X | None`` -> ``X`` (Python <= 3.10 also
+    wraps a bare ``X = None`` parameter as ``Optional[X]``, so unwrapping keeps
+    resolution consistent). Broader unions are left as-is - no single type to
+    autowire.
+    """
+    if hasattr(type_hint, "__metadata__"):
+        type_hint = type_hint.__origin__
     origin = typing.get_origin(type_hint)
     if origin is typing.Union or (_UNION_TYPE is not None and origin is _UNION_TYPE):
         args = [arg for arg in typing.get_args(type_hint) if arg is not type(None)]
         if len(args) == 1:
             return args[0]
     return type_hint
+
+
+def qualifier_of(type_hint: Any) -> str | None:  # noqa: ANN401 -- arbitrary annotation
+    """Return the qualifier name in an Annotated hint's metadata, if any."""
+    for item in getattr(type_hint, "__metadata__", ()):
+        if isinstance(item, Qualifier):
+            return item.name
+        if isinstance(item, str):
+            return item
+    return None
 
 
 @dataclass(frozen=True)
@@ -51,10 +74,12 @@ class Dependency:
     type_hint: Any
     has_default: bool
     registrable: Any = field(init=False, compare=False)
+    qualifier: str | None = field(init=False, compare=False)
 
     def __post_init__(self) -> None:
-        """Derive and cache the Optional-unwrapped autowire key from type_hint."""
+        """Derive and cache the autowire key and qualifier from type_hint, once."""
         object.__setattr__(self, "registrable", registrable_type(self.type_hint))
+        object.__setattr__(self, "qualifier", qualifier_of(self.type_hint))
 
 
 def resolve_constructor_dependencies(cls: type) -> dict[str, Dependency]:

@@ -317,3 +317,14 @@ def test_thread_local_scope_reset_clears_the_cache():
     first = container.get(Repo)
     container.reset()
     assert container.get(Repo) is not first
+
+
+def test_generic_typed_param_with_default_is_omitted():
+    container = Container()
+
+    class Service:
+        def __init__(self, items: Optional[list[int]] = None) -> None:
+            self.items = items
+
+    container.register(Service)
+    assert container.get(Service).items is None  # generic type -> not injectable, default applies

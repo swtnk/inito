@@ -33,16 +33,18 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress
 - [ ] Docs: "configuration injection" section.
 
 ## 3. Qualifiers for multiple implementations
-- [ ] `@Service(qualifier="postgres")` registers under (type, qualifier).
-- [ ] Resolution: a param typed `Annotated[Repo, "postgres"]` resolves the
-      qualified registration; a bare `Repo` resolves the `primary` (or the sole)
-      registration.
-- [ ] `@Service(qualifier=..., primary=True)` marks the default when several
-      implementations of one type exist.
-- [ ] Reflect-once: qualifier is read from `Annotated` metadata at registration,
-      cached on `Dependency` (like `registrable`).
-- [ ] Tests: two impls + qualified injection; primary selection; ambiguous
-      (multiple, no primary) raises a clear error; `Annotated` unwrapping.
+- [x] `@Service(qualifier="postgres", primary=...)` registers under a global
+      `_qualified` name index; `ServiceOptions`/`Container.register` extended.
+- [x] Resolution: `Annotated[Repo, Qualifier("postgres")]` (or a bare string)
+      resolves the qualified registration; a bare `Repo` resolves the sole
+      registered subclass, or the `primary` one when several exist.
+- [x] `@Service(primary=True)` marks the default; several/none primary among
+      candidates raises `AmbiguousDependencyError`. `Qualifier` marker exported.
+- [x] Reflect-once: qualifier + Annotated-stripped registrable read once at
+      registration, cached on `Dependency` (`registrable_type`/`qualifier_of`).
+- [x] Tests (`tests/di/test_qualifiers.py`, 11): marker + bare-string qualifier,
+      sole-impl, primary, ambiguous, unknown qualifier, duplicate qualifier,
+      Annotated/Optional stripping. Container + resolver 100%.
 - [ ] Docs: "multiple implementations / qualifiers" section.
 
 ## 4. Thread-local scope

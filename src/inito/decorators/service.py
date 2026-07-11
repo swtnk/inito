@@ -14,11 +14,13 @@ class ServiceOptions:
 
     scope: Scope = Scope.SINGLETON
     container: Container | None = None
+    qualifier: str | None = None
+    primary: bool = False
 
 
 def _apply_service(cls: type, options: ServiceOptions) -> type:
     target = options.container if options.container is not None else default_container
-    target.register(cls, scope=options.scope)
+    target.register(cls, scope=options.scope, qualifier=options.qualifier, primary=options.primary)
     return cls
 
 

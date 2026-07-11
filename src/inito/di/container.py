@@ -14,6 +14,7 @@ from inito.di.dependency_resolver import (
     resolve_constructor_dependencies,
 )
 from inito.exceptions.errors import (
+    AmbiguousDependencyError,
     CircularDependencyError,
     DependencyRegistrationError,
     UnresolvableDependencyError,
@@ -35,11 +36,12 @@ class Scope(enum.Enum):
 
 @dataclass(frozen=True)
 class ServiceRegistration:
-    """A registered service: its class, scope, and resolved constructor dependencies."""
+    """A registered service: its class, scope, resolved dependencies, and primary flag."""
 
     cls: type
     scope: Scope
     dependencies: dict[str, Dependency]
+    primary: bool = False
 
 
 class Container:
@@ -60,13 +62,27 @@ class Container:
         self._singleton_locks: dict[type, threading.Lock] = {}
         self._overrides: dict[type, Callable[[], Any]] = {}
         self._thread_local = threading.local()
+        self._qualified: dict[str, type] = {}
 
-    def register(self, cls: type, *, scope: Scope = Scope.SINGLETON) -> None:
-        """Register cls's constructor dependency types under scope, without instantiating it."""
+    def register(
+        self,
+        cls: type,
+        *,
+        scope: Scope = Scope.SINGLETON,
+        qualifier: str | None = None,
+        primary: bool = False,
+    ) -> None:
+        """Register cls under scope (and optional qualifier), without instantiating it."""
         if cls in self._registrations:
             raise DependencyRegistrationError(f"{cls!r} is already registered.")
+        if qualifier is not None and qualifier in self._qualified:
+            raise DependencyRegistrationError(
+                f"Qualifier {qualifier!r} is already registered to {self._qualified[qualifier]!r}."
+            )
         dependencies = resolve_constructor_dependencies(cls)
-        self._registrations[cls] = ServiceRegistration(cls, scope, dependencies)
+        self._registrations[cls] = ServiceRegistration(cls, scope, dependencies, primary)
+        if qualifier is not None:
+            self._qualified[qualifier] = cls
         if scope is Scope.SINGLETON:
             # Create the construction lock now, at (single-threaded) decoration
             # time, so the cold resolve path reads it with a plain dict lookup
@@ -201,16 +217,57 @@ class Container:
     ) -> dict[str, Any]:
         kwargs: dict[str, Any] = {}
         for name, dependency in registration.dependencies.items():
-            resolved_type = dependency.registrable  # precomputed at registration time
-            if resolved_type in self._registrations:
-                kwargs[name] = self._resolve(resolved_type, (*path, cls))
-            elif not dependency.has_default:
-                raise UnresolvableDependencyError(
-                    f"{cls.__qualname__}.__init__ parameter {name!r} (type "
-                    f"{dependency.type_hint!r}) isn't registered and has no default value."
-                )
-            # else: unregistered type with a default - omit, the constructor's own default applies
+            resolved = self._resolve_dependency(cls, name, dependency, path)
+            if resolved is not _MISSING:
+                kwargs[name] = resolved
         return kwargs
+
+    def _resolve_dependency(
+        self, cls: type, name: str, dependency: Dependency, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        child_path = (*path, cls)
+        if dependency.qualifier is not None:
+            target = self._qualified.get(dependency.qualifier)
+            if target is None:
+                raise UnresolvableDependencyError(
+                    f"{cls.__qualname__}.__init__ parameter {name!r} requests qualifier "
+                    f"{dependency.qualifier!r}, which is not registered."
+                )
+            return self._resolve(target, child_path)
+        resolved_type = dependency.registrable  # precomputed at registration time
+        if resolved_type in self._registrations:
+            return self._resolve(resolved_type, child_path)
+        implementation = self._pick_implementation(resolved_type)
+        if implementation is not None:
+            return self._resolve(implementation, child_path)
+        if dependency.has_default:
+            return _MISSING  # unregistered + default -> omit, the ctor's own default applies
+        raise UnresolvableDependencyError(
+            f"{cls.__qualname__}.__init__ parameter {name!r} (type "
+            f"{dependency.type_hint!r}) isn't registered and has no default value."
+        )
+
+    def _pick_implementation(self, base_type: Any) -> type | None:  # noqa: ANN401
+        """Return the sole or primary registered subclass of an unregistered base, if any."""
+        if not isinstance(base_type, type):
+            return None
+        candidates = [
+            registration.cls
+            for registration in self._registrations.values()
+            if registration.cls is not base_type and issubclass(registration.cls, base_type)
+        ]
+        if len(candidates) == 1:
+            return candidates[0]
+        if not candidates:
+            return None
+        primaries = [cls for cls in candidates if self._registrations[cls].primary]
+        if len(primaries) == 1:
+            return primaries[0]
+        raise AmbiguousDependencyError(
+            f"{base_type.__qualname__} has multiple registered implementations "
+            f"({', '.join(cls.__qualname__ for cls in candidates)}); mark one "
+            "@Service(primary=True) or inject Annotated[..., Qualifier(name)]."
+        )
 
 
 default_container = Container()

@@ -11,10 +11,14 @@ def _reset_default_container():
     in this codebase - so tests that register services must not leak
     registrations into other tests.
     """
-    default_container._registrations.clear()
-    default_container._singletons.clear()
-    default_container._overrides.clear()
+    _clear_container_state()
     yield
+    _clear_container_state()
+
+
+def _clear_container_state() -> None:
     default_container._registrations.clear()
     default_container._singletons.clear()
     default_container._overrides.clear()
+    default_container._qualified.clear()
+    default_container._singleton_locks.clear()
