@@ -50,16 +50,25 @@ plain = UserRepository(Database())           # still an ordinary class
 
 ## The pieces
 
-| Symbol | Role |
-|---|---|
-| `@Service` / `@Component` | register a class in a container (defaults to singleton scope) |
-| `@Singleton` | sugar for `@Service(scope=Scope.SINGLETON)` |
-| `@Inject` | wrap a function so its annotated parameters are filled from a container |
-| `Container` | the registry + resolver; a shared `default_container` exists |
-| `Scope` | `SINGLETON` (cached) or `TRANSIENT` (rebuilt each time) |
+**A `Container` is the heart of the system — a registry and a resolver in one.**
+It holds *registrations* (which classes are available for injection and what
+each one's constructor depends on), and on demand it builds instances, wires
+their dependencies, caches them according to their scope, and hands them back.
+You rarely create one by hand: a shared `default_container` already exists, and
+`@Service`/`@Singleton` register into it. Make your own `Container` only to
+isolate a subsystem's wiring or a test.
 
-`@Component` is a literal alias for `@Service`; use whichever name you
-prefer.
+| Symbol | What it is |
+|---|---|
+| `@Service` / `@Component` | Marks a class as **available for injection** — registers it (and the types its constructor needs) in a container, at decoration time. It never instantiates or mutates the class; `MyService(...)` still works normally. |
+| `@Singleton` | `@Service` with singleton lifetime (the default) — sugar for `@Service(scope=Scope.SINGLETON)`. |
+| `@Inject` | Wraps a **function** so a container fills its type-annotated parameters that the caller didn't supply. |
+| `Container` | The registry + resolver + lifetime manager. `container.get(cls)` builds `cls`, wiring its dependencies bottom-up, and returns it. |
+| `default_container` | The shared `Container` that `@Service`/`@Singleton` use unless you pass `container=`. |
+| `Scope` | A service's lifetime: `SINGLETON` (one cached instance), `TRANSIENT` (a fresh instance every time), or `THREAD_LOCAL` (one instance per thread). |
+| `Qualifier` | Names *which* implementation to inject when several implement one base type — `Annotated[Repo, Qualifier("postgres")]`. |
+
+`@Component` is a literal alias for `@Service`; use whichever name you prefer.
 
 ## How resolution works
 
@@ -102,6 +111,16 @@ from inito import Service, Scope
           self.token = object()
   ```
 
+- **`Scope.THREAD_LOCAL`** caches **one instance per thread** — every thread
+  that resolves the service gets its own, shared within that thread. Useful for
+  objects that aren't safe to share across threads (a connection, a cursor):
+
+  ```python
+  @Service(scope=Scope.THREAD_LOCAL)
+  class Session:
+      ...
+  ```
+
 One subtlety: a transient service used as a dependency of a *singleton* is
 built once — at the singleton's first resolution — because the singleton
 that holds it is itself cached. "Transient" means "fresh each time it is
@@ -138,6 +157,91 @@ container.reset()               # clear cached singletons (keeps registrations)
 `container.get(cls)` is typed generically (`type[T] -> T`), so both mypy and
 pyright infer the returned type with no plugin or stub needed.
 
+## Multiple implementations (qualifiers)
+
+When several classes implement one base type, a bare `repo: Repo` parameter is
+ambiguous. Name the one you want with `typing.Annotated` and a `Qualifier` — no
+markers, no string keys scattered around:
+
+```python
+from typing import Annotated
+from inito import Service, Qualifier
+
+
+@Service(qualifier="postgres", primary=True)
+class PostgresRepo(Repo): ...
+
+
+@Service(qualifier="sqlite")
+class SqliteRepo(Repo): ...
+
+
+@Service
+class Users:
+    def __init__(self, repo: Annotated[Repo, Qualifier("postgres")]) -> None:
+        self.repo = repo                      # -> PostgresRepo
+
+
+@Service
+class Reports:
+    def __init__(self, repo: Repo) -> None:   # bare interface -> the `primary` one
+        self.repo = repo                      # -> PostgresRepo
+```
+
+- `@Service(qualifier="name")` registers an implementation under that name;
+  `Annotated[Repo, Qualifier("name")]` (or a bare string, `Annotated[Repo,
+  "name"]`) resolves it.
+- A **bare** interface parameter resolves the sole registered implementation, or
+  the one marked `@Service(primary=True)` when several exist. Several with no
+  `primary` raises `AmbiguousDependencyError` naming the candidates.
+- The qualifier is read once, at registration — never per `get()`.
+
+## Configuration injection
+
+A [`@Config`](decorators/config.md) class loads its fields from environment
+variables; registered as a `@Service`, it is autowired by type like any other
+dependency — 12-factor configuration with no globals or import-time reads:
+
+```python
+from inito import Config, Service
+
+
+@Service
+@Config(prefix="APP_")
+class Settings:
+    database_url: str = "sqlite:///app.db"     # reads APP_DATABASE_URL
+    pool_size: int = 5                          # reads APP_POOL_SIZE, coerced to int
+
+
+@Service
+class Database:
+    def __init__(self, settings: Settings) -> None:
+        self.url = settings.database_url        # loaded from the environment
+```
+
+A Pydantic `BaseSettings` works the same way (it loads the environment itself) —
+register it as a `@Service` and it autowires by type.
+
+## Testing with overrides
+
+Swap any dependency for a fake, with no monkeypatching, so a service under test
+gets a stub instead of the real thing:
+
+```python
+container.override(Repo, FakeRepo())                  # a fixed instance
+container.override_factory(Repo, lambda: FakeRepo())  # a fresh one each resolution
+
+with container.overrides({Repo: FakeRepo()}):         # scoped; auto-restored on exit
+    assert container.get(Users).repo.__class__ is FakeRepo
+
+container.clear_override(Repo)                         # or clear_overrides() for all
+```
+
+An override wins over everything — including a cached singleton — and doesn't
+require the type to be registered, so you can stub a collaborator the container
+has never seen. `container.reset()` clears the instance caches **and** overrides
+(registrations stay).
+
 ## Errors
 
 | Exception | When |
@@ -145,6 +249,7 @@ pyright infer the returned type with no plugin or stub needed.
 | `DependencyRegistrationError` | a constructor parameter has no type annotation, or a class is registered twice |
 | `UnresolvableDependencyError` | a needed type is unregistered and has no default; or `get()` is called for an unregistered class |
 | `CircularDependencyError` | the dependency graph has a cycle (`A → B → A`); the message lists the cycle |
+| `AmbiguousDependencyError` | a bare interface has several registered implementations and no `primary` |
 
 ## Performance and safety
 

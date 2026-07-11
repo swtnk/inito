@@ -52,4 +52,14 @@ dependency resolution — never silently. See
 
 .. autoclass:: inito.exceptions.CircularDependencyError
    :members:
+
+.. autoclass:: inito.exceptions.AmbiguousDependencyError
+   :members:
+```
+
+## Configuration
+
+```{eval-rst}
+.. autoclass:: inito.exceptions.ConfigResolutionError
+   :members:
 ```

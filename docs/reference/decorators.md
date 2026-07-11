@@ -130,3 +130,15 @@ Guide: [Constructors](../decorators/constructors.md).
 ```
 
 Also exported as `inito.builder`. Guide: [@Builder](../decorators/builder.md).
+
+## @Config / config
+
+```{eval-rst}
+.. autodata:: inito.Config
+   :annotation:
+
+.. autoclass:: inito.ConfigOptions
+   :members:
+```
+
+Also exported as `inito.config`. Guide: [@Config](../decorators/config.md).

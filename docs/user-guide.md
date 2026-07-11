@@ -25,11 +25,12 @@ all-in-one `@Data`.
 - [Constructors](decorators/constructors.md) — `@NoArgsConstructor`,
   `@AllArgsConstructor`, `@RequiredArgsConstructor`.
 - [@Builder](decorators/builder.md) — a fluent, chainable builder.
+- [@Config](decorators/config.md) — load fields from environment variables.
 
 ## Dependency injection
 
 - [Dependency injection](dependency-injection.md) — `@Service`/`@Singleton`/
-  `@Inject` and the `Container`.
+  `@Inject`, the `Container`, scopes, qualifiers, config injection, overrides.
 
 ## Recipes and guides
 
@@ -66,6 +67,7 @@ decorators/to-string
 decorators/equals-and-hash-code
 decorators/constructors
 decorators/builder
+decorators/config
 ```
 
 ```{toctree}

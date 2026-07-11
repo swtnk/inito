@@ -13,11 +13,19 @@ containers, errors, and the thread-safety/performance guarantees) see
 .. autoclass:: inito.Scope
    :members:
 
+.. autoclass:: inito.Qualifier
+   :members:
+
 .. data:: inito.default_container
 
    The shared Container that ``@Service``/``@Singleton`` register into by
    default.
 ```
+
+`Container` exposes `get`/`register`/`is_registered`/`reset`, and the test
+overrides `override`/`override_factory`/`overrides`/`clear_override`/
+`clear_overrides`. `Scope` is `SINGLETON`, `TRANSIENT`, or `THREAD_LOCAL`.
+`Qualifier` names an implementation for `Annotated[Base, Qualifier("name")]`.
 
 ## Decorators
 
