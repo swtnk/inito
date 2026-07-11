@@ -143,19 +143,18 @@ single shared instance with no deadlock.
 parameters and returns the coroutine unchanged:
 
 ```python
-from inito import Inject, Service, Singleton
+from inito import Inject, RequiredArgsConstructor, Service, Singleton
 
 
 @Singleton
 class Repository:
-    def __init__(self) -> None:
-        self.users = {"ada": 30}
+    users = {"ada": 30}          # seed data — no constructor needed
 
 
 @Service
+@RequiredArgsConstructor         # inito writes __init__(self, repo)
 class UserService:
-    def __init__(self, repo: Repository) -> None:
-        self.repo = repo
+    repo: Repository
 
 
 # FastAPI example — the handler's dependencies are wired by InitO, not the route.

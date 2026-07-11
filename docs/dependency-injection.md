@@ -25,8 +25,7 @@ from inito import Service, Singleton, Inject, RequiredArgsConstructor, default_c
 
 @Singleton                       # one shared instance per container
 class Database:
-    def __init__(self) -> None:
-        self.rows = {1: "Ada"}
+    rows = {1: "Ada"}            # seed data — no constructor needed
 
 
 @Service                         # autowired from the container on demand
@@ -88,9 +87,10 @@ a registered service**. A parameter whose type is *not* registered:
 
 ```python
 @Service
+@AllArgsConstructor           # inito writes __init__(self, db, ttl=60)
 class Cache:
-    def __init__(self, db: Database, ttl: int = 60) -> None:
-        ...   # db is autowired; ttl keeps its default
+    db: Database              # registered -> autowired
+    ttl: int = 60             # not registered, has a default -> keeps 60
 ```
 
 ## Scopes
@@ -177,15 +177,15 @@ class SqliteRepo(Repo): ...
 
 
 @Service
+@RequiredArgsConstructor
 class Users:
-    def __init__(self, repo: Annotated[Repo, Qualifier("postgres")]) -> None:
-        self.repo = repo                      # -> PostgresRepo
+    repo: Annotated[Repo, Qualifier("postgres")]     # -> PostgresRepo
 
 
 @Service
+@RequiredArgsConstructor
 class Reports:
-    def __init__(self, repo: Repo) -> None:   # bare interface -> the `primary` one
-        self.repo = repo                      # -> PostgresRepo
+    repo: Repo                                        # bare interface -> the `primary` one
 ```
 
 - `@Service(qualifier="name")` registers an implementation under that name;
@@ -203,7 +203,7 @@ variables; registered as a `@Service`, it is autowired by type like any other
 dependency — 12-factor configuration with no globals or import-time reads:
 
 ```python
-from inito import Config, Service
+from inito import Config, RequiredArgsConstructor, Service
 
 
 @Service
@@ -214,9 +214,12 @@ class Settings:
 
 
 @Service
+@RequiredArgsConstructor
 class Database:
-    def __init__(self, settings: Settings) -> None:
-        self.url = settings.database_url        # loaded from the environment
+    settings: Settings                          # loaded from the environment, autowired
+
+    def dsn(self) -> str:
+        return self.settings.database_url
 ```
 
 A Pydantic `BaseSettings` works the same way (it loads the environment itself) —

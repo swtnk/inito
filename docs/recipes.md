@@ -110,8 +110,7 @@ from inito import Service, Singleton, Inject, RequiredArgsConstructor, default_c
 
 @Singleton
 class Database:
-    def __init__(self) -> None:
-        self.rows = {1: "Ada", 2: "Linus"}
+    rows = {1: "Ada", 2: "Linus"}   # seed data — no constructor needed
 
 
 @Service
