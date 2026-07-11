@@ -61,6 +61,22 @@ jobs:
       - name: Framework interop tests
         run: uv run pytest tests/integration/test_framework_interop.py -v --no-cov
 
+  examples:
+    name: framework examples (fastapi, redis, boto3)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          python-version: "3.12"
+      - name: Install project (dev + examples extras)
+        run: |
+          uv venv --python 3.12
+          uv pip install -e ".[dev,examples]"
+      - name: Example smoke tests
+        run: uv run pytest examples/di -v --no-cov
+
   build:
     name: build sdist and wheel
     runs-on: ubuntu-latest
