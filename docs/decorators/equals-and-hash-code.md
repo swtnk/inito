@@ -39,8 +39,9 @@ print({a, b})             # a single-element set — a and b are equal & hash eq
 | `__eq__` | compares the tuple of all field values; a different class yields `NotImplemented` |
 | `__hash__` | `hash()` of the tuple of all field values |
 
-The two are always generated together — matching Lombok's
-`equals()`/`hashCode()` pairing and Python's own hash/eq contract.
+The two are always generated together — matching Python's own hash/eq
+contract (a class that overrides `__eq__` must define `__hash__` to stay
+hashable).
 
 ## Options
 

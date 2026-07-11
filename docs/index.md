@@ -1,11 +1,12 @@
 # InitO
 
-**Boilerplate elimination for Python — Lombok-inspired, zero-dependency.**
+**A zero-dependency Python library that eliminates data-class boilerplate.**
 
-InitO generates constructors, `repr`, equality/hashing, accessors, and fluent
-builders once at class-decoration time — never at instance construction or
-attribute-access time — so the generated classes perform like handwritten
-ones.
+Decorate a class and InitO writes the mechanical methods it needs — constructor,
+`repr`, equality, hashing, accessors, and builders — as *real methods*, generated
+once when the class is defined, never at construction or attribute-access time.
+Your objects stay ordinary Python instances and run as fast as code you'd write
+by hand.
 
 ```python
 from inito import Data
@@ -80,13 +81,13 @@ Real-world, copy-pasteable patterns combining several decorators.
   run at [handwritten speed](performance.md).
 - **Pick exactly what you need.** `@Data` is the all-in-one, but every
   capability is also a standalone decorator (`@Getter`, `@ToString`,
-  `@EqualsAndHashCode`, ...), matching Lombok's à-la-carte style.
+  `@EqualsAndHashCode`, ...) — you never pay for what you don't ask for.
 - **Composes with the standard library.** Stack any decorator with
   `@dataclass`; `@Builder` and the accessors work on plain classes too.
-- **Typed.** A bundled [mypy plugin](installation.md#type-checking-mypy) makes
-  `mypy --strict` see every generated member; `@Data`/`@Value`/
-  `@AllArgsConstructor` also type-check under pyright via a
-  `dataclass_transform` stub.
+- **Typed for both checkers.** A bundled [mypy
+  plugin](installation.md#type-checking-mypy) makes `mypy --strict` see every
+  generated member, and [`inito-stubgen`](installation.md) does the same for
+  pyright / Pylance.
 - **Batteries for services.** A small
   [dependency-injection](dependency-injection.md) layer
   (`@Service`/`@Singleton`/`@Inject` + a `Container`) wires constructors

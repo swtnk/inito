@@ -8,9 +8,8 @@ A small, zero-dependency DI layer: `@Service`/`@Singleton` register classes,
 As an application grows, wiring objects together by hand becomes its own
 chore: a handler needs a service, which needs a repository, which needs a
 database connection — and every call site has to build that whole chain in
-the right order. In Java, Lombok's `@RequiredArgsConstructor` provides the
-constructor and Spring's container does the wiring. inito gives you the same
-split: the [constructor decorators](decorators/constructors.md) declare what
+the right order. inito splits that into two jobs: the
+[constructor decorators](decorators/constructors.md) declare what
 a class depends on (its typed constructor parameters), and a `Container`
 resolves and builds the graph for you, once, on demand.
 

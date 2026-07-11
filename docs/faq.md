@@ -49,8 +49,16 @@ since decoration always attaches its generated version last.
 ## Why does `@Builder` alone not give me a nice `repr`?
 
 By design — see the [`@ToString` + `@Builder` example](decorators/to-string.md).
-Each decorator does one focused thing, matching Lombok; stack `@ToString`
-(or `@Data`) alongside `@Builder` for a readable repr.
+Each decorator does one focused thing; stack `@ToString` (or `@Data`) alongside
+`@Builder` for a readable repr.
+
+## Are the decorator names related to Lombok?
+
+If you've used [Lombok](https://projectlombok.org/) in Java, inito's decorator
+names (`@Data`, `@Builder`, `@Getter`, `@Value`, `@RequiredArgsConstructor`, …)
+will look familiar — they follow the same naming so the mental model carries
+over. That's the only connection: inito is a standalone, pure-Python library
+with its own implementation and design, not a port.
 
 ## Does `inito` work with generic classes (`Generic[T]`)?
 

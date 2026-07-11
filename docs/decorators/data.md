@@ -6,7 +6,7 @@ The all-in-one decorator: one line gives a class a constructor, `__repr__`,
 ## The problem it solves
 
 A class that just holds a few fields still needs a constructor, a readable
-`repr`, value-based equality and hashing, and (Lombok-style) accessors.
+`repr`, value-based equality and hashing, and `get_x`/`set_x` accessors.
 Writing those by hand is repetitive and drifts out of sync whenever a field
 is added or renamed. `@Data` derives all of them from the class's
 annotations, so there is nothing to keep in sync.

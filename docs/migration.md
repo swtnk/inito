@@ -51,7 +51,7 @@ runtime overhead. The differences:
   [Performance](performance.md#results)) — `inito` doesn't generate slotted
   classes today.
 - `attrs` has one flexible `@define`/`@attrs.s` entry point with many flags;
-  `inito` favors many small, Lombok-named decorators
+  `inito` favors many small, focused decorators
   (`@Getter`, `@ToString`, ...) you compose explicitly.
 - `attrs` has mature mypy *and* pyright plugin support for every generated
   attribute; `inito` ships an equivalent [mypy plugin](installation.md#type-checking-mypy)
@@ -59,10 +59,10 @@ runtime overhead. The differences:
   files that expose every generated member (see
   [Troubleshooting](troubleshooting.md#pyright-flags-get_xset_xbuilder-members-as-unknown)).
 
-If you're coming from Java/Lombok and want that naming/mental model
-directly in Python, `inito` will feel more familiar. If per-instance memory
-or IDE type-checking of generated members matters most, `attrs` is the more
-mature choice today.
+If you want a small, à-la-carte set of decorators with zero runtime
+dependencies, `inito` fits well. If per-instance memory or the most mature
+IDE type-checking of generated members matters most, `attrs` is the more
+established choice today.
 
 ## From Pydantic
 

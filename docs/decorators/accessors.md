@@ -1,7 +1,7 @@
 # @Getter and @Setter
 
-Lombok-style accessors: a `get_<field>()` and/or `set_<field>(value)` for
-every declared field.
+Accessors: a `get_<field>()` and/or `set_<field>(value)` method for every
+declared field.
 
 ## The problem it solves
 

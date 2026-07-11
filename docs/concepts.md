@@ -47,10 +47,11 @@ class User:
 ```
 
 `dataclasses` solves part of this, but it is all-or-nothing (you take its
-whole bundle) and it does not generate Lombok-style `get_x`/`set_x`
-accessors or a fluent builder. inito is modelled on Java's
-[Lombok](https://projectlombok.org/): one focused decorator per capability,
-plus an all-in-one `@Data`.
+whole bundle) and it does not generate `get_x`/`set_x` accessors or a fluent
+builder. inito takes an à-la-carte approach instead: one focused decorator per
+capability, plus an all-in-one `@Data`. You reach for exactly the pieces a class
+needs — only a builder, only accessors, only the constructor — and pay for
+nothing else.
 
 ## How inito solves it — without the usual runtime cost
 

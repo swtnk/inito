@@ -2,9 +2,9 @@
 
 Three constructor-only decorators — `@NoArgsConstructor`,
 `@AllArgsConstructor`, and `@RequiredArgsConstructor` — that generate an
-`__init__` and nothing else. They mirror Lombok's constructor annotations,
-and are the right choice when you want a constructor but *not* the rest of
-what [@Data](data.md) provides (no `repr`, no `eq`/`hash`, no accessors).
+`__init__` and nothing else. They are the right choice when you want a
+constructor but *not* the rest of what [@Data](data.md) provides (no `repr`,
+no `eq`/`hash`, no accessors).
 
 ## The problem they solve
 
@@ -57,9 +57,9 @@ print(c.timeout)                # 30.0
 # __init__ signature: (self, host, port)   -- timeout is excluded
 ```
 
-This is the closest match to Lombok's `@RequiredArgsConstructor`, and pairs
-naturally with [dependency injection](../dependency-injection.md): a field
-annotation is all `@Service` needs to autowire it.
+`@RequiredArgsConstructor` pairs naturally with
+[dependency injection](../dependency-injection.md): a field annotation is all
+`@Service` needs to autowire it.
 
 ## @NoArgsConstructor
 
