@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import enum
 import threading
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
 
@@ -19,12 +21,16 @@ from inito.exceptions.errors import (
 
 T = TypeVar("T")
 
+_MISSING = object()
+"""Sentinel for 'no cached instance' - distinct from a legitimately falsy one."""
+
 
 class Scope(enum.Enum):
     """How a registered service's lifetime is managed."""
 
     SINGLETON = "singleton"
     TRANSIENT = "transient"
+    THREAD_LOCAL = "thread_local"
 
 
 @dataclass(frozen=True)
@@ -52,6 +58,8 @@ class Container:
         self._registrations: dict[type, ServiceRegistration] = {}
         self._singletons: dict[type, Any] = {}
         self._singleton_locks: dict[type, threading.Lock] = {}
+        self._overrides: dict[type, Callable[[], Any]] = {}
+        self._thread_local = threading.local()
 
     def register(self, cls: type, *, scope: Scope = Scope.SINGLETON) -> None:
         """Register cls's constructor dependency types under scope, without instantiating it."""
@@ -67,6 +75,13 @@ class Container:
 
     def get(self, cls: type[T]) -> T:
         """Resolve and return an instance of cls, building its dependency graph bottom-up."""
+        # An active override wins over everything, including a cached singleton;
+        # the empty-dict guard keeps this ~free when nothing is overridden (the
+        # production case), so the warm fast-path is unregressed.
+        if self._overrides:
+            provider = self._overrides.get(cls)
+            if provider is not None:
+                return cast(T, provider())
         # Warm-singleton fast path: a single dict lookup, skipping registration
         # lookup / scope / cycle checks and even typing.cast (a real runtime call
         # here). A cached instance is never None, so a miss falls through to the
@@ -77,29 +92,89 @@ class Container:
             return instance  # type: ignore[no-any-return]
         return cast(T, self._resolve(cls, path=()))
 
+    def override(self, cls: type[T], instance: T) -> None:
+        """Make get(cls) return instance until cleared. For tests/environment swaps."""
+        self._overrides[cls] = lambda: instance
+
+    def override_factory(self, cls: type[T], factory: Callable[[], T]) -> None:
+        """Make get(cls) return factory() on each resolution until cleared."""
+        self._overrides[cls] = factory
+
+    def clear_override(self, cls: type) -> None:
+        """Remove any override for cls."""
+        self._overrides.pop(cls, None)
+
+    def clear_overrides(self) -> None:
+        """Remove all overrides."""
+        self._overrides.clear()
+
+    @contextlib.contextmanager
+    def overrides(self, mapping: Mapping[type, Any]) -> Iterator[None]:
+        """Temporarily override each type -> instance in mapping, restoring on exit.
+
+        Both the overrides and the singleton cache are snapshotted and restored,
+        so any singleton built *under* the override is discarded on exit and the
+        container returns to its prior state - the behavior a test expects.
+        """
+        previous_overrides = dict(self._overrides)
+        previous_singletons = dict(self._singletons)
+        for cls, instance in mapping.items():
+            self.override(cls, instance)
+        try:
+            yield
+        finally:
+            self._overrides = previous_overrides
+            self._singletons = previous_singletons
+
     def is_registered(self, cls: type) -> bool:
         """Whether cls has been registered in this container."""
         return cls in self._registrations
 
     def reset(self) -> None:
-        """Clear the singleton instance cache (not registrations). Mainly for tests/reload."""
+        """Clear the singleton/thread-local caches and overrides (not registrations)."""
         self._singletons.clear()
+        self._overrides.clear()
+        self._thread_local = threading.local()
+
+    def _thread_local_cache(self) -> dict[type, Any]:
+        cache = getattr(self._thread_local, "cache", None)
+        if cache is None:
+            cache = {}
+            self._thread_local.cache = cache
+        return cache
+
+    def _cached_instance(self, cls: type, scope: Scope) -> Any:  # noqa: ANN401
+        if scope is Scope.SINGLETON:
+            return self._singletons.get(cls, _MISSING)
+        if scope is Scope.THREAD_LOCAL:
+            return self._thread_local_cache().get(cls, _MISSING)
+        return _MISSING
 
     def _resolve(self, cls: type, path: tuple[type, ...]) -> Any:  # noqa: ANN401
+        if self._overrides:
+            provider = self._overrides.get(cls)
+            if provider is not None:
+                return provider()
         registration = self._registrations.get(cls)
         if registration is None:
             raise UnresolvableDependencyError(f"{cls!r} is not registered in the container.")
-        if registration.scope is Scope.SINGLETON and cls in self._singletons:
-            return self._singletons[cls]
+        cached = self._cached_instance(cls, registration.scope)
+        if cached is not _MISSING:
+            return cached
         if cls in path:
             cycle = (*path, cls)
             raise CircularDependencyError(
                 "Circular dependency detected: " + " -> ".join(step.__qualname__ for step in cycle)
             )
+        return self._build(cls, registration, path)
+
+    def _build(self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]) -> Any:  # noqa: ANN401
         if registration.scope is Scope.SINGLETON:
             return self._resolve_singleton(cls, registration, path)
-        kwargs = self._resolve_dependencies(cls, registration, path)
-        return cls(**kwargs)
+        instance = cls(**self._resolve_dependencies(cls, registration, path))
+        if registration.scope is Scope.THREAD_LOCAL:
+            self._thread_local_cache()[cls] = instance
+        return instance
 
     def _resolve_singleton(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]

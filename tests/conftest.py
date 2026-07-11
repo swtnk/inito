@@ -13,6 +13,8 @@ def _reset_default_container():
     """
     default_container._registrations.clear()
     default_container._singletons.clear()
+    default_container._overrides.clear()
     yield
     default_container._registrations.clear()
     default_container._singletons.clear()
+    default_container._overrides.clear()

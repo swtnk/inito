@@ -282,3 +282,38 @@ def test_resolve_singleton_double_check_returns_already_cached_instance():
     sentinel = Repo()
     container._singletons[Repo] = sentinel
     assert container._resolve_singleton(Repo, registration, ()) is sentinel
+
+
+def test_thread_local_scope_same_instance_within_a_thread():
+    container = Container()
+    container.register(Repo, scope=Scope.THREAD_LOCAL)
+    assert container.get(Repo) is container.get(Repo)
+
+
+def test_thread_local_scope_distinct_instances_across_threads():
+    container = Container()
+    container.register(Repo, scope=Scope.THREAD_LOCAL)
+
+    # Store the instances themselves (not their ids): a reference keeps each
+    # alive, so identities stay stable and can't be reused after a thread dies.
+    seen: dict[int, Repo] = {}
+
+    def worker(index: int) -> None:
+        seen[index] = container.get(Repo)
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    instances = [*seen.values(), container.get(Repo)]  # 4 workers + main thread
+    assert len({id(instance) for instance in instances}) == 5  # all distinct
+
+
+def test_thread_local_scope_reset_clears_the_cache():
+    container = Container()
+    container.register(Repo, scope=Scope.THREAD_LOCAL)
+    first = container.get(Repo)
+    container.reset()
+    assert container.get(Repo) is not first

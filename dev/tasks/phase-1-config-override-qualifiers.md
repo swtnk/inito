@@ -6,12 +6,15 @@ before coding). Ship as an `rc` when done.
 Legend: `[x]` done · `[ ]` todo · `[~]` in progress
 
 ## 1. Test overriding
-- [ ] `Container.override(cls, instance_or_factory)` and `clear_override(cls)` /
-      `clear_overrides()`.
-- [ ] `with container.overrides({T: obj, ...}):` context manager (auto-restores).
-- [ ] `get()` / `_resolve()` check overrides first (before singleton cache).
-- [ ] Tests: override an instance; override a factory; scoped context restores;
-      override wins over a cached singleton; interaction with `reset()`.
+- [x] `Container.override(cls, instance)`, `override_factory(cls, factory)`,
+      `clear_override(cls)`, `clear_overrides()`.
+- [x] `with container.overrides({T: obj, ...}):` context manager (snapshots +
+      restores overrides *and* singletons built under the override).
+- [x] `get()` / `_resolve()` check overrides first (guarded so the warm path is
+      unregressed); `reset()` clears overrides.
+- [x] Tests (`tests/di/test_overrides.py`, 12): instance; factory; scoped context
+      restore; wins over cached singleton; injected into dependents; unregistered
+      target; `reset()`/`clear`.
 - [ ] Docs: a "testing with overrides" section.
 
 ## 2. Config injection (zero-dep core, Pydantic optional)
@@ -39,9 +42,11 @@ Legend: `[x]` done · `[ ]` todo · `[~]` in progress
 - [ ] Docs: "multiple implementations / qualifiers" section.
 
 ## 4. Thread-local scope
-- [ ] `Scope.THREAD_LOCAL` — one instance per thread (via `threading.local`).
-- [ ] Resolution + caching path for thread-local; warm path unaffected.
-- [ ] Tests: distinct instances across threads; same instance within a thread.
+- [x] `Scope.THREAD_LOCAL` — one instance per thread (via `threading.local`).
+- [x] Resolution + caching path (`_cached_instance`/`_build`); warm singleton
+      path unaffected; `reset()` clears the thread-local cache.
+- [x] Tests (`tests/di/test_container.py`, 3): same instance within a thread;
+      distinct across threads; `reset()` clears.
 - [ ] Docs: scope table update.
 
 ## Cross-cutting
