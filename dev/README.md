@@ -6,17 +6,19 @@ we" from one small read instead of scanning the codebase.
 
 ## Current status
 
-- **Released:** `1.0.0-rc3` on PyPI (Pydantic v2 support). All Initial Features
-  + `@Value` + DI v1 complete. CI green on Python 3.9–3.14 + framework interop.
+- **Released:** `1.0.0-rc5` on PyPI (DI 2.0 `Factory[T]` + `@Resource` lifecycle).
+  All Initial Features + `@Value` + DI v1/v2-so-far complete. CI green on Python
+  3.9–3.14 + framework interop; test suite at **100% coverage**.
 - **pyright gap closed:** `inito-stubgen` generates `.pyi` stubs giving pyright
   full visibility of every generated member (see
   [`tasks/pyright-stubgen.md`](tasks/pyright-stubgen.md)).
 - **Active work:** **DI 2.0** — cover the cases `dependency-injector` solves, in
   inito's zero-dependency, annotation-native way. See [`roadmap.md`](roadmap.md).
-- **Active phase:** **Phase 1** — test overriding · config injection · `Annotated`
-  qualifiers · thread-local scope. Tasks:
-  [`tasks/phase-1-config-override-qualifiers.md`](tasks/phase-1-config-override-qualifiers.md).
-- **Not yet started:** DI 2.0 Phases 2–4 (Factory, Resources, Scopes/async).
+- **Done:** DI 2.0 Phase 1 (overrides · config · qualifiers · thread-local),
+  Phase 2 ([`Factory[T]`](tasks/phase-2-factory.md)), Phase 3
+  ([`@Resource`](tasks/phase-3-resources.md)).
+- **Next phase:** **Phase 4** — `Scope.SCOPED` · `container.scope()` · async
+  dependency graphs on `aget()` · FastAPI `Injected[T]`. Then promote to `1.0.0`.
 
 ## Map
 
