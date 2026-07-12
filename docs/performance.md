@@ -12,7 +12,7 @@ Every comparison uses the same `Point`-shaped class (two required fields,
 one defaulted) implemented four ways:
 
 - **handwritten** — a manually written class, the baseline.
-- **inito** — the same class decorated with `@Data` (and `@Builder` where noted).
+- **InitO** — the same class decorated with `@Data` (and `@Builder` where noted).
 - **dataclass** — `@dataclasses.dataclass`.
 - **attrs** — `@attrs.define` (slotted by default).
 
@@ -50,7 +50,7 @@ decision.
 
 ### pytest-benchmark (mean, nanoseconds unless noted)
 
-| Operation | handwritten | inito | dataclass | attrs |
+| Operation | handwritten | InitO | dataclass | attrs |
 |---|---:|---:|---:|---:|
 | construction | 66 | 71 | 71 | 62 |
 | attribute access | 13.6 | 13.6 | 13.6 | 13.5 |
@@ -59,7 +59,7 @@ decision.
 | `__hash__` | 58 | 62 | 61 | 62 |
 | decoration (µs) | ~2 | ~100 | ~78 | ~92 |
 
-**inito is at parity with handwritten/dataclasses across every runtime
+**InitO is at parity with handwritten/dataclasses across every runtime
 operation.** For an ordinary (non-frozen) class, generated constructors
 assign fields via plain `self.x = x` — the fastest option, and the one that
 keeps CPython's key-sharing instance dict (PEP 412) intact so attribute
@@ -82,7 +82,7 @@ it does five method calls and allocates a Builder instance instead of one.
 ### pyperf construction (mean ± stddev)
 
 Representative single-machine run: handwritten and dataclass land in the
-same ~70-75ns band as inito; attrs is a few ns faster. Run
+same ~70-75ns band as InitO; attrs is a few ns faster. Run
 `python benchmarks/pyperf_suite.py` locally for numbers with pyperf's full
 statistical rigor (the quick sanity-check run used here used `--fast`,
 which pyperf itself flags as insufficient for a stable result).
@@ -92,13 +92,13 @@ which pyperf itself flags as insufficient for a stable result).
 | Flavor | Bytes/instance |
 |---|---:|
 | handwritten | 96.0 |
-| inito | 96.0 |
+| InitO | 96.0 |
 | dataclass | 96.0 |
 | attrs (slotted) | 80.0 |
 
-inito matches handwritten/dataclass exactly — all three use ordinary
+InitO matches handwritten/dataclass exactly — all three use ordinary
 `__dict__`-based instances. attrs is smaller here because `attrs.define`
-opts into `__slots__` by default; inito doesn't generate slotted classes
+opts into `__slots__` by default; InitO doesn't generate slotted classes
 today (tracked as a possible future enhancement, not required by the
 current spec).
 
@@ -113,7 +113,7 @@ current spec).
 
 ## Takeaways
 
-- **Construction, attribute access, `__eq__`, `__hash__`:** inito is at or
+- **Construction, attribute access, `__eq__`, `__hash__`:** InitO is at or
   within a few percent of handwritten/dataclasses — those generators emit
   exactly what you'd write by hand, and non-frozen construction uses a plain
   `self.x = x`, so the "generated code performs like handwritten code" goal
@@ -122,10 +122,10 @@ current spec).
   ~2x on construction only (the `object.__setattr__` bypass, a cold
   once-per-object path); their attribute reads and eq/hash/repr stay at
   handwritten speed.
-- **`__repr__`:** inito's single unrolled f-string is the fastest generated
+- **`__repr__`:** InitO's single unrolled f-string is the fastest generated
   repr among the three codegen-based flavors, and close to handwritten.
 - **Decoration time:** meaningfully higher than dataclasses (both are
-  one-time, at-import costs, not per-instance) — reasonable given inito's
+  one-time, at-import costs, not per-instance) — reasonable given InitO's
   extra indirection (registry lookup, `exec()`-based method generation vs.
   dataclasses' more specialized C-accelerated path), and irrelevant to
   steady-state performance since it happens once per class, not per object.
@@ -139,7 +139,7 @@ hand-written equivalents at four points. Measured on the same machine as
 above, after 0.0.10-beta added double-checked per-class locking around
 singleton construction (see the [Dependency injection guide](dependency-injection.md#performance-and-safety)):
 
-| Operation | inito (DI) | hand-written | Verdict |
+| Operation | InitO (DI) | hand-written | Verdict |
 |---|---:|---:|---|
 | attribute access on a resolved instance | 12 ns | 12 ns | **at parity** — zero DI-related overhead once an object is built |
 | `container.get()`, warm/singleton-cached | 45 ns | 22 ns | small — a single dict lookup (fast-pathed ahead of registration/scope/cycle checks); **no lock is touched once a singleton is cached** |
@@ -168,7 +168,7 @@ resolved concurrently from opposite ends raises `CircularDependencyError`
 cleanly rather than deadlocking. The lock only runs on the cold path; warm
 `get()` is lock-free.
 
-Cold resolution keeps to inito's "reflect once, at decoration time" rule:
+Cold resolution keeps to InitO's "reflect once, at decoration time" rule:
 each dependency's autowire type (its `Optional[...]` wrapper stripped) is
 computed once at `@Service` registration, not re-derived on every `get()`,
 and each singleton's construction lock is created at registration too — so

@@ -48,7 +48,7 @@ print(Point.builder().x(1).y(2).build())   # Point(x=1, y=2)
 ## What it generates
 
 A single `__repr__` rendering `ClassName(field=value, ...)` — one unrolled
-f-string over every declared field, so it is the fastest of inito's three
+f-string over every declared field, so it is the fastest of InitO's three
 `repr`-capable flavors (see [Performance](../performance.md)).
 
 ## Options

@@ -54,10 +54,10 @@ Each decorator does one focused thing; stack `@ToString` (or `@Data`) alongside
 
 ## Are the decorator names related to Lombok?
 
-If you've used [Lombok](https://projectlombok.org/) in Java, inito's decorator
+If you've used [Lombok](https://projectlombok.org/) in Java, InitO's decorator
 names (`@Data`, `@Builder`, `@Getter`, `@Value`, `@RequiredArgsConstructor`, …)
 will look familiar — they follow the same naming so the mental model carries
-over. That's the only connection: inito is a standalone, pure-Python library
+over. That's the only connection: InitO is a standalone, pure-Python library
 with its own implementation and design, not a port.
 
 ## Does `inito` work with generic classes (`Generic[T]`)?

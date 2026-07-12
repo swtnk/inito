@@ -29,7 +29,7 @@ dataclass's own `__init__` uses).
 **Stacking order matters:** put `@dataclass(frozen=True)` **innermost**
 (closest to the class), as above. In the reverse order —
 `@dataclass(frozen=True)` on the *outside* of `@Data` — construction itself
-raises `FrozenInstanceError`, because inito generates its constructor
+raises `FrozenInstanceError`, because InitO generates its constructor
 before the outer `@dataclass` installs the frozen `__setattr__` and so
 can't know to bypass it. Use the innermost order, or `@Value` /
 `@Data(frozen=True)` (which need no stacking), for an immutable class.
@@ -55,7 +55,7 @@ on their own, generating a `__setattr__`/`__delattr__` pair that
 unconditionally raises `dataclasses.FrozenInstanceError` — no
 `@dataclass(frozen=True)` stacking required. This applies regardless of
 how the instance was built (`Point(1, 2)`, `@Builder`'s `build()`,
-`.to_builder()`, ...), since every inito constructor assigns fields via
+`.to_builder()`, ...), since every InitO constructor assigns fields via
 `object.__setattr__`, bypassing the generated `__setattr__` only for
 that one internal call.
 
@@ -83,7 +83,7 @@ this used to be a limitation but no longer is; see the
 
 ## mypy flags `user.get_name()`, `Point.builder()`, etc. as unknown attributes
 
-Enable inito's bundled mypy plugin — without it, mypy has no way to know
+Enable InitO's bundled mypy plugin — without it, mypy has no way to know
 about members attached via `setattr` at decoration time:
 
 ```toml
@@ -165,7 +165,7 @@ Two (or more) services depend on each other, directly or transitively —
 the container can't build either without first building the other. The
 error message lists the exact cycle in resolution order. There's no
 setter-injection or lazy-proxy escape hatch in this release (that would
-require exactly the kind of `__getattr__`/proxy machinery inito's core
+require exactly the kind of `__getattr__`/proxy machinery InitO's core
 performance rule rules out); break the cycle by extracting the shared
 behavior both classes need into a third service they both depend on
 instead of on each other, or by restructuring one direction of the
@@ -191,7 +191,7 @@ dependency graph — an unannotated parameter can't be autowired or checked
 against a default), or if you `@Service`-decorate the same class into the
 same container twice.
 
-Stacking `@Service` on top of another inito constructor decorator works
+Stacking `@Service` on top of another InitO constructor decorator works
 correctly and needs no extra annotations of your own:
 
 ```python

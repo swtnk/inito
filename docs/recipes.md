@@ -40,7 +40,7 @@ totals = {Money(500): "five dollars"}
 
 Required fields first, defaulted fields after — the same ordering Python
 uses. For a **mutable** default (a list, dict, set), stack `@dataclass` so
-inito picks up `field(default_factory=...)`; each instance then gets its own
+InitO picks up `field(default_factory=...)`; each instance then gets its own
 fresh container.
 
 ```python
@@ -222,7 +222,7 @@ print(rex.name, rex.breed)   # Rex Labrador
 
 ## Add your own methods
 
-inito only attaches the members each decorator owns; anything else you write
+InitO only attaches the members each decorator owns; anything else you write
 is left untouched, so decorated classes are just normal classes.
 
 ```python

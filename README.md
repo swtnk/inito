@@ -1,4 +1,4 @@
-# inito
+# InitO
 
 [![PyPI version](https://img.shields.io/pypi/v/inito.svg)](https://pypi.org/project/inito/)
 [![Python versions](https://img.shields.io/pypi/pyversions/inito.svg)](https://pypi.org/project/inito/)
@@ -6,8 +6,8 @@
 [![CI](https://github.com/swtnk/inito/actions/workflows/ci.yml/badge.svg)](https://github.com/swtnk/inito/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-swetanksubham.com%2Finito-blue.svg)](https://swetanksubham.com/inito/)
 
-**inito is a zero-dependency Python library that eliminates data-class
-boilerplate.** Decorate a class and inito writes its constructor, `repr`,
+**InitO is a zero-dependency Python library that eliminates data-class
+boilerplate.** Decorate a class and InitO writes its constructor, `repr`,
 equality, hashing, accessors, and builder for you — as *real methods*, generated
 once when the class is defined, running as fast as code you'd write by hand.
 
@@ -29,7 +29,7 @@ print(user == User("Ada", 31))   # True
 ```
 
 By hand, `User` is ~20 lines of `__init__`, `__repr__`, `__eq__`, `__hash__`,
-and accessors. With inito it's the three lines above — and the generated methods
+and accessors. With InitO it's the three lines above — and the generated methods
 are the *same* code you would have written, [benchmarked at
 parity](#performance) with handwritten classes and `dataclasses`.
 
@@ -37,7 +37,7 @@ parity](#performance) with handwritten classes and `dataclasses`.
 
 ## Table of contents
 
-- [Why inito](#why-inito)
+- [Why InitO](#why-inito)
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Decorators](#decorators)
@@ -50,27 +50,27 @@ parity](#performance) with handwritten classes and `dataclasses`.
   - [Scopes](#scopes) · [Multiple implementations (qualifiers)](#multiple-implementations-qualifiers)
   - [Configuration injection](#configuration-injection) · [Testing with overrides](#testing-with-overrides)
 - [Type checking](#type-checking)
-- [Using inito with frameworks](#using-inito-with-frameworks)
+- [Using InitO with frameworks](#using-inito-with-frameworks)
 - [Framework examples](#framework-examples) — [FastAPI](#fastapi) · [Django](#django) · [Sanic](#sanic) · [aiohttp](#aiohttp) · [Clients (boto3, Redis, …)](#clients-boto3-redis-)
 - [Immutability](#immutability)
 - [Self-referential fields](#self-referential-fields)
 - [Performance](#performance)
 - [How it works](#how-it-works)
 - [Exceptions](#exceptions)
-- [When to use inito](#when-to-use-inito)
+- [When to use InitO](#when-to-use-inito)
 - [Compared to `dataclasses` / `attrs` / Pydantic](#compared-to-dataclasses--attrs--pydantic)
 - [Documentation](#documentation) · [Contributing](#contributing) · [License](#license)
 
 ---
 
-## Why inito
+## Why InitO
 
-- **Real methods, generated once.** inito builds actual Python functions from
+- **Real methods, generated once.** InitO builds actual Python functions from
   your fields when the class is defined, compiles them with `exec()`, and
   attaches them — no `__getattr__`, proxies, descriptors, or runtime
   interception. At runtime your objects are ordinary instances, so construction,
   attribute access, `==`, and `hash()` run at handwritten speed.
-- **Zero runtime dependencies.** inito imports nothing outside the standard
+- **Zero runtime dependencies.** InitO imports nothing outside the standard
   library. It installs cleanly into any project and any environment.
 - **À la carte.** `@Data` is the all-in-one, but every capability is also a
   standalone decorator — take only the constructor, only the accessors, only the
@@ -487,8 +487,8 @@ registrations).
 
 ## Type checking
 
-Because inito attaches members at decoration time, type-checkers need a little
-help to see them — and inito ships that help for both major checkers:
+Because InitO attaches members at decoration time, type-checkers need a little
+help to see them — and InitO ships that help for both major checkers:
 
 **mypy** — enable the bundled plugin; `mypy --strict` then sees every generated
 member (the real `__init__` signature, `get_x`/`set_x`, the `@Builder` chain):
@@ -512,9 +512,9 @@ pyright natively (via `typing.dataclass_transform`, PEP 681); `inito-stubgen`
 adds accessors, the `@Builder` chain, and the other constructors. Re-run it when
 your decorated classes change, or wire it into pre-commit.
 
-## Using inito with frameworks
+## Using InitO with frameworks
 
-inito has zero dependencies and generates plain methods on plain classes, so it
+InitO has zero dependencies and generates plain methods on plain classes, so it
 drops into any project — FastAPI, Django, Sanic, aiohttp, Flask, or none. It
 **composes with** your stack rather than replacing it; it is not an ORM or a
 validation layer.
@@ -561,7 +561,7 @@ class Greeter:
 ```
 
 > **Dogfooding note:** the services declare their dependencies as fields and let
-> inito write the constructor (`@RequiredArgsConstructor`) — the same
+> InitO write the constructor (`@RequiredArgsConstructor`) — the same
 > boilerplate this library removes. A hand-written `__init__` remains only where
 > it does real work (building an external client below), not mere field
 > forwarding.
@@ -692,7 +692,7 @@ Full, runnable, override-tested versions of all of these — plus RabbitMQ, Valk
 and env-config — live in
 [`examples/di/`](https://github.com/swtnk/inito/tree/main/examples/di). Interop
 is verified in CI against Pydantic v2, SQLAlchemy 2.0, and Django on Python
-3.9–3.14. See also [Using inito with your
+3.9–3.14. See also [Using InitO with your
 framework](https://swetanksubham.com/inito/frameworks.html).
 
 ## Immutability
@@ -720,7 +720,7 @@ mutation is blocked. A non-frozen class uses a plain `self.x = x`, which is both
 faster and keeps attribute reads at handwritten speed.
 
 To stack a decorator with `@dataclass(frozen=True)`, put the
-`@dataclass(frozen=True)` **innermost** (closest to the class) so inito sees the
+`@dataclass(frozen=True)` **innermost** (closest to the class) so InitO sees the
 frozen `__setattr__` when it generates the constructor. The reverse order is not
 supported — prefer `@Value` / `@Data(frozen=True)`.
 
@@ -741,13 +741,13 @@ class Node:
 
 Use `Optional[Node]` rather than `Node | None` for such a field: the annotation
 is evaluated at runtime, and `|` union syntax isn't valid there before Python
-3.10 (inito supports 3.9+).
+3.10 (InitO supports 3.9+).
 
 ## Performance
 
-Because inito generates real methods and gets out of the way, its objects are at
+Because InitO generates real methods and gets out of the way, its objects are at
 **parity with handwritten classes and `dataclasses`** — construction, attribute
-access, `==`, `hash()`, and `repr()`. There is no per-instance or per-call inito
+access, `==`, `hash()`, and `repr()`. There is no per-instance or per-call InitO
 overhead; the only cost is a one-time, decoration-time code generation when the
 class is first defined.
 
@@ -759,11 +759,11 @@ measured numbers vs. handwritten, `dataclasses`, and `attrs`.
 
 ## How it works
 
-inito follows one strict rule: **all reflection happens exactly once, at
+InitO follows one strict rule: **all reflection happens exactly once, at
 decoration time.** Each decorator reads the class's annotations, builds the
 source text of a real Python function, compiles it with `exec()`, and attaches
 the resulting function object to the class — just as if you had typed it. At
-runtime there is no inito left in the picture: no `__getattr__`, no proxies, no
+runtime there is no InitO left in the picture: no `__getattr__`, no proxies, no
 descriptors, no monkeypatching. That is why the generated methods run at
 handwritten speed, and why the whole library needs zero runtime dependencies.
 
@@ -784,9 +784,9 @@ All errors inherit from `inito.exceptions.InitoError`:
 | `AmbiguousDependencyError` | several implementations of a type and no `primary` |
 | `CodeGenerationError`, `MetadataExtractionError`, `DuplicateGeneratorError` | internal generation/registry errors |
 
-## When to use inito
+## When to use InitO
 
-Reach for inito on the classes that are mostly **data**: DTOs, domain/value
+Reach for InitO on the classes that are mostly **data**: DTOs, domain/value
 objects, configuration, and service objects. It removes the mechanical methods
 those classes need without changing what they are — after decoration they're
 still plain Python classes you can subclass, pickle, and construct directly.
@@ -796,14 +796,14 @@ SQLAlchemy / Django for those (see [frameworks](#using-inito-with-frameworks)).
 
 ## Compared to `dataclasses` / `attrs` / Pydantic
 
-- **`dataclasses`** — inito composes *with* it and adds what it doesn't have:
+- **`dataclasses`** — InitO composes *with* it and adds what it doesn't have:
   `get_x`/`set_x` accessors, a fluent builder, and à-la-carte decorators (take
   only the pieces you need). Both are zero-dependency and at the same speed.
-- **`attrs`** — one flexible entry point vs. inito's many small, explicit
-  decorators; `attrs` has the more mature IDE story today, while inito ships a
+- **`attrs`** — one flexible entry point vs. InitO's many small, explicit
+  decorators; `attrs` has the more mature IDE story today, while InitO ships a
   mypy plugin *and* `inito-stubgen` for pyright, with zero runtime dependencies.
 - **Pydantic** — a validation/serialization framework, a different job. Use
-  Pydantic for I/O boundaries and inito for plain domain/service objects; they
+  Pydantic for I/O boundaries and InitO for plain domain/service objects; they
   [interoperate](#using-inito-with-frameworks).
 
 See the [migration guide](https://swetanksubham.com/inito/migration.html) for a

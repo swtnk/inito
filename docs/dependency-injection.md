@@ -8,7 +8,7 @@ A small, zero-dependency DI layer: `@Service`/`@Singleton` register classes,
 As an application grows, wiring objects together by hand becomes its own
 chore: a handler needs a service, which needs a repository, which needs a
 database connection — and every call site has to build that whole chain in
-the right order. inito splits that into two jobs: the
+the right order. InitO splits that into two jobs: the
 [constructor decorators](decorators/constructors.md) declare what
 a class depends on (its typed constructor parameters), and a `Container`
 resolves and builds the graph for you, once, on demand.

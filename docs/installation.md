@@ -18,7 +18,7 @@ Python 3.9, 3.10, 3.11, 3.12, and 3.13.
 
 ## Type checking (mypy)
 
-If you use mypy, enable inito's bundled plugin so `get_x`/`set_x`,
+If you use mypy, enable InitO's bundled plugin so `get_x`/`set_x`,
 `__init__`, and `@Builder`'s fluent chain are all correctly typed:
 
 ```toml

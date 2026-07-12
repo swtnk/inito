@@ -80,7 +80,7 @@ See [Configuration injection](../dependency-injection.md#configuration-injection
   `ConfigResolutionError`; a value that can't be coerced (e.g. `PORT=abc` for an
   `int`) raises it too.
 - Need validation, nested config, or `.env` files? A Pydantic `BaseSettings`
-  works with inito's DI the same way — register it as a `@Service` and it
+  works with InitO's DI the same way — register it as a `@Service` and it
   autowires by type.
 
 ## See also

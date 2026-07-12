@@ -68,7 +68,7 @@ is the more descriptive choice when immutability is the point (see
 ## Notes & gotchas
 
 - **Mutable defaults** (a `list`/`dict`/`set`) need `dataclasses.field`,
-  which inito reads only from a real dataclass — stack `@dataclass`:
+  which InitO reads only from a real dataclass — stack `@dataclass`:
 
   ```python
   from dataclasses import dataclass, field

@@ -1,4 +1,4 @@
-# Concepts: the problem inito solves
+# Concepts: the problem InitO solves
 
 ## The boilerplate problem
 
@@ -48,22 +48,22 @@ class User:
 
 `dataclasses` solves part of this, but it is all-or-nothing (you take its
 whole bundle) and it does not generate `get_x`/`set_x` accessors or a fluent
-builder. inito takes an à-la-carte approach instead: one focused decorator per
+builder. InitO takes an à-la-carte approach instead: one focused decorator per
 capability, plus an all-in-one `@Data`. You reach for exactly the pieces a class
 needs — only a builder, only accessors, only the constructor — and pay for
 nothing else.
 
-## How inito solves it — without the usual runtime cost
+## How InitO solves it — without the usual runtime cost
 
 The naive way to "generate methods" in Python is to intercept attribute
 access at runtime (`__getattr__`, descriptors, proxies). That is flexible
 but slow: every access pays for the machinery.
 
-inito never does that. **All reflection happens exactly once, at
+InitO never does that. **All reflection happens exactly once, at
 decoration time.** Each decorator reads the class's annotations, builds the
 source text of a real Python function, compiles it with `exec()`, and
 attaches the resulting function object to the class — just as if you had
-typed it. At runtime there is no inito left in the picture: your objects are
+typed it. At runtime there is no InitO left in the picture: your objects are
 ordinary instances, and the generated `__init__`/`__eq__`/`get_x` run the
 exact bytecode a handwritten version would.
 

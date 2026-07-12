@@ -1,6 +1,6 @@
 # Quick start
 
-A five-minute tour of inito: install it, meet the all-in-one `@Data`, the
+A five-minute tour of InitO: install it, meet the all-in-one `@Data`, the
 immutable `@Value`, the fluent `@Builder`, dependency injection, and how to
 compose the atomic decorators yourself. Every example is copy-paste runnable.
 
