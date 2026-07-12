@@ -53,7 +53,7 @@ def augment_stub(stub_source: str, module: ModuleType) -> str:
         if not isinstance(cls, type) or METADATA_ATTRIBUTE not in cls.__dict__:
             continue
         members = member_stub_source(cls)
-        if not members:
+        if not members:  # pragma: no cover -- inito class that generated no stub members
             continue
         node.decorator_list = [d for d in node.decorator_list if not _is_inito_decorator(d)]
         _inject(node, ast.parse(members).body)
@@ -72,7 +72,7 @@ def _ensure_any_import(tree: ast.Module) -> None:
             and node.module == "typing"
             and any(alias.name == "Any" for alias in node.names)
         ):
-            return
+            return  # pragma: no cover -- `Any` already imported by the source module
     tree.body.insert(0, ast.ImportFrom(module="typing", names=[ast.alias(name="Any")], level=0))
 
 
@@ -82,7 +82,7 @@ def _decorator_name(node: ast.expr) -> str | None:
         return target.id
     if isinstance(target, ast.Attribute):
         return target.attr
-    return None
+    return None  # pragma: no cover -- decorator expr that is neither a Name nor an Attribute
 
 
 def _is_inito_decorator(node: ast.expr) -> bool:

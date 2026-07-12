@@ -25,6 +25,7 @@ from inito.decorators.required_args_constructor import (
     RequiredArgsConstructorOptions,
     required_args_constructor,
 )
+from inito.decorators.resource import Resource, ResourceOptions, resource
 from inito.decorators.service import Component, Service, ServiceOptions, component, service
 from inito.decorators.setter import Setter, SetterOptions, setter
 from inito.decorators.singleton import Singleton, singleton
@@ -32,9 +33,10 @@ from inito.decorators.to_string import ToString, ToStringOptions, to_string
 from inito.decorators.value import Value, ValueOptions, value
 from inito.di.container import Container, Scope, default_container
 from inito.di.dependency_resolver import Qualifier
+from inito.di.factory import Factory
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc4"
+__version__ = "1.0.0-rc5"
 
 __all__ = [
     "AllArgsConstructor",
@@ -49,6 +51,7 @@ __all__ = [
     "DataOptions",
     "EqualsAndHashCode",
     "EqualsAndHashCodeOptions",
+    "Factory",
     "Getter",
     "GetterOptions",
     "InitoError",
@@ -58,6 +61,8 @@ __all__ = [
     "Qualifier",
     "RequiredArgsConstructor",
     "RequiredArgsConstructorOptions",
+    "Resource",
+    "ResourceOptions",
     "Scope",
     "Service",
     "ServiceOptions",
@@ -80,6 +85,7 @@ __all__ = [
     "inject",
     "no_args_constructor",
     "required_args_constructor",
+    "resource",
     "service",
     "setter",
     "singleton",

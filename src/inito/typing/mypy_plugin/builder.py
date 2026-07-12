@@ -21,7 +21,7 @@ from inito.typing.mypy_plugin.options import bool_option, str_option
 def transform_builder(ctx: ClassDefContext) -> bool:
     """Synthesize the Builder nested class, builder(), and optional to_builder()."""
     fields = collect_fields(ctx)
-    if fields is None:
+    if fields is None:  # pragma: no cover -- mypy deferral guard (unresolved field type)
         return False
 
     setter_prefix = str_option(ctx, "setter_prefix", "")

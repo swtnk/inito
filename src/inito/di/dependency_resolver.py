@@ -6,8 +6,9 @@ import inspect
 import types
 import typing
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
+from inito.di.factory import Factory
 from inito.exceptions.errors import DependencyRegistrationError
 from inito.metadata.class_metadata import METADATA_ATTRIBUTE
 from inito.reflection.introspection import _self_reference_injected
@@ -58,6 +59,15 @@ def qualifier_of(type_hint: Any) -> str | None:  # noqa: ANN401 -- arbitrary ann
     return None
 
 
+def factory_target(type_hint: Any) -> type | None:  # noqa: ANN401 -- arbitrary annotation
+    """Return X when type_hint is ``Factory[X]`` (X a class), else None."""
+    if typing.get_origin(type_hint) is Factory:
+        args = typing.get_args(type_hint)
+        if args and isinstance(args[0], type):
+            return args[0]
+    return None
+
+
 @dataclass(frozen=True)
 class Dependency:
     """A single constructor parameter's resolved type and whether it has a default value.
@@ -75,11 +85,13 @@ class Dependency:
     has_default: bool
     registrable: Any = field(init=False, compare=False)
     qualifier: str | None = field(init=False, compare=False)
+    factory_target: type | None = field(init=False, compare=False)
 
     def __post_init__(self) -> None:
-        """Derive and cache the autowire key and qualifier from type_hint, once."""
+        """Derive and cache the autowire key, qualifier, and factory target, once."""
         object.__setattr__(self, "registrable", registrable_type(self.type_hint))
         object.__setattr__(self, "qualifier", qualifier_of(self.type_hint))
+        object.__setattr__(self, "factory_target", factory_target(self.type_hint))
 
 
 def resolve_constructor_dependencies(cls: type) -> dict[str, Dependency]:
@@ -110,10 +122,37 @@ def resolve_constructor_dependencies(cls: type) -> dict[str, Dependency]:
         ) from error
     hints.pop("return", None)
     field_types = _cached_field_types(cls)
-    params = inspect.signature(init).parameters
+    return _dependencies_from_signature(init, hints, field_types, cls.__qualname__, skip_self=True)
+
+
+def resolve_provider_dependencies(fn: Callable[..., Any]) -> dict[str, Dependency]:
+    """Return {param_name: Dependency} for a @Resource generator provider's parameters.
+
+    Resolved once, at registration time. Every parameter must be type-annotated;
+    the provider function has no ``self`` and no ClassMetadata fallback.
+    """
+    try:
+        hints = typing.get_type_hints(fn, include_extras=True)
+    except NameError as error:
+        raise DependencyRegistrationError(
+            f"Could not resolve parameter type hints for {fn.__qualname__!r}: {error}"
+        ) from error
+    hints.pop("return", None)
+    return _dependencies_from_signature(fn, hints, {}, fn.__qualname__, skip_self=False)
+
+
+def _dependencies_from_signature(
+    func: Callable[..., Any],
+    hints: dict[str, Any],
+    field_types: dict[str, Any],
+    owner: str,
+    *,
+    skip_self: bool,
+) -> dict[str, Dependency]:
+    params = inspect.signature(func).parameters
     dependencies: dict[str, Dependency] = {}
     for name, param in params.items():
-        if name == "self":
+        if skip_self and name == "self":
             continue
         if name in hints:
             type_hint = hints[name]
@@ -121,8 +160,8 @@ def resolve_constructor_dependencies(cls: type) -> dict[str, Dependency]:
             type_hint = field_types[name]
         else:
             raise DependencyRegistrationError(
-                f"{cls.__qualname__}.__init__ parameter {name!r} has no type annotation; "
-                "@Service requires every constructor parameter to be annotated."
+                f"{owner} parameter {name!r} has no type annotation; DI requires every "
+                "injected parameter to be annotated."
             )
         dependencies[name] = Dependency(type_hint, param.default is not inspect.Parameter.empty)
     return dependencies

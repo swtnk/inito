@@ -38,11 +38,15 @@ decorators, not `Provide[]` markers or explicit provider/container definitions.
 - **Phase 1 — high-ROI, elegant:** test overriding · config injection (zero-dep
   `@Config` + optional Pydantic `BaseSettings`) · `Annotated[T, qualifier]` ·
   `Scope.THREAD_LOCAL`. Closes the gaps most real projects hit; all S–M effort.
-- **Phase 2 — Factory[T]:** call-time args alongside injected deps.
+- **Phase 2 — Factory[T]:** call-time args alongside injected deps. ✅ **Done**
+  (`dev/tasks/phase-2-factory.md`) — staged in CHANGELOG `[Unreleased]`.
 - **Phase 3 — Resource lifecycle:** `@Resource`, container as (async) context
-  manager, ordered teardown.
+  manager, ordered teardown. ✅ **Done** (`dev/tasks/phase-3-resources.md`) —
+  both models (resource classes + generator providers), staged in CHANGELOG
+  `[Unreleased]`. Pulled a minimal `container.aget()` forward for async providers.
 - **Phase 4 — Scopes + async + framework glue:** `Scope.SCOPED`,
-  `container.scope()`, `await container.aget()`, FastAPI `Injected[T]`.
+  `container.scope()`, extend `await container.aget()` to async dependency graphs,
+  FastAPI `Injected[T]`.
 
 Each phase: design → `dev/plans/di2-phase-N.md`, implement (reusing
 `attach_capability`/`make_decorator`, the existing `Container`), tests mirroring

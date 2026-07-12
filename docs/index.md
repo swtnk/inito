@@ -153,7 +153,11 @@ main()
 It also supports [scopes](dependency-injection.md#scopes) (singleton, transient,
 thread-local), [qualifiers](dependency-injection.md#multiple-implementations-qualifiers)
 for multiple implementations, [config injection](dependency-injection.md#configuration-injection),
-and [test overrides](dependency-injection.md#testing-with-overrides).
+[factories](dependency-injection.md#factory-call-time-arguments) for on-demand
+construction with call-time arguments,
+[resource lifecycle](dependency-injection.md#resources-lifecycle-and-teardown) with
+ordered teardown (`@Resource`, `with container`), and
+[test overrides](dependency-injection.md#testing-with-overrides).
 
 ## Type checking
 

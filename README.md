@@ -48,7 +48,8 @@ parity](#performance) with handwritten classes and `dataclasses`.
 - [Dependency injection](#dependency-injection)
   - [`@Service` / `@Singleton` / `@Inject`](#service--singleton--inject)
   - [Scopes](#scopes) · [Multiple implementations (qualifiers)](#multiple-implementations-qualifiers)
-  - [Configuration injection](#configuration-injection) · [Testing with overrides](#testing-with-overrides)
+  - [Configuration injection](#configuration-injection) · [Factory (call-time arguments)](#factory-call-time-arguments)
+  - [Resources (lifecycle and teardown)](#resources-lifecycle-and-teardown) · [Testing with overrides](#testing-with-overrides)
 - [Type checking](#type-checking)
 - [Using InitO with frameworks](#using-inito-with-frameworks)
 - [Framework examples](#framework-examples) — [FastAPI](#fastapi) · [Django](#django) · [Sanic](#sanic) · [aiohttp](#aiohttp) · [Clients (boto3, Redis, …)](#clients-boto3-redis-)
@@ -354,6 +355,8 @@ create one by hand.
 | `default_container` | The shared `Container` that `@Service`/`@Singleton` use unless you pass `container=`. |
 | `Scope` | A service's **lifetime**: `SINGLETON` (one cached instance), `TRANSIENT` (fresh every time), `THREAD_LOCAL` (one per thread). |
 | `Qualifier` | Picks **which implementation** to inject when several share a base type. |
+| `Factory[T]` | Inject a **callable** that builds a fresh `T` on demand — autowiring its registered deps, taking the rest as call-time arguments. |
+| `@Resource` | Mark a class or generator whose instance the container **opens lazily and closes** (LIFO) at `shutdown_resources()` / `with container`. |
 
 ### `@Service` / `@Singleton` / `@Inject`
 
@@ -466,6 +469,87 @@ class Settings:
 class App:
     settings: Settings                    # loaded from the environment, autowired
 ```
+
+### Factory (call-time arguments)
+
+A `@Service` is built once with *every* parameter autowired. When an object has to
+be built **on demand from runtime data** — a report for a title, a session for a
+request — inject a `Factory[T]` and call it:
+
+```python
+from inito import Factory, RequiredArgsConstructor, Service, Singleton
+
+
+@Singleton
+class Renderer:
+    def render(self, title: str) -> str:
+        return f"[{title}]"
+
+
+class Report:
+    def __init__(self, renderer: Renderer, title: str) -> None:   # renderer autowired, title supplied
+        self.body = renderer.render(title)
+
+
+@Service
+@RequiredArgsConstructor
+class Dashboard:
+    make_report: Factory[Report]                # a callable that builds a Report
+
+    def sales(self) -> str:
+        return self.make_report(title="Sales").body     # -> "[Sales]"
+```
+
+`make_report(title="Sales")` builds a **fresh** `Report`: `renderer` is autowired,
+`title` comes from the call. Call-time keyword arguments win; every other
+registered-typed parameter is autowired; anything left falls to the target's own
+default. The target need not itself be registered (it's a *prototype* factory), and
+because a factory is lazy a `Factory[B]` parameter can **break a would-be cycle**.
+`mypy` and pyright both infer `make_report(...) -> Report` with no plugin.
+
+### Resources (lifecycle and teardown)
+
+A singleton is opened once — but pools, clients, and sessions must also be
+**closed**, in reverse order. `@Resource` marks something the container tears down
+at `shutdown_resources()` or when a `with container:` block exits (resources are
+still built lazily). Mark a class — torn down by its `close()` method (or the
+`__enter__`/`__exit__` protocol) — or a generator function whose post-`yield` code
+is the teardown:
+
+```python
+from collections.abc import Iterator
+
+from inito import RequiredArgsConstructor, Resource, Service
+
+
+@Service
+@Resource
+@RequiredArgsConstructor
+class Database:
+    dsn: str
+    def close(self) -> None:                       # called at teardown
+        self._pool.close()
+
+
+@Resource
+def cache(settings: Settings) -> Iterator[Cache]:  # settings autowired
+    c = Cache(settings.url)
+    yield c                                         # what container.get(Cache) returns
+    c.disconnect()                                  # runs at shutdown
+
+
+with container:
+    db = container.get(Database)                    # opened on first get()
+    ...
+# db.close() (and every other resource) runs here, in reverse order
+```
+
+Rename the method with `@Resource(close="dispose")`. **Async** resources — a class
+with an `async` `aclose()` or an `async def` generator — are torn down by
+`await container.ashutdown_resources()` / `async with container`, and an async
+generator provider is built with `await container.aget(Cls)`. Teardown is
+best-effort: every resource is closed even if one raises, and failures are
+aggregated into one `ResourceTeardownError`.
 
 ### Testing with overrides
 

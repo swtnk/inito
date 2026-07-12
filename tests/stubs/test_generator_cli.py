@@ -3,7 +3,7 @@ import shutil
 import pytest
 
 from inito.stubs import generator
-from inito.stubs.cli import main
+from inito.stubs.cli import _iter_py_files, main
 from inito.stubs.generator import StubgenUnavailableError, generate_stub_for_file
 
 _MODEL_SRC = """
@@ -24,6 +24,24 @@ class Request:
 _needs_stubgen = pytest.mark.skipif(
     shutil.which("stubgen") is None, reason="stubgen (mypy) not installed"
 )
+
+
+def test_iter_py_files_walks_directories_and_filters(tmp_path):
+    (tmp_path / "a.py").write_text("x = 1")
+    (tmp_path / "b.txt").write_text("not python")
+    (tmp_path / ".hidden.py").write_text("h = 1")
+    lone = tmp_path / "lone.py"
+    lone.write_text("y = 2")
+
+    from_dir = list(_iter_py_files([str(tmp_path)]))
+    from_file = list(_iter_py_files([str(lone)]))
+    from_non_py = list(_iter_py_files([str(tmp_path / "b.txt")]))
+
+    assert (tmp_path / "a.py") in from_dir  # directories are walked
+    assert all(path.suffix == ".py" for path in from_dir)  # .txt filtered out
+    assert (tmp_path / ".hidden.py") not in from_dir  # dotfiles skipped
+    assert from_file == [lone]  # a direct .py path is yielded as-is
+    assert from_non_py == []  # a direct non-.py, non-dir path yields nothing
 
 
 @_needs_stubgen

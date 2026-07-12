@@ -1,5 +1,5 @@
 import threading
-from typing import Optional
+from typing import Optional, Protocol
 
 import pytest
 
@@ -328,3 +328,24 @@ def test_generic_typed_param_with_default_is_omitted():
 
     container.register(Service)
     assert container.get(Service).items is None  # generic type -> not injectable, default applies
+
+
+def test_non_runtime_checkable_protocol_dependency_is_not_autowired():
+    class Repository(Protocol):
+        def fetch(self) -> str: ...
+
+    class SqlRepo:
+        def fetch(self) -> str:
+            return "row"
+
+    class Consumer:
+        def __init__(self, repo: Repository) -> None:
+            self.repo = repo
+
+    container = Container()
+    container.register(SqlRepo)
+    container.register(Consumer)
+    # issubclass(SqlRepo, Repository) raises TypeError for a non-runtime_checkable
+    # Protocol, so it is not treated as an injectable implementation.
+    with pytest.raises(UnresolvableDependencyError):
+        container.get(Consumer)

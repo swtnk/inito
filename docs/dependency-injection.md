@@ -66,6 +66,8 @@ isolate a subsystem's wiring or a test.
 | `default_container` | The shared `Container` that `@Service`/`@Singleton` use unless you pass `container=`. |
 | `Scope` | A service's lifetime: `SINGLETON` (one cached instance), `TRANSIENT` (a fresh instance every time), or `THREAD_LOCAL` (one instance per thread). |
 | `Qualifier` | Names *which* implementation to inject when several implement one base type — `Annotated[Repo, Qualifier("postgres")]`. |
+| `Factory[T]` | Inject a **callable** that builds a fresh `T` on demand, autowiring its registered dependencies and taking the rest as call-time arguments. |
+| `@Resource` | Mark a class or generator function whose instance the container **opens lazily and closes** (LIFO) at `shutdown_resources()` / `with container`. |
 
 `@Component` is a literal alias for `@Service`; use whichever name you prefer.
 
@@ -225,6 +227,136 @@ class Database:
 A Pydantic `BaseSettings` works the same way (it loads the environment itself) —
 register it as a `@Service` and it autowires by type.
 
+## Factory (call-time arguments)
+
+A `@Service` is built **once**, with *every* constructor parameter autowired from
+the container. But some objects have to be built **on demand, from runtime data**
+the container can't know — a report for a given title, a session for a given
+request — while still autowiring the dependencies the container *does* have.
+Inject a `Factory[T]` and call it:
+
+```python
+from inito import Factory, RequiredArgsConstructor, Service, Singleton
+
+
+@Singleton
+class Renderer:
+    def render(self, title: str) -> str:
+        return f"[{title}]"
+
+
+class Report:
+    def __init__(self, renderer: Renderer, title: str) -> None:  # renderer autowired, title supplied
+        self.body = renderer.render(title)
+
+
+@Service
+@RequiredArgsConstructor
+class Dashboard:
+    make_report: Factory[Report]                # injected: a callable that builds a Report
+
+    def sales(self) -> str:
+        return self.make_report(title="Sales").body   # -> "[Sales]"
+```
+
+Calling `make_report(title="Sales")` builds a **fresh** `Report`: the `renderer`
+parameter is autowired from the container, `title` comes from the call, and a new
+instance is returned every time. The rules:
+
+- **Call-time keyword arguments win.** Any keyword you pass is used as-is, even if
+  that parameter *could* have been autowired — handy for supplying a test double.
+- **The rest is autowired.** Every other parameter whose type is a registered
+  service (or has a qualifier) is resolved from the container.
+- **Anything left falls to the target's own default**, or raises a natural
+  `TypeError` at the call if a required parameter was neither passed nor
+  autowirable.
+- **The target need not be registered.** A `Factory[T]` is a *prototype* builder;
+  `T` itself doesn't have to be a `@Service`.
+- **Fresh every call** — the result is never cached, whatever the target's scope.
+
+Because a factory is lazy, a `Factory[B]` parameter also **breaks an
+otherwise-circular graph**: `A` can hold a `Factory[B]` while `B` depends on `A`,
+and `B` is only built when the factory is actually called.
+
+`Factory` is both the annotation and the static type: `mypy` and pyright both see
+`make_report(...)` returning `Report` with no plugin or stub needed. (The call-time
+keyword arguments themselves are typed as `Any`.)
+
+## Resources (lifecycle and teardown)
+
+A singleton is opened once — but a DB pool, HTTP client, or session must also be
+**closed**, in the reverse of the order it was opened. `@Resource` marks something
+whose teardown the container owns; it runs on `shutdown_resources()` or when a
+`with container:` block exits. Resources are still built **lazily** (on first
+`get()`); `@Resource` only registers *how* to tear them down.
+
+### A resource class
+
+Mark a `@Service`/`@Singleton` class `@Resource`. It is torn down by its `close()`
+method — or, if it has none, its `__enter__`/`__exit__` context-manager protocol:
+
+```python
+from inito import RequiredArgsConstructor, Resource, Service
+
+
+@Service
+@Resource
+@RequiredArgsConstructor
+class Database:
+    dsn: str
+    def open(self) -> "Database":
+        self._pool = connect(self.dsn); return self
+    def close(self) -> None:                      # called at teardown
+        self._pool.close()
+
+
+with container:
+    db = container.get(Database)                  # opened on first get()
+    ...
+# db.close() runs here, and for every other resource, in reverse order
+```
+
+Rename the teardown method with `@Resource(close="dispose")`. `@Resource` requires
+a **singleton** scope, so its lifetime is container-managed.
+
+### A generator provider
+
+Mark a **generator function** `@Resource` and it registers a provider keyed by the
+type it yields; its parameters are autowired, and the code after `yield` is the
+teardown:
+
+```python
+from collections.abc import Iterator
+
+from inito import Resource
+
+
+@Resource
+def pool(settings: Settings) -> Iterator[Pool]:   # settings autowired
+    resource = Pool(settings.dsn)
+    yield resource                                 # what container.get(Pool) returns
+    resource.close()                               # runs at shutdown
+```
+
+### Async resources
+
+An async resource is a class with an `async` close method (`@Resource(close="aclose")`)
+or an `async def` generator provider. Async teardown is awaited by
+`await container.ashutdown_resources()` or an `async with container:` block, and an
+async generator provider is built with `await container.aget(Cls)`:
+
+```python
+async with container:
+    session = await container.aget(HttpSession)
+    ...
+# session's async teardown is awaited on exit
+```
+
+Calling the **sync** `shutdown_resources()` while an async resource is pending
+raises `ResourceTeardownError`, pointing you at the async path. Teardown is
+best-effort: every resource is closed even if one raises, and the failures are
+aggregated into a single `ResourceTeardownError`.
+
 ## Testing with overrides
 
 Swap any dependency for a fake, with no monkeypatching, so a service under test
@@ -253,6 +385,7 @@ has never seen. `container.reset()` clears the instance caches **and** overrides
 | `UnresolvableDependencyError` | a needed type is unregistered and has no default; or `get()` is called for an unregistered class |
 | `CircularDependencyError` | the dependency graph has a cycle (`A → B → A`); the message lists the cycle |
 | `AmbiguousDependencyError` | a bare interface has several registered implementations and no `primary` |
+| `ResourceTeardownError` | a `@Resource` teardown raised, or a sync `shutdown_resources()` met an async resource |
 
 ## Performance and safety
 

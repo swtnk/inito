@@ -53,3 +53,7 @@ class ConfigResolutionError(InitoError):
 
 class AmbiguousDependencyError(InitoError):
     """Raised when a dependency type has several registered implementations and no primary."""
+
+
+class ResourceTeardownError(InitoError):
+    """Raised when a @Resource teardown fails, or a sync shutdown meets an async resource."""

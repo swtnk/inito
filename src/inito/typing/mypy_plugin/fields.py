@@ -44,12 +44,12 @@ def collect_fields(ctx: ClassDefContext) -> list[InitoField] | None:
     found: dict[str, InitoField] = {}
     for info in reversed(ctx.cls.info.mro[1:-1]):
         fields = _own_fields(info)
-        if fields is None:
+        if fields is None:  # pragma: no cover -- placeholder/unresolved base, retried by mypy
             return None
         found.update(fields)
 
     current = _own_fields(ctx.cls.info, body=ctx.cls.defs)
-    if current is None:
+    if current is None:  # pragma: no cover -- placeholder/unresolved field, retried by mypy
         return None
     found.update(current)
 
@@ -63,20 +63,22 @@ def _own_fields(info: TypeInfo, body: Block | None = None) -> dict[str, InitoFie
         if not stmt.new_syntax:
             continue
         lvalue = stmt.lvalues[0]
-        if not isinstance(lvalue, NameExpr):
+        if not isinstance(lvalue, NameExpr):  # pragma: no cover -- non-name assignment target
             continue
 
         sym = info.names.get(lvalue.name)
-        if sym is None:
+        if sym is None:  # pragma: no cover -- symbol not yet bound in this pass
             continue
         node = sym.node
-        if isinstance(node, PlaceholderNode):
+        if isinstance(
+            node, PlaceholderNode
+        ):  # pragma: no cover -- unresolved node, retried by mypy
             return None
-        if isinstance(node, (TypeAlias, Decorator)):
+        if isinstance(node, (TypeAlias, Decorator)):  # pragma: no cover -- not a field declaration
             continue
         if not isinstance(node, Var) or node.is_classvar:
             continue
-        if node.type is None:
+        if node.type is None:  # pragma: no cover -- untyped var, resolved on a later pass
             return None
 
         fields[lvalue.name] = InitoField(

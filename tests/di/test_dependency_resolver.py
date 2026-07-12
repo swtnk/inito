@@ -1,15 +1,31 @@
 import sys
 import typing
+from typing import Optional
 
 import pytest
 
 from inito import RequiredArgsConstructor
 from inito.di.dependency_resolver import (
     Dependency,
+    factory_target,
     registrable_type,
     resolve_constructor_dependencies,
+    resolve_provider_dependencies,
 )
+from inito.di.factory import Factory
 from inito.exceptions.errors import DependencyRegistrationError
+
+
+def test_factory_target_none_when_type_arg_is_not_a_class():
+    assert factory_target(Factory[Optional[int]]) is None
+
+
+def test_resolve_provider_dependencies_rejects_unresolvable_forward_ref():
+    def provider(x: "Undefined") -> None:  # noqa: F821 -- deliberately unresolvable
+        return None
+
+    with pytest.raises(DependencyRegistrationError):
+        resolve_provider_dependencies(provider)
 
 
 def test_resolves_simple_constructor_dependencies():

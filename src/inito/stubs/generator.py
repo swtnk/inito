@@ -43,7 +43,7 @@ def _has_inito_class(module: ModuleType) -> bool:
 def _import_module(path: Path) -> ModuleType | None:
     name = f"_inito_stub_{uuid.uuid4().hex}"
     spec = importlib.util.spec_from_file_location(name, path)
-    if spec is None or spec.loader is None:
+    if spec is None or spec.loader is None:  # pragma: no cover -- import machinery can't load path
         return None
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module

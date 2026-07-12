@@ -5,6 +5,36 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc5] - 2026-07-12
+
+### Added
+
+- **`@Resource` — resource lifecycle with ordered teardown.** Mark a
+  `@Service`/`@Singleton` **class** (torn down by its `close()`/`aclose()` method,
+  name configurable, or its `__enter__`/`__exit__` context-manager protocol) or a
+  **generator-provider function** (`yield` the resource, then clean up after the
+  yield; its parameters are autowired, and it registers a provider keyed by the
+  yielded type). The `Container` builds each resource lazily and closes them in
+  reverse construction order (LIFO) at `shutdown_resources()` or when a
+  `with container:` block exits. **Async** resources (an `async` close method or an
+  `async def` generator) are awaited by `await container.ashutdown_resources()` /
+  `async with container`, and an async generator provider is built with the new
+  `await container.aget(cls)`. Teardown is best-effort — every resource is closed
+  even if one raises, with failures aggregated into one new `ResourceTeardownError`.
+  Zero-dependency and reflect-once: each resource's teardown strategy is determined
+  once, at decoration/registration time.
+
+- **`Factory[T]` — on-demand construction with call-time arguments.** Inject a
+  `Factory[T]` constructor parameter and call it to build a **fresh** `T` per
+  call: registered-typed parameters are autowired from the container, call-time
+  keyword arguments supply (and override) the rest, and anything left falls to
+  the target's own default. The target need not itself be registered (a
+  *prototype* factory), and because a factory is lazy a `Factory[B]` parameter
+  breaks an otherwise-circular graph. `Factory` is both the annotation and the
+  static type — `mypy` and pyright infer `make(...) -> T` with no plugin or
+  stub. Zero-dependency and reflect-once: the target's constructor plan is
+  inspected once, when the factory is injected.
+
 ## [1.0.0-rc4] - 2026-07-03
 
 ### Added

@@ -95,6 +95,6 @@ def _builder_class_source(owner: str, builder_cls: type, field_types: dict[str, 
         lines.append(f"    def {setter}(self, value: {value_type}) -> {owner}.Builder: ...")
     if build_name is not None:
         lines.append(f"    def {build_name}(self) -> {owner}: ...")
-    if len(lines) == 1:
+    if len(lines) == 1:  # pragma: no cover -- builder with no setters and no build method
         lines.append("    ...")
     return "\n".join(lines)

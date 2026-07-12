@@ -5,18 +5,27 @@ from __future__ import annotations
 import contextlib
 import enum
 import threading
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Awaitable, Callable, Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any, TypeVar, cast
+from typing import Any, Literal, TypeVar, cast
 
 from inito.di.dependency_resolver import (
     Dependency,
     resolve_constructor_dependencies,
+    resolve_provider_dependencies,
+)
+from inito.di.factory import Factory
+from inito.di.resource import (
+    RESOURCE_ATTRIBUTE,
+    ProviderKind,
+    ProviderSpec,
+    ResourceSpec,
 )
 from inito.exceptions.errors import (
     AmbiguousDependencyError,
     CircularDependencyError,
     DependencyRegistrationError,
+    ResourceTeardownError,
     UnresolvableDependencyError,
 )
 
@@ -56,6 +65,51 @@ class ServiceRegistration:
     scope: Scope
     dependencies: dict[str, Dependency]
     primary: bool = False
+    resource: ResourceSpec | None = None  # class-form @Resource lifecycle
+    provider: ProviderSpec | None = None  # function-form @Resource generator provider
+
+
+@dataclass(frozen=True)
+class _Finalizer:
+    """A single resource's teardown, recorded at build time and run LIFO at shutdown.
+
+    Exactly one of ``close``/``aclose`` is set; ``key`` is the registration whose
+    cached singleton is dropped once torn down so a later ``get()`` rebuilds it.
+    """
+
+    key: type
+    label: str
+    close: Callable[[], Any] | None = None
+    aclose: Callable[[], Awaitable[Any]] | None = None
+
+    @property
+    def is_async(self) -> bool:
+        """Whether this resource must be torn down with ``await``."""
+        return self.aclose is not None
+
+
+def _advance_sync_generator(label: str, generator: Iterator[Any]) -> None:
+    """Resume a provider generator past its ``yield`` to run its cleanup."""
+    try:
+        next(generator)
+    except StopIteration:
+        return
+    raise ResourceTeardownError(f"{label}: a @Resource generator must yield exactly once.")
+
+
+async def _advance_async_generator(label: str, generator: Any) -> None:  # noqa: ANN401 -- async gen
+    """Resume an async provider generator past its ``yield`` to run its cleanup."""
+    try:
+        await generator.__anext__()
+    except StopAsyncIteration:
+        return
+    raise ResourceTeardownError(f"{label}: a @Resource generator must yield exactly once.")
+
+
+def _raise_teardown_errors(errors: list[tuple[str, BaseException]]) -> None:
+    if errors:
+        detail = "; ".join(f"{label}: {error!r}" for label, error in errors)
+        raise ResourceTeardownError(f"resource teardown failed for {detail}")
 
 
 class Container:
@@ -77,6 +131,9 @@ class Container:
         self._overrides: dict[type, Callable[[], Any]] = {}
         self._thread_local = threading.local()
         self._qualified: dict[str, type] = {}
+        self._factory_plans: dict[type, dict[str, Dependency]] = {}
+        self._resource_finalizers: list[_Finalizer] = []
+        self._resource_lock = threading.Lock()
 
     def register(
         self,
@@ -94,7 +151,15 @@ class Container:
                 f"Qualifier {qualifier!r} is already registered to {self._qualified[qualifier]!r}."
             )
         dependencies = resolve_constructor_dependencies(cls)
-        self._registrations[cls] = ServiceRegistration(cls, scope, dependencies, primary)
+        resource = cls.__dict__.get(RESOURCE_ATTRIBUTE)
+        if resource is not None and scope is not Scope.SINGLETON:
+            raise DependencyRegistrationError(
+                f"{cls.__qualname__}: @Resource requires singleton scope so its lifetime "
+                "(and teardown) is container-managed."
+            )
+        self._registrations[cls] = ServiceRegistration(
+            cls, scope, dependencies, primary, resource=resource
+        )
         if qualifier is not None:
             self._qualified[qualifier] = cls
         if scope is Scope.SINGLETON:
@@ -102,6 +167,19 @@ class Container:
             # time, so the cold resolve path reads it with a plain dict lookup
             # instead of guarding a lazily-created-lock dict on every build.
             self._singleton_locks[cls] = threading.Lock()
+
+    def register_provider(self, spec: ProviderSpec, *, scope: Scope = Scope.SINGLETON) -> None:
+        """Register a function-form @Resource provider, keyed by the type it yields."""
+        provided = spec.provided_type
+        if provided in self._registrations:
+            raise DependencyRegistrationError(f"{provided!r} is already registered.")
+        if scope is not Scope.SINGLETON:
+            raise DependencyRegistrationError("@Resource providers must be singleton-scoped.")
+        dependencies = resolve_provider_dependencies(spec.factory)
+        self._registrations[provided] = ServiceRegistration(
+            provided, scope, dependencies, provider=spec
+        )
+        self._singleton_locks[provided] = threading.Lock()
 
     def get(self, cls: type[T]) -> T:
         """Resolve and return an instance of cls, building its dependency graph bottom-up."""
@@ -121,6 +199,50 @@ class Container:
         if instance is not None:
             return instance  # type: ignore[no-any-return]
         return cast(T, self._resolve(cls, path=()))
+
+    async def aget(self, cls: type[T]) -> T:
+        """Async twin of ``get`` for building an async @Resource generator provider.
+
+        Everything else (classes, sync providers, cached singletons) resolves through
+        the synchronous path; only an async-generator provider is awaited to its first
+        yield. Its own dependencies are resolved synchronously, so nesting an async
+        provider as a constructor dependency of a sync-built class is not yet supported.
+        """
+        if self._overrides:
+            provider = self._overrides.get(cls)
+            if provider is not None:
+                return cast(T, provider())
+        instance = self._singletons.get(cls)
+        if instance is not None:
+            return instance  # type: ignore[no-any-return]
+        registration = self._registrations.get(cls)
+        if (
+            registration is not None
+            and registration.provider is not None
+            and registration.provider.kind is ProviderKind.ASYNC_GENERATOR
+        ):
+            return cast(T, await self._aresolve_async_provider(cls, registration))
+        return self.get(cls)
+
+    async def _aresolve_async_provider(self, cls: type, registration: ServiceRegistration) -> Any:  # noqa: ANN401
+        provider = cast(ProviderSpec, registration.provider)
+        kwargs = self._resolve_dependencies(cls, registration, ())
+        with self._singleton_locks[cls]:
+            cached = self._singletons.get(cls)
+            if (
+                cached is not None
+            ):  # pragma: no cover -- double-checked lock; only wins under a race
+                return cached
+            generator = provider.factory(**kwargs)
+            value = await generator.__anext__()
+            self._singletons[cls] = value
+            label = cls.__qualname__
+            self._record_finalizer(
+                _Finalizer(
+                    key=cls, label=label, aclose=lambda: _advance_async_generator(label, generator)
+                )
+            )
+            return value
 
     def override(self, cls: type[T], instance: T) -> None:
         """Make get(cls) return instance until cleared. For tests/environment swaps."""
@@ -161,10 +283,82 @@ class Container:
         return cls in self._registrations
 
     def reset(self) -> None:
-        """Clear the singleton/thread-local caches and overrides (not registrations)."""
+        """Clear the singleton/thread-local caches, overrides, and pending finalizers.
+
+        Registrations are kept. A test helper: it drops resource finalizers **without**
+        running them, so tear resources down with ``shutdown_resources()`` first if their
+        cleanup matters.
+        """
         self._singletons.clear()
         self._overrides.clear()
         self._thread_local = threading.local()
+        with self._resource_lock:
+            self._resource_finalizers = []
+
+    def shutdown_resources(self) -> None:
+        """Tear down every built @Resource in reverse construction order (LIFO).
+
+        Best-effort: each is closed even if an earlier one raised, and the failures
+        are aggregated into a single ``ResourceTeardownError``. Raises immediately,
+        tearing nothing down, if an **async** resource is pending — use
+        ``ashutdown_resources()`` / ``async with container`` for those.
+        """
+        with self._resource_lock:
+            pending = self._resource_finalizers
+            if any(finalizer.is_async for finalizer in pending):
+                raise ResourceTeardownError(
+                    "async @Resource teardown requires `await container.ashutdown_resources()` "
+                    "or `async with container`."
+                )
+            self._resource_finalizers = []
+        errors: list[tuple[str, BaseException]] = []
+        for finalizer in reversed(pending):
+            self._run_finalizer_sync(finalizer, errors)
+        _raise_teardown_errors(errors)
+
+    async def ashutdown_resources(self) -> None:
+        """Async twin of ``shutdown_resources``: awaits async teardowns, runs sync ones."""
+        with self._resource_lock:
+            pending = self._resource_finalizers
+            self._resource_finalizers = []
+        errors: list[tuple[str, BaseException]] = []
+        for finalizer in reversed(pending):
+            try:
+                if finalizer.aclose is not None:
+                    await finalizer.aclose()
+                else:
+                    cast(Callable[[], Any], finalizer.close)()
+            except Exception as error:  # teardown is best-effort; aggregated and re-raised below
+                errors.append((finalizer.label, error))
+            self._singletons.pop(finalizer.key, None)
+        _raise_teardown_errors(errors)
+
+    def _run_finalizer_sync(
+        self, finalizer: _Finalizer, errors: list[tuple[str, BaseException]]
+    ) -> None:
+        try:
+            cast(Callable[[], Any], finalizer.close)()
+        except Exception as error:  # teardown is best-effort; aggregated and re-raised by caller
+            errors.append((finalizer.label, error))
+        self._singletons.pop(finalizer.key, None)
+
+    def __enter__(self) -> Container:
+        """Enter a ``with`` block; resources are still built lazily on first ``get()``."""
+        return self
+
+    def __exit__(self, *exc_info: object) -> Literal[False]:
+        """Tear down all built resources on block exit."""
+        self.shutdown_resources()
+        return False
+
+    async def __aenter__(self) -> Container:
+        """Enter an ``async with`` block; resources are still built lazily."""
+        return self
+
+    async def __aexit__(self, *exc_info: object) -> Literal[False]:
+        """Await teardown of all built resources on block exit."""
+        await self.ashutdown_resources()
+        return False
 
     def _thread_local_cache(self) -> dict[type, Any]:
         cache = getattr(self._thread_local, "cache", None)
@@ -222,9 +416,53 @@ class Container:
         with self._singleton_locks[cls]:
             if cls in self._singletons:
                 return self._singletons[cls]
-            instance = cls(**kwargs)
+            instance, finalizer = self._construct(cls, registration, kwargs)
             self._singletons[cls] = instance
+            if finalizer is not None:
+                self._record_finalizer(finalizer)
             return instance
+
+    def _construct(
+        self, cls: type, registration: ServiceRegistration, kwargs: dict[str, Any]
+    ) -> tuple[Any, _Finalizer | None]:
+        """Build one instance, returning it with its teardown finalizer (or None)."""
+        if registration.provider is not None:
+            return self._construct_from_provider(cls, registration.provider, kwargs)
+        instance = cls(**kwargs)
+        if registration.resource is None:
+            return instance, None
+        return instance, self._class_finalizer(cls, instance, registration.resource)
+
+    def _construct_from_provider(
+        self, cls: type, provider: ProviderSpec, kwargs: dict[str, Any]
+    ) -> tuple[Any, _Finalizer]:
+        if provider.kind is ProviderKind.ASYNC_GENERATOR:
+            raise UnresolvableDependencyError(
+                f"{cls.__qualname__} is an async @Resource generator; build it with "
+                "`await container.aget(...)` or inside `async with container`."
+            )
+        generator = provider.factory(**kwargs)
+        value = next(generator)
+        label = cls.__qualname__
+        return value, _Finalizer(
+            key=cls, label=label, close=lambda: _advance_sync_generator(label, generator)
+        )
+
+    def _class_finalizer(self, cls: type, instance: Any, resource: ResourceSpec) -> _Finalizer:  # noqa: ANN401
+        label = cls.__qualname__
+        if resource.is_context_manager:
+            instance.__enter__()
+            return _Finalizer(
+                key=cls, label=label, close=lambda: instance.__exit__(None, None, None)
+            )
+        teardown = getattr(instance, cast(str, resource.close_method))
+        if resource.is_async:
+            return _Finalizer(key=cls, label=label, aclose=teardown)
+        return _Finalizer(key=cls, label=label, close=teardown)
+
+    def _record_finalizer(self, finalizer: _Finalizer) -> None:
+        with self._resource_lock:
+            self._resource_finalizers.append(finalizer)
 
     def _resolve_dependencies(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
@@ -239,27 +477,49 @@ class Container:
     def _resolve_dependency(
         self, cls: type, name: str, dependency: Dependency, path: tuple[type, ...]
     ) -> Any:  # noqa: ANN401
-        child_path = (*path, cls)
+        value = self._autowire(dependency, (*path, cls))
+        if value is not _MISSING:
+            return value
         if dependency.qualifier is not None:
-            target = self._qualified.get(dependency.qualifier)
-            if target is None:
-                raise UnresolvableDependencyError(
-                    f"{cls.__qualname__}.__init__ parameter {name!r} requests qualifier "
-                    f"{dependency.qualifier!r}, which is not registered."
-                )
-            return self._resolve(target, child_path)
-        resolved_type = dependency.registrable  # precomputed at registration time
-        if resolved_type in self._registrations:
-            return self._resolve(resolved_type, child_path)
-        implementation = self._pick_implementation(resolved_type)
-        if implementation is not None:
-            return self._resolve(implementation, child_path)
+            raise UnresolvableDependencyError(
+                f"{cls.__qualname__}.__init__ parameter {name!r} requests qualifier "
+                f"{dependency.qualifier!r}, which is not registered."
+            )
         if dependency.has_default:
             return _MISSING  # unregistered + default -> omit, the ctor's own default applies
         raise UnresolvableDependencyError(
             f"{cls.__qualname__}.__init__ parameter {name!r} (type "
             f"{dependency.type_hint!r}) isn't registered and has no default value."
         )
+
+    def _autowire(self, dependency: Dependency, path: tuple[type, ...]) -> Any:  # noqa: ANN401
+        """Resolve dependency to an instance if its type is autowirable, else _MISSING.
+
+        Shared by _resolve_dependency (which then raises or applies a default) and
+        a Factory (which then applies call-time args or the target's own default).
+        """
+        if dependency.factory_target is not None:
+            return self._make_factory(dependency.factory_target)
+        if dependency.qualifier is not None:
+            target = self._qualified.get(dependency.qualifier)
+            return self._resolve(target, path) if target is not None else _MISSING
+        resolved_type = dependency.registrable  # precomputed at registration time
+        if resolved_type in self._registrations:
+            return self._resolve(resolved_type, path)
+        implementation = self._pick_implementation(resolved_type)
+        if implementation is not None:
+            return self._resolve(implementation, path)
+        return _MISSING
+
+    def _factory_plan(self, target: type) -> dict[str, Dependency]:
+        plan = self._factory_plans.get(target)
+        if plan is None:
+            plan = resolve_constructor_dependencies(target)  # inspected once per target
+            self._factory_plans[target] = plan
+        return plan
+
+    def _make_factory(self, target: type) -> Factory[Any]:
+        return _BoundFactory(self, target, self._factory_plan(target))
 
     def _pick_implementation(self, base_type: Any) -> type | None:  # noqa: ANN401
         """Return the sole or primary registered subclass of an unregistered base, if any."""
@@ -282,6 +542,31 @@ class Container:
             f"({', '.join(cls.__qualname__ for cls in candidates)}); mark one "
             "@Service(primary=True) or inject Annotated[..., Qualifier(name)]."
         )
+
+
+class _BoundFactory(Factory[Any]):
+    """A ``Factory[T]`` bound to a container: builds a fresh target per call.
+
+    Call-time keyword arguments win; every other constructor parameter whose type
+    is autowirable is resolved from the container; anything left falls to the
+    target's own default (or a natural missing-argument ``TypeError`` at the call).
+    The plan is the target's constructor dependencies, inspected once and cached.
+    """
+
+    def __init__(self, container: Container, target: type, plan: dict[str, Dependency]) -> None:
+        self._container = container
+        self._target = target
+        self._plan = plan
+
+    def __call__(self, **kwargs: Any) -> Any:  # noqa: ANN401 -- forwards to the target ctor
+        final = dict(kwargs)  # call-time kwargs win over autowiring
+        for name, dependency in self._plan.items():
+            if name in final:
+                continue
+            value = self._container._autowire(dependency, ())
+            if value is not _MISSING:
+                final[name] = value
+        return self._target(**final)
 
 
 default_container = Container()

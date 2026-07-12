@@ -8,7 +8,7 @@ from inito import (
     RequiredArgsConstructor,
     Value,
 )
-from inito.stubs.emit import member_stub_source
+from inito.stubs.emit import _builder_class_source, member_stub_source
 
 
 def test_data_emits_init_accessors_repr_eq_hash():
@@ -108,3 +108,19 @@ def test_class_without_metadata_yields_no_members():
         pass
 
     assert member_stub_source(Plain) == ""
+
+
+def test_builder_source_handles_a_setter_after_the_build_method():
+    # A Builder with an arity-0 build(), arity-1 setters, and a method matching
+    # neither exercises every branch of the member-classifying loop.
+    class FakeBuilder:
+        def title(self, value: object) -> object: ...
+        def build(self) -> object: ...
+        def author(self, value: object) -> object: ...
+        def neither(self, a: object, b: object) -> object: ...  # arity 2 -> not a setter/build
+
+    source = _builder_class_source("Book", FakeBuilder, {"title": "str", "author": "str"})
+
+    assert "def title(self, value: str) -> Book.Builder: ..." in source
+    assert "def author(self, value: str) -> Book.Builder: ..." in source
+    assert "def build(self) -> Book: ..." in source

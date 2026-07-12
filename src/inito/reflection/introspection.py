@@ -31,7 +31,7 @@ def _own_annotation_names(klass: type) -> tuple[str, ...]:
     evaluating any annotation value (so an undefined forward reference can't
     raise here - resolution happens later, in ``resolve_type_hints``).
     """
-    if sys.version_info >= (3, 14):
+    if sys.version_info >= (3, 14):  # pragma: no cover -- exercised only on the 3.14+ matrix leg
         import annotationlib
 
         return tuple(annotationlib.get_annotations(klass, format=annotationlib.Format.FORWARDREF))
