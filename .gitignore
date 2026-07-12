@@ -23,6 +23,10 @@ build/
 .coverage
 htmlcov/
 
+# uv lockfile: inito is a library whose CI resolves deps fresh (`uv pip install
+# -e .[dev]`), so the lock is an unused local artifact rather than a source of truth.
+uv.lock
+
 # Docs
 site/
 docs/_build/
