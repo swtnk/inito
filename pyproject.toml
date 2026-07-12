@@ -132,6 +132,13 @@ mypy_path = "src"
 module = "tests.*"
 disallow_untyped_defs = false
 
+# FastAPI is an optional, lazily-imported integration; don't follow it (and its
+# transitive deps) into code that uses newer-Python syntax under the 3.9 target.
+[[tool.mypy.overrides]]
+module = ["fastapi.*"]
+follow_imports = "skip"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "-ra --strict-markers --strict-config --cov=inito --cov-report=term-missing --cov-fail-under=95"

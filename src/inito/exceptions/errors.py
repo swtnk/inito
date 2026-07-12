@@ -57,3 +57,11 @@ class AmbiguousDependencyError(InitoError):
 
 class ResourceTeardownError(InitoError):
     """Raised when a @Resource teardown fails, or a sync shutdown meets an async resource."""
+
+
+class ScopeError(InitoError):
+    """Raised when a scoped service is resolved with no active ``container.scope()``."""
+
+
+class FrameworkIntegrationError(InitoError):
+    """Raised when an optional framework integration is used but the framework is absent."""

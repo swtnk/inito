@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import contextlib
+import contextvars
 import enum
 import threading
 from collections.abc import Awaitable, Callable, Iterator, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Literal, TypeVar, cast
 
 from inito.di.dependency_resolver import (
@@ -26,6 +27,7 @@ from inito.exceptions.errors import (
     CircularDependencyError,
     DependencyRegistrationError,
     ResourceTeardownError,
+    ScopeError,
     UnresolvableDependencyError,
 )
 
@@ -55,6 +57,22 @@ class Scope(enum.Enum):
     SINGLETON = "singleton"
     TRANSIENT = "transient"
     THREAD_LOCAL = "thread_local"
+    SCOPED = "scoped"
+
+
+@dataclass
+class _Scope:
+    """A single active ``container.scope()``: its per-scope instance cache and finalizers."""
+
+    instances: dict[type, Any] = field(default_factory=dict)
+    finalizers: list[_Finalizer] = field(default_factory=list)
+    lock: threading.Lock = field(default_factory=threading.Lock)
+
+
+_current_scope: contextvars.ContextVar[_Scope | None] = contextvars.ContextVar(
+    "inito_current_scope", default=None
+)
+"""The scope active on this thread/async-task, if any - set by ``container.scope()``."""
 
 
 @dataclass(frozen=True)
@@ -152,10 +170,10 @@ class Container:
             )
         dependencies = resolve_constructor_dependencies(cls)
         resource = cls.__dict__.get(RESOURCE_ATTRIBUTE)
-        if resource is not None and scope is not Scope.SINGLETON:
+        if resource is not None and scope not in (Scope.SINGLETON, Scope.SCOPED):
             raise DependencyRegistrationError(
-                f"{cls.__qualname__}: @Resource requires singleton scope so its lifetime "
-                "(and teardown) is container-managed."
+                f"{cls.__qualname__}: @Resource requires singleton or scoped lifetime so its "
+                "teardown is container- or scope-managed."
             )
         self._registrations[cls] = ServiceRegistration(
             cls, scope, dependencies, primary, resource=resource
@@ -173,8 +191,10 @@ class Container:
         provided = spec.provided_type
         if provided in self._registrations:
             raise DependencyRegistrationError(f"{provided!r} is already registered.")
-        if scope is not Scope.SINGLETON:
-            raise DependencyRegistrationError("@Resource providers must be singleton-scoped.")
+        if scope not in (Scope.SINGLETON, Scope.SCOPED):
+            raise DependencyRegistrationError(
+                "@Resource providers must be singleton- or scope-scoped."
+            )
         dependencies = resolve_provider_dependencies(spec.factory)
         self._registrations[provided] = ServiceRegistration(
             provided, scope, dependencies, provider=spec
@@ -201,12 +221,11 @@ class Container:
         return cast(T, self._resolve(cls, path=()))
 
     async def aget(self, cls: type[T]) -> T:
-        """Async twin of ``get`` for building an async @Resource generator provider.
+        """Async twin of ``get``, awaiting async @Resource providers anywhere in the graph.
 
-        Everything else (classes, sync providers, cached singletons) resolves through
-        the synchronous path; only an async-generator provider is awaited to its first
-        yield. Its own dependencies are resolved synchronously, so nesting an async
-        provider as a constructor dependency of a sync-built class is not yet supported.
+        Sync services, singletons, scoped services, and cached instances resolve
+        exactly as ``get`` does; an async-generator provider is awaited to its first
+        yield. Use this whenever the graph contains an async resource.
         """
         if self._overrides:
             provider = self._overrides.get(cls)
@@ -215,34 +234,110 @@ class Container:
         instance = self._singletons.get(cls)
         if instance is not None:
             return instance  # type: ignore[no-any-return]
-        registration = self._registrations.get(cls)
-        if (
-            registration is not None
-            and registration.provider is not None
-            and registration.provider.kind is ProviderKind.ASYNC_GENERATOR
-        ):
-            return cast(T, await self._aresolve_async_provider(cls, registration))
-        return self.get(cls)
+        return cast(T, await self._aresolve(cls, ()))
 
-    async def _aresolve_async_provider(self, cls: type, registration: ServiceRegistration) -> Any:  # noqa: ANN401
-        provider = cast(ProviderSpec, registration.provider)
-        kwargs = self._resolve_dependencies(cls, registration, ())
+    async def _aresolve(self, cls: type, path: tuple[type, ...]) -> Any:  # noqa: ANN401
+        if self._overrides:
+            provider = self._overrides.get(cls)
+            if provider is not None:
+                return provider()
+        registration = self._registrations.get(cls)
+        if registration is None:
+            raise UnresolvableDependencyError(f"{cls!r} is not registered in the container.")
+        cached = self._cached_instance(cls, registration.scope)
+        if cached is not _MISSING:
+            return cached
+        if cls in path:
+            cycle = (*path, cls)
+            raise CircularDependencyError(
+                "Circular dependency detected: " + " -> ".join(step.__qualname__ for step in cycle)
+            )
+        return await self._abuild(cls, registration, path)
+
+    async def _abuild(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        if registration.scope is Scope.SINGLETON:
+            return await self._aresolve_singleton(cls, registration, path)
+        if registration.scope is Scope.SCOPED:
+            return await self._aresolve_scoped(cls, registration, path)
+        kwargs = await self._aresolve_dependencies(cls, registration, path)
+        instance, _ = await self._aconstruct(cls, registration, kwargs)
+        if registration.scope is Scope.THREAD_LOCAL:
+            self._thread_local_cache()[cls] = instance
+        return instance
+
+    async def _aresolve_singleton(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        kwargs = await self._aresolve_dependencies(cls, registration, path)
         with self._singleton_locks[cls]:
-            cached = self._singletons.get(cls)
-            if (
-                cached is not None
-            ):  # pragma: no cover -- double-checked lock; only wins under a race
-                return cached
+            if cls in self._singletons:  # pragma: no cover -- double-checked lock; race only
+                return self._singletons[cls]
+            instance, finalizer = await self._aconstruct(cls, registration, kwargs)
+            self._singletons[cls] = instance
+            if finalizer is not None:
+                self._record_finalizer(finalizer)
+            return instance
+
+    async def _aresolve_scoped(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        scope = self._require_scope(cls)
+        kwargs = await self._aresolve_dependencies(cls, registration, path)
+        with scope.lock:
+            if cls in scope.instances:  # pragma: no cover -- double-checked lock; race only
+                return scope.instances[cls]
+            instance, finalizer = await self._aconstruct(cls, registration, kwargs)
+            scope.instances[cls] = instance
+            if finalizer is not None:
+                scope.finalizers.append(finalizer)
+            return instance
+
+    async def _aconstruct(
+        self, cls: type, registration: ServiceRegistration, kwargs: dict[str, Any]
+    ) -> tuple[Any, _Finalizer | None]:
+        provider = registration.provider
+        if provider is not None and provider.kind is ProviderKind.ASYNC_GENERATOR:
             generator = provider.factory(**kwargs)
             value = await generator.__anext__()
-            self._singletons[cls] = value
             label = cls.__qualname__
-            self._record_finalizer(
-                _Finalizer(
-                    key=cls, label=label, aclose=lambda: _advance_async_generator(label, generator)
-                )
+            return value, _Finalizer(
+                key=cls, label=label, aclose=lambda: _advance_async_generator(label, generator)
             )
+        return self._construct(cls, registration, kwargs)
+
+    async def _aresolve_dependencies(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> dict[str, Any]:
+        kwargs: dict[str, Any] = {}
+        for name, dependency in registration.dependencies.items():
+            resolved = await self._aresolve_dependency(cls, name, dependency, path)
+            if resolved is not _MISSING:
+                kwargs[name] = resolved
+        return kwargs
+
+    async def _aresolve_dependency(
+        self, cls: type, name: str, dependency: Dependency, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        value = await self._aautowire(dependency, (*path, cls))
+        if value is not _MISSING:
             return value
+        return self._unresolved_dependency(cls, name, dependency)
+
+    async def _aautowire(self, dependency: Dependency, path: tuple[type, ...]) -> Any:  # noqa: ANN401
+        if dependency.factory_target is not None:
+            return self._make_factory(dependency.factory_target)
+        if dependency.qualifier is not None:
+            target = self._qualified.get(dependency.qualifier)
+            return await self._aresolve(target, path) if target is not None else _MISSING
+        resolved_type = dependency.registrable
+        if resolved_type in self._registrations:
+            return await self._aresolve(resolved_type, path)
+        implementation = self._pick_implementation(resolved_type)
+        if implementation is not None:
+            return await self._aresolve(implementation, path)
+        return _MISSING
 
     def override(self, cls: type[T], instance: T) -> None:
         """Make get(cls) return instance until cleared. For tests/environment swaps."""
@@ -305,42 +400,57 @@ class Container:
         """
         with self._resource_lock:
             pending = self._resource_finalizers
-            if any(finalizer.is_async for finalizer in pending):
-                raise ResourceTeardownError(
-                    "async @Resource teardown requires `await container.ashutdown_resources()` "
-                    "or `async with container`."
-                )
             self._resource_finalizers = []
-        errors: list[tuple[str, BaseException]] = []
-        for finalizer in reversed(pending):
-            self._run_finalizer_sync(finalizer, errors)
-        _raise_teardown_errors(errors)
+        self._teardown_sync(pending, self._forget_singleton)
 
     async def ashutdown_resources(self) -> None:
         """Async twin of ``shutdown_resources``: awaits async teardowns, runs sync ones."""
         with self._resource_lock:
             pending = self._resource_finalizers
             self._resource_finalizers = []
+        await self._teardown_async(pending, self._forget_singleton)
+
+    def _forget_singleton(self, key: type) -> None:
+        self._singletons.pop(key, None)
+
+    def _teardown_sync(self, finalizers: list[_Finalizer], drop: Callable[[type], None]) -> None:
+        if any(finalizer.is_async for finalizer in finalizers):
+            raise ResourceTeardownError(
+                "async @Resource teardown requires `await container.ashutdown_resources()` / "
+                "`await ...` or `async with`."
+            )
         errors: list[tuple[str, BaseException]] = []
-        for finalizer in reversed(pending):
+        for finalizer in reversed(finalizers):
+            try:
+                cast(Callable[[], Any], finalizer.close)()
+            except Exception as error:  # best-effort; aggregated and re-raised below
+                errors.append((finalizer.label, error))
+            drop(finalizer.key)
+        _raise_teardown_errors(errors)
+
+    async def _teardown_async(
+        self, finalizers: list[_Finalizer], drop: Callable[[type], None]
+    ) -> None:
+        errors: list[tuple[str, BaseException]] = []
+        for finalizer in reversed(finalizers):
             try:
                 if finalizer.aclose is not None:
                     await finalizer.aclose()
                 else:
                     cast(Callable[[], Any], finalizer.close)()
-            except Exception as error:  # teardown is best-effort; aggregated and re-raised below
+            except Exception as error:  # best-effort; aggregated and re-raised below
                 errors.append((finalizer.label, error))
-            self._singletons.pop(finalizer.key, None)
+            drop(finalizer.key)
         _raise_teardown_errors(errors)
 
-    def _run_finalizer_sync(
-        self, finalizer: _Finalizer, errors: list[tuple[str, BaseException]]
-    ) -> None:
-        try:
-            cast(Callable[[], Any], finalizer.close)()
-        except Exception as error:  # teardown is best-effort; aggregated and re-raised by caller
-            errors.append((finalizer.label, error))
-        self._singletons.pop(finalizer.key, None)
+    def scope(self) -> _ScopeHandle:
+        """Open a scope for ``Scope.SCOPED`` services; usable as ``with`` or ``async with``.
+
+        Within the block, a scoped service is built once and cached, and a scoped
+        @Resource is torn down (LIFO) when the block exits. Scopes nest and are
+        task/thread-local.
+        """
+        return _ScopeHandle(self)
 
     def __enter__(self) -> Container:
         """Enter a ``with`` block; resources are still built lazily on first ``get()``."""
@@ -372,7 +482,20 @@ class Container:
             return self._singletons.get(cls, _MISSING)
         if scope is Scope.THREAD_LOCAL:
             return self._thread_local_cache().get(cls, _MISSING)
+        if scope is Scope.SCOPED:
+            active = _current_scope.get()
+            if active is not None:
+                return active.instances.get(cls, _MISSING)
         return _MISSING
+
+    def _require_scope(self, cls: type) -> _Scope:
+        active = _current_scope.get()
+        if active is None:
+            raise ScopeError(
+                f"{cls.__qualname__} is scope-bound (Scope.SCOPED) but no scope is active; "
+                "resolve it inside `with container.scope():` or `async with container.scope():`."
+            )
+        return active
 
     def _resolve(self, cls: type, path: tuple[type, ...]) -> Any:  # noqa: ANN401
         if self._overrides:
@@ -395,10 +518,26 @@ class Container:
     def _build(self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]) -> Any:  # noqa: ANN401
         if registration.scope is Scope.SINGLETON:
             return self._resolve_singleton(cls, registration, path)
+        if registration.scope is Scope.SCOPED:
+            return self._resolve_scoped(cls, registration, path)
         instance = cls(**self._resolve_dependencies(cls, registration, path))
         if registration.scope is Scope.THREAD_LOCAL:
             self._thread_local_cache()[cls] = instance
         return instance
+
+    def _resolve_scoped(
+        self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
+    ) -> Any:  # noqa: ANN401
+        scope = self._require_scope(cls)
+        kwargs = self._resolve_dependencies(cls, registration, path)
+        with scope.lock:
+            if cls in scope.instances:  # pragma: no cover -- double-checked lock; race only
+                return scope.instances[cls]
+            instance, finalizer = self._construct(cls, registration, kwargs)
+            scope.instances[cls] = instance
+            if finalizer is not None:
+                scope.finalizers.append(finalizer)
+            return instance
 
     def _resolve_singleton(
         self, cls: type, registration: ServiceRegistration, path: tuple[type, ...]
@@ -480,6 +619,10 @@ class Container:
         value = self._autowire(dependency, (*path, cls))
         if value is not _MISSING:
             return value
+        return self._unresolved_dependency(cls, name, dependency)
+
+    def _unresolved_dependency(self, cls: type, name: str, dependency: Dependency) -> Any:  # noqa: ANN401
+        """Apply the default (return _MISSING to omit) or raise; shared by sync and async."""
         if dependency.qualifier is not None:
             raise UnresolvableDependencyError(
                 f"{cls.__qualname__}.__init__ parameter {name!r} requests qualifier "
@@ -542,6 +685,42 @@ class Container:
             f"({', '.join(cls.__qualname__ for cls in candidates)}); mark one "
             "@Service(primary=True) or inject Annotated[..., Qualifier(name)]."
         )
+
+
+def _drop_nothing(key: type) -> None:
+    """Teardown drop-callback for a scope: its instances are discarded with the scope."""
+
+
+class _ScopeHandle:
+    """Returned by ``container.scope()``: a scope context manager (sync and async)."""
+
+    def __init__(self, container: Container) -> None:
+        self._container = container
+        self._scope: _Scope | None = None
+        self._token: contextvars.Token[_Scope | None] | None = None
+
+    def _enter(self) -> Container:
+        self._scope = _Scope()
+        self._token = _current_scope.set(self._scope)
+        return self._container
+
+    def _exit(self) -> _Scope:
+        _current_scope.reset(cast("contextvars.Token[_Scope | None]", self._token))
+        return cast(_Scope, self._scope)
+
+    def __enter__(self) -> Container:
+        return self._enter()
+
+    def __exit__(self, *exc_info: object) -> Literal[False]:
+        self._container._teardown_sync(self._exit().finalizers, _drop_nothing)
+        return False
+
+    async def __aenter__(self) -> Container:
+        return self._enter()
+
+    async def __aexit__(self, *exc_info: object) -> Literal[False]:
+        await self._container._teardown_async(self._exit().finalizers, _drop_nothing)
+        return False
 
 
 class _BoundFactory(Factory[Any]):

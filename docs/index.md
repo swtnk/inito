@@ -156,7 +156,10 @@ for multiple implementations, [config injection](dependency-injection.md#configu
 [factories](dependency-injection.md#factory-call-time-arguments) for on-demand
 construction with call-time arguments,
 [resource lifecycle](dependency-injection.md#resources-lifecycle-and-teardown) with
-ordered teardown (`@Resource`, `with container`), and
+ordered teardown (`@Resource`, `with container`),
+[scopes](dependency-injection.md#scopes) (`Scope.SCOPED` + `container.scope()`),
+[async resolution](dependency-injection.md#async-resolution) (`await container.aget()`),
+[FastAPI `Injected[T]`](dependency-injection.md#fastapi), and
 [test overrides](dependency-injection.md#testing-with-overrides).
 
 ## Type checking

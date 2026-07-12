@@ -49,7 +49,8 @@ parity](#performance) with handwritten classes and `dataclasses`.
   - [`@Service` / `@Singleton` / `@Inject`](#service--singleton--inject)
   - [Scopes](#scopes) · [Multiple implementations (qualifiers)](#multiple-implementations-qualifiers)
   - [Configuration injection](#configuration-injection) · [Factory (call-time arguments)](#factory-call-time-arguments)
-  - [Resources (lifecycle and teardown)](#resources-lifecycle-and-teardown) · [Testing with overrides](#testing-with-overrides)
+  - [Resources (lifecycle and teardown)](#resources-lifecycle-and-teardown) · [Scopes and async](#scopes-and-async) · [FastAPI](#fastapi)
+  - [Testing with overrides](#testing-with-overrides)
 - [Type checking](#type-checking)
 - [Using InitO with frameworks](#using-inito-with-frameworks)
 - [Framework examples](#framework-examples) — [FastAPI](#fastapi) · [Django](#django) · [Sanic](#sanic) · [aiohttp](#aiohttp) · [Clients (boto3, Redis, …)](#clients-boto3-redis-)
@@ -357,6 +358,8 @@ create one by hand.
 | `Qualifier` | Picks **which implementation** to inject when several share a base type. |
 | `Factory[T]` | Inject a **callable** that builds a fresh `T` on demand — autowiring its registered deps, taking the rest as call-time arguments. |
 | `@Resource` | Mark a class or generator whose instance the container **opens lazily and closes** (LIFO) at `shutdown_resources()` / `with container`. |
+| `container.scope()` | Open a **scope** for `Scope.SCOPED` services — one instance per scope; scoped resources torn down at exit. |
+| `Injected[T]` | A **FastAPI** dependency that resolves `T` from the container per request, inside a per-request scope. |
 
 ### `@Service` / `@Singleton` / `@Inject`
 
@@ -550,6 +553,38 @@ with an `async` `aclose()` or an `async def` generator — are torn down by
 generator provider is built with `await container.aget(Cls)`. Teardown is
 best-effort: every resource is closed even if one raises, and failures are
 aggregated into one `ResourceTeardownError`.
+
+### Scopes and async
+
+`Scope.SCOPED` gives **one instance per scope** — a request, a task, a unit of
+work — resolved inside `with container.scope():` (or `async with`). A scoped
+`@Resource` (e.g. a per-request DB session) is opened lazily and closed at scope
+exit. `await container.aget(cls)` is the async twin of `get()`: it resolves the
+**whole graph**, awaiting async `@Resource` providers anywhere in it.
+
+```python
+@Service(scope=Scope.SCOPED)
+class UnitOfWork: ...
+
+
+with container.scope():
+    uow = container.get(UnitOfWork)          # one per scope; scoped resources closed on exit
+```
+
+### FastAPI
+
+`Injected[T]` resolves a service from the container per request, inside a
+per-request scope (so scoped resources open and close automatically). FastAPI is
+optional — inito never imports it at runtime.
+
+```python
+from inito import Injected
+
+
+@app.get("/users/{user_id}")
+async def read_user(user_id: int, service: Injected[UserService]) -> dict:
+    return service.get(user_id)
+```
 
 ### Testing with overrides
 

@@ -64,10 +64,12 @@ isolate a subsystem's wiring or a test.
 | `@Inject` | Wraps a **function** so a container fills its type-annotated parameters that the caller didn't supply. |
 | `Container` | The registry + resolver + lifetime manager. `container.get(cls)` builds `cls`, wiring its dependencies bottom-up, and returns it. |
 | `default_container` | The shared `Container` that `@Service`/`@Singleton` use unless you pass `container=`. |
-| `Scope` | A service's lifetime: `SINGLETON` (one cached instance), `TRANSIENT` (a fresh instance every time), or `THREAD_LOCAL` (one instance per thread). |
+| `Scope` | A service's lifetime: `SINGLETON` (one cached instance), `TRANSIENT` (fresh every time), `THREAD_LOCAL` (one per thread), or `SCOPED` (one per `container.scope()`). |
 | `Qualifier` | Names *which* implementation to inject when several implement one base type — `Annotated[Repo, Qualifier("postgres")]`. |
 | `Factory[T]` | Inject a **callable** that builds a fresh `T` on demand, autowiring its registered dependencies and taking the rest as call-time arguments. |
 | `@Resource` | Mark a class or generator function whose instance the container **opens lazily and closes** (LIFO) at `shutdown_resources()` / `with container`. |
+| `container.scope()` | Open a **scope** (`with` / `async with`) for `Scope.SCOPED` services — one instance per scope, scoped resources torn down at exit. |
+| `Injected[T]` | A **FastAPI** dependency that resolves `T` from the container per request, inside a per-request scope. |
 
 `@Component` is a literal alias for `@Service`; use whichever name you prefer.
 
@@ -122,6 +124,27 @@ from inito import Service, Scope
   class Session:
       ...
   ```
+
+- **`Scope.SCOPED`** caches **one instance per active scope** — a request, a
+  task, a unit of work. A scoped service is resolved inside a
+  `with container.scope():` (or `async with container.scope():`) block; the same
+  instance is returned throughout that scope, a fresh one in the next scope, and
+  a scoped [`@Resource`](#resources-lifecycle-and-teardown) is torn down when the
+  scope exits. Resolving a scoped service with no active scope raises `ScopeError`.
+
+  ```python
+  @Service(scope=Scope.SCOPED)
+  class UnitOfWork:
+      ...
+
+  with container.scope():
+      uow = container.get(UnitOfWork)        # one per scope
+  ```
+
+  Scopes are `contextvars`-based (task/thread-local) and nest — the innermost
+  wins. A scoped `@Resource` (e.g. a per-request DB session) is opened lazily and
+  closed at scope exit, LIFO; async scoped resources are torn down by
+  `async with container.scope()`.
 
 One subtlety: a transient service used as a dependency of a *singleton* is
 built once — at the singleton's first resolution — because the singleton
@@ -357,6 +380,60 @@ raises `ResourceTeardownError`, pointing you at the async path. Teardown is
 best-effort: every resource is closed even if one raises, and the failures are
 aggregated into a single `ResourceTeardownError`.
 
+## Async resolution
+
+`await container.aget(cls)` is the async twin of `get()`. It resolves the **whole
+dependency graph**, awaiting an async `@Resource` generator provider *anywhere* in
+it — not just at the top — so an async resource can be an ordinary constructor
+dependency:
+
+```python
+@Resource
+async def pool(settings: Settings) -> AsyncIterator[Pool]:
+    p = await open_pool(settings.dsn)
+    yield p
+    await p.aclose()
+
+
+@Service
+class Repo:
+    def __init__(self, pool: Pool) -> None:   # the async pool, autowired
+        self.pool = pool
+
+
+async with container:
+    repo = await container.aget(Repo)         # builds pool, then Repo
+```
+
+Sync services, singletons, scoped services, and cached instances resolve exactly
+as `get()` does; only an async-generator provider is awaited. Use `aget` whenever
+the graph contains an async resource.
+
+## FastAPI
+
+`Injected[T]` wires a service into a FastAPI handler — it resolves `T` from the
+container per request, inside a fresh `container.scope()` that is torn down when
+the request ends (so a scoped `@Resource`, like a per-request DB session, is
+opened and closed automatically):
+
+```python
+from fastapi import FastAPI
+from inito import Injected
+
+app = FastAPI()
+
+
+@app.get("/users/{user_id}")
+async def read_user(user_id: int, service: Injected[UserService]) -> dict:
+    return service.get(user_id)
+```
+
+Both forms work: the `Annotated` form `service: Injected[UserService]` and the
+default-value form `service: UserService = Injected(UserService)` (pass
+`container=` to the call form for a non-default container). FastAPI is an
+**optional** dependency — inito never imports it at runtime; using `Injected`
+without it installed raises `FrameworkIntegrationError`.
+
 ## Testing with overrides
 
 Swap any dependency for a fake, with no monkeypatching, so a service under test
@@ -386,6 +463,8 @@ has never seen. `container.reset()` clears the instance caches **and** overrides
 | `CircularDependencyError` | the dependency graph has a cycle (`A → B → A`); the message lists the cycle |
 | `AmbiguousDependencyError` | a bare interface has several registered implementations and no `primary` |
 | `ResourceTeardownError` | a `@Resource` teardown raised, or a sync `shutdown_resources()` met an async resource |
+| `ScopeError` | a `Scope.SCOPED` service was resolved with no active `container.scope()` |
+| `FrameworkIntegrationError` | `Injected` was used but FastAPI isn't installed |
 
 ## Performance and safety
 

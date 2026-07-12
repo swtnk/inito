@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc6] - 2026-07-13
+
+### Added
+
+- **`Scope.SCOPED` + `container.scope()` — per-scope lifetimes.** A `contextvars`
+  -based scope (usable as `with container.scope():` or `async with`) caches one
+  instance of a `Scope.SCOPED` service per scope — a request, task, or unit of
+  work — and tears down any scoped `@Resource` (LIFO) when the scope exits.
+  Scopes nest (innermost wins). Resolving a scoped service with no active scope
+  raises the new `ScopeError`. `@Resource` may now be singleton- **or**
+  scope-scoped.
+- **Full async resolution — `await container.aget(cls)`.** `aget` now resolves the
+  **entire** dependency graph asynchronously, awaiting an async `@Resource`
+  generator provider *anywhere* in it (not only at the top), so an async resource
+  can be an ordinary constructor dependency. Sync `get()` is unchanged.
+- **FastAPI `Injected[T]`.** `Injected[T]` (or `Injected(T, container=...)`) is a
+  FastAPI dependency that resolves `T` from the container per request, inside a
+  per-request `container.scope()` — so a scoped `@Resource` opens and closes with
+  the request. FastAPI stays an **optional** dependency (imported lazily, never at
+  runtime); using `Injected` without it raises the new `FrameworkIntegrationError`.
+
 ## [1.0.0-rc5] - 2026-07-12
 
 ### Added

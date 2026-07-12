@@ -26,9 +26,11 @@ containers, errors, and the thread-safety/performance guarantees) see
 ```
 
 `Container` exposes `get`/`aget`/`register`/`register_provider`/`is_registered`/
-`reset`, the resource lifecycle `shutdown_resources`/`ashutdown_resources` (and the
+`reset`, `scope()` (a `with`/`async with` scope for `Scope.SCOPED` services), the
+resource lifecycle `shutdown_resources`/`ashutdown_resources` (and the
 `with`/`async with` context-manager protocol), and the test overrides
-`override`/`override_factory`/`overrides`/`clear_override`/`clear_overrides`. `Scope` is `SINGLETON`, `TRANSIENT`, or `THREAD_LOCAL`.
+`override`/`override_factory`/`overrides`/`clear_override`/`clear_overrides`.
+`Scope` adds `SCOPED` (one instance per `scope()`). `Scope` is `SINGLETON`, `TRANSIENT`, or `THREAD_LOCAL`.
 `Qualifier` names an implementation for `Annotated[Base, Qualifier("name")]`.
 `Factory[T]` injects a callable that builds a fresh `T` per call, autowiring its
 registered dependencies and taking the rest as call-time keyword arguments.
@@ -52,6 +54,8 @@ registered dependencies and taking the rest as call-time keyword arguments.
 
 .. autoclass:: inito.ResourceOptions
    :members:
+
+.. autoclass:: inito.Injected
 ```
 
 `@Resource` marks a class (torn down by `close()`/`aclose()` or the

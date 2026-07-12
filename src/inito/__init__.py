@@ -34,9 +34,10 @@ from inito.decorators.value import Value, ValueOptions, value
 from inito.di.container import Container, Scope, default_container
 from inito.di.dependency_resolver import Qualifier
 from inito.di.factory import Factory
+from inito.di.integrations.fastapi import Injected
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc5"
+__version__ = "1.0.0-rc6"
 
 __all__ = [
     "AllArgsConstructor",
@@ -56,6 +57,7 @@ __all__ = [
     "GetterOptions",
     "InitoError",
     "Inject",
+    "Injected",
     "NoArgsConstructor",
     "NoArgsConstructorOptions",
     "Qualifier",

@@ -46,7 +46,8 @@ decorators, not `Provide[]` markers or explicit provider/container definitions.
   `[Unreleased]`. Pulled a minimal `container.aget()` forward for async providers.
 - **Phase 4 — Scopes + async + framework glue:** `Scope.SCOPED`,
   `container.scope()`, extend `await container.aget()` to async dependency graphs,
-  FastAPI `Injected[T]`.
+  FastAPI `Injected[T]`. ✅ **Done** (`dev/tasks/phase-4-scopes-async-fastapi.md`)
+  — staged in CHANGELOG `[Unreleased]`. **DI 2.0 roadmap complete.**
 
 Each phase: design → `dev/plans/di2-phase-N.md`, implement (reusing
 `attach_capability`/`make_decorator`, the existing `Container`), tests mirroring

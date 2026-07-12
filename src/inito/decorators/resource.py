@@ -7,7 +7,7 @@ import inspect
 from dataclasses import dataclass
 from typing import Any
 
-from inito.di.container import Container, default_container
+from inito.di.container import Container, Scope, default_container
 from inito.di.resource import RESOURCE_ATTRIBUTE, class_resource_spec, provider_spec
 from inito.exceptions.errors import DecoratorConfigurationError
 
@@ -18,6 +18,7 @@ class ResourceOptions:
 
     close: str = "close"
     container: Container | None = None
+    scope: Scope = Scope.SINGLETON
 
 
 def _apply_resource(target: Any, options: ResourceOptions) -> Any:  # noqa: ANN401 -- class or function
@@ -26,7 +27,7 @@ def _apply_resource(target: Any, options: ResourceOptions) -> Any:  # noqa: ANN4
         setattr(target, RESOURCE_ATTRIBUTE, spec)
         return target
     container = options.container if options.container is not None else default_container
-    container.register_provider(provider_spec(target))
+    container.register_provider(provider_spec(target), scope=options.scope)
     return target
 
 

@@ -14,11 +14,12 @@ we" from one small read instead of scanning the codebase.
   [`tasks/pyright-stubgen.md`](tasks/pyright-stubgen.md)).
 - **Active work:** **DI 2.0** — cover the cases `dependency-injector` solves, in
   inito's zero-dependency, annotation-native way. See [`roadmap.md`](roadmap.md).
-- **Done:** DI 2.0 Phase 1 (overrides · config · qualifiers · thread-local),
-  Phase 2 ([`Factory[T]`](tasks/phase-2-factory.md)), Phase 3
-  ([`@Resource`](tasks/phase-3-resources.md)).
-- **Next phase:** **Phase 4** — `Scope.SCOPED` · `container.scope()` · async
-  dependency graphs on `aget()` · FastAPI `Injected[T]`. Then promote to `1.0.0`.
+- **Done:** **DI 2.0 complete** — Phase 1 (overrides · config · qualifiers ·
+  thread-local), Phase 2 ([`Factory[T]`](tasks/phase-2-factory.md)), Phase 3
+  ([`@Resource`](tasks/phase-3-resources.md)), Phase 4
+  ([scopes · async `aget` · FastAPI `Injected`](tasks/phase-4-scopes-async-fastapi.md)).
+- **Next:** promote to stable **`1.0.0`** (drop the `-rc` suffix) after an rc soak.
+  Phases 2–4 are staged in CHANGELOG `[Unreleased]`, to ship as the next `rc`.
 
 ## Map
 
