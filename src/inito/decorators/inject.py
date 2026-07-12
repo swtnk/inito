@@ -7,7 +7,7 @@ import inspect
 import typing
 from typing import Any, Callable, Optional
 
-from inito.di.container import Container, default_container
+from inito.di.container import _MISSING, Container, default_container
 from inito.di.dependency_resolver import registrable_type
 
 # (param_name, positional_index_or_None, resolved_type) computed once at decoration time.
@@ -70,6 +70,10 @@ def _collect_injectables(fn: Callable[..., Any]) -> list[_Injectable]:
 
 def _wrap(fn: Callable[..., Any], target_container: Container) -> Callable[..., Any]:
     injectables = _collect_injectables(fn)
+    # Bind the resolver once, at decoration time, so the per-call loop makes a
+    # single local call (no ``target_container.`` attribute lookup per injectable)
+    # and folds the old is_registered + get pair into one container traversal.
+    resolve = target_container._resolve_optional
 
     @functools.wraps(fn)
     def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401 -- forwards fn's own signature
@@ -77,8 +81,9 @@ def _wrap(fn: Callable[..., Any], target_container: Container) -> Callable[..., 
         for name, index, resolved_type in injectables:
             if name in kwargs or (index is not None and index < supplied_positional):
                 continue
-            if target_container.is_registered(resolved_type):
-                kwargs[name] = target_container.get(resolved_type)
+            value = resolve(resolved_type)
+            if value is not _MISSING:
+                kwargs[name] = value
         return fn(*args, **kwargs)
 
     return wrapper

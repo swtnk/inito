@@ -60,7 +60,14 @@ decision.
 | decoration (µs) | ~2 | ~100 | ~78 | ~92 |
 
 **InitO is at parity with handwritten/dataclasses across every runtime
-operation.** For an ordinary (non-frozen) class, generated constructors
+operation** — and slightly ahead on equality and single-field hashing. `__eq__`
+emits a field-by-field `and`-chain (`self.a == other.a and ...`), the same thing
+you'd write by hand: it allocates nothing and short-circuits on the first
+differing field, so it is faster than the two-tuple comparison dataclasses
+generate (the `__eq__`/`__hash__` figures above predate this — re-run the
+benchmark to regenerate). A single-field class hashes the field directly rather
+than wrapping it in a one-element tuple. For an ordinary (non-frozen) class,
+generated constructors
 assign fields via plain `self.x = x` — the fastest option, and the one that
 keeps CPython's key-sharing instance dict (PEP 412) intact so attribute
 reads and `__eq__`/`__hash__`/`__repr__` stay at handwritten speed. When a
@@ -117,7 +124,10 @@ current spec).
   within a few percent of handwritten/dataclasses — those generators emit
   exactly what you'd write by hand, and non-frozen construction uses a plain
   `self.x = x`, so the "generated code performs like handwritten code" goal
-  holds up in measurement, not just in design intent.
+  holds up in measurement, not just in design intent. `__eq__` (an
+  allocation-free `and`-chain) and single-field `__hash__` (a direct
+  `hash(self.field)`) are actually a shade faster than the tuple-based forms
+  dataclasses emit — measured ~20% / ~30% on the comparison itself.
 - **Immutable classes** (`@Value`/`@Data(frozen=True)`/frozen-innermost) pay
   ~2x on construction only (the `object.__setattr__` bypass, a cold
   once-per-object path); their attribute reads and eq/hash/repr stay at
@@ -154,9 +164,14 @@ and resolving its container-registered parameters happens on every call.
 It still inspects the wrapped function's signature and type hints **exactly
 once, at decoration time**; the per-call path only checks which parameters
 the caller already supplied (a name/positional-index check — no
-`Signature.bind_partial` per call) and resolves the rest. That is what
-brought the call cost from ~830ns to ~200ns. See
-[the Dependency injection guide](dependency-injection.md) for why this
+`Signature.bind_partial` per call) and resolves the rest. Precomputing the
+signature is what first brought the call cost from ~830ns to ~200ns; each
+unfilled, registered parameter is then resolved by a **single** container
+traversal — `_resolve_optional` (override → warm singleton → registration),
+bound once at decoration — rather than the former `is_registered` check
+*followed by* `get`, which trims the resolution step a further ~15% (the
+`202 ns` figure predates this fold — re-run the benchmark to regenerate).
+See [the Dependency injection guide](dependency-injection.md) for why this
 boundary is architecturally different from every other generated member.
 
 Concurrent first-access to a singleton from multiple threads is safe

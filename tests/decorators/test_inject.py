@@ -137,3 +137,24 @@ def test_inject_ignores_unannotated_params_and_var_keyword():
     assert flag is True
     assert isinstance(repo, Repo)
     assert extra == {"note": "x"}
+
+
+def test_inject_resolves_through_an_active_override():
+    container = Container()
+
+    @Service(container=container)
+    class Repo:
+        pass
+
+    @Inject(container=container)
+    def handler(repo: Repo) -> Repo:
+        return repo
+
+    # An unrelated override is active: Repo has none, so it resolves normally.
+    container.override(str, "unrelated")
+    assert isinstance(handler(), Repo)
+
+    # Now override Repo itself: the override wins on the @Inject fast path too.
+    stub = Repo()
+    container.override(Repo, stub)
+    assert handler() is stub

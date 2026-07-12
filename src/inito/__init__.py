@@ -37,7 +37,7 @@ from inito.di.factory import Factory
 from inito.di.integrations.fastapi import Injected
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc6"
+__version__ = "1.0.0-rc7"
 
 __all__ = [
     "AllArgsConstructor",

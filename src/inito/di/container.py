@@ -220,6 +220,24 @@ class Container:
             return instance  # type: ignore[no-any-return]
         return cast(T, self._resolve(cls, path=()))
 
+    def _resolve_optional(self, cls: type) -> Any:  # noqa: ANN401 -- instance of cls, or _MISSING
+        """Resolve cls if it is overridden or registered, else return the ``_MISSING`` sentinel.
+
+        The single-lookup fast path for ``@Inject``: it folds ``is_registered`` and
+        ``get`` into one traversal (override -> warm singleton -> registration),
+        so an injectable whose singleton is already cached costs one dict read.
+        """
+        if self._overrides:
+            provider = self._overrides.get(cls)
+            if provider is not None:
+                return provider()
+        instance = self._singletons.get(cls)
+        if instance is not None:
+            return instance
+        if cls in self._registrations:
+            return self._resolve(cls, ())
+        return _MISSING
+
     async def aget(self, cls: type[T]) -> T:
         """Async twin of ``get``, awaiting async @Resource providers anywhere in the graph.
 
