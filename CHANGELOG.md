@@ -5,6 +5,32 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc8] - 2026-07-13
+
+### Added
+
+- **`@Jsonize` — `to_dict()` / `to_json()` serialization.** Generates a
+  `to_dict(self) -> dict[str, Any]` and `to_json(self, **kwargs) -> str` over a
+  class's declared fields, coercing the types `json.dumps` can't handle:
+  `datetime`/`date`/`time` (ISO 8601), `UUID`, `Decimal`, `Enum` (by value),
+  `bytes`/`bytearray` (base64), `os.PathLike`, mappings, sequences/sets, and
+  nested `@Jsonize` objects; anything else is stringified. `to_json` forwards its
+  keyword arguments to `json.dumps`. Handy for returning inito objects from a
+  FastAPI handler (`return obj.to_dict()`), logging, and storage. Built the inito
+  way — a new `json` capability + generator + thin decorator — with mypy-plugin
+  and `inito-stubgen` support, so `mypy --strict` and pyright both see the two
+  methods. New `Jsonize`/`jsonize`/`JsonizeOptions` exports.
+
+### Changed (performance — no behavior change)
+
+- **`@Inject` now generates a wrapper specialized to the function's own
+  signature** (for ordinary signatures — `*args`/`**kwargs`/positional-only fall
+  back to the generic wrapper), skipping the per-call `*args`/`**kwargs` packing
+  and the per-parameter loop. ~56% faster on the resolve path (≈130 ns → ≈57 ns
+  on the benchmark machine), within a few ns of a plain call plus one
+  `container.get()`. All existing `@Inject` behaviors are preserved; generated
+  helper names are namespaced so a parameter can never shadow them.
+
 ## [1.0.0-rc7] - 2026-07-13
 
 ### Changed (performance — no behavior change)

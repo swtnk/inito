@@ -27,6 +27,9 @@ htmlcov/
 # -e .[dev]`), so the lock is an unused local artifact rather than a source of truth.
 uv.lock
 
+# Local proof-of-concept apps (dev-machine-only, not part of the package)
+poc/
+
 # Docs
 site/
 docs/_build/

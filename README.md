@@ -43,7 +43,7 @@ parity](#performance) with handwritten classes and `dataclasses`.
 - [Decorators](#decorators)
   - [`@Data`](#data) · [`@Value`](#value) · [`@Getter` / `@Setter`](#getter--setter)
   - [`@ToString`](#tostring) · [`@EqualsAndHashCode`](#equalsandhashcode)
-  - [Constructors](#constructors) · [`@Builder`](#builder) · [`@Config`](#config)
+  - [Constructors](#constructors) · [`@Builder`](#builder) · [`@Config`](#config) · [`@Jsonize`](#jsonize)
   - [Composing decorators](#composing-decorators) · [Lowercase aliases](#lowercase-aliases)
 - [Dependency injection](#dependency-injection)
   - [`@Service` / `@Singleton` / `@Inject`](#service--singleton--inject)
@@ -309,6 +309,33 @@ settings = Settings()                 # reads os.environ
 
 Supports `str`/`int`/`float`/`bool`/`Optional[...]`. A required field with no env
 value and no default raises `ConfigResolutionError`.
+
+### `@Jsonize`
+
+Generates `to_dict()` and `to_json()` that serialize every declared field, coercing
+the types `json.dumps` chokes on — `datetime`/`date`/`time` (ISO 8601), `UUID`,
+`Decimal`, `Enum`, `bytes` (base64), `Path`, mappings/sequences/sets, and nested
+`@Jsonize` objects.
+
+```python
+import datetime, uuid
+from inito import Data, Jsonize
+
+
+@Jsonize
+@Data
+class Event:
+    id: uuid.UUID
+    when: datetime.datetime
+    name: str = ""
+
+
+event.to_dict()               # {"id": "…", "when": "2026-…T…", "name": "launch"}
+event.to_json(sort_keys=True) # kwargs forwarded to json.dumps
+```
+
+Handy for APIs (return `obj.to_dict()` from a FastAPI handler), logging, and
+storage. Both the mypy plugin and `inito-stubgen` expose `to_dict`/`to_json`.
 
 ### Composing decorators
 

@@ -22,6 +22,7 @@ from inito.typing.mypy_plugin.constructors import (
     transform_setter,
     transform_value,
 )
+from inito.typing.mypy_plugin.serialization import transform_jsonize
 
 _DECORATOR_MODULE = "inito.decorators"
 
@@ -65,6 +66,7 @@ def _build_transforms() -> dict[str, Callable[[ClassDefContext], bool]]:
     )
     _register(transforms, "builder", "Builder", "builder", transform_builder)
     _register(transforms, "value", "Value", "value", transform_value)
+    _register(transforms, "jsonize", "Jsonize", "jsonize", transform_jsonize)
     return transforms
 
 

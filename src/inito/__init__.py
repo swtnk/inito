@@ -15,6 +15,7 @@ from inito.decorators.equals_and_hash_code import (
 )
 from inito.decorators.getter import Getter, GetterOptions, getter
 from inito.decorators.inject import Inject, inject
+from inito.decorators.jsonize import Jsonize, JsonizeOptions, jsonize
 from inito.decorators.no_args_constructor import (
     NoArgsConstructor,
     NoArgsConstructorOptions,
@@ -37,7 +38,7 @@ from inito.di.factory import Factory
 from inito.di.integrations.fastapi import Injected
 from inito.exceptions.errors import InitoError
 
-__version__ = "1.0.0-rc7"
+__version__ = "1.0.0-rc8"
 
 __all__ = [
     "AllArgsConstructor",
@@ -58,6 +59,8 @@ __all__ = [
     "InitoError",
     "Inject",
     "Injected",
+    "Jsonize",
+    "JsonizeOptions",
     "NoArgsConstructor",
     "NoArgsConstructorOptions",
     "Qualifier",
@@ -85,6 +88,7 @@ __all__ = [
     "equals_and_hash_code",
     "getter",
     "inject",
+    "jsonize",
     "no_args_constructor",
     "required_args_constructor",
     "resource",

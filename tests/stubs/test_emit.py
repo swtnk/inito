@@ -124,3 +124,16 @@ def test_builder_source_handles_a_setter_after_the_build_method():
     assert "def title(self, value: str) -> Book.Builder: ..." in source
     assert "def author(self, value: str) -> Book.Builder: ..." in source
     assert "def build(self) -> Book: ..." in source
+
+
+def test_jsonize_emits_to_dict_and_to_json_stubs():
+    from inito import Data, Jsonize
+
+    @Jsonize
+    @Data
+    class Doc:
+        title: str
+
+    source = member_stub_source(Doc)
+    assert "def to_dict(self) -> dict[str, Any]: ..." in source
+    assert "def to_json(self, **kwargs: Any) -> str: ..." in source

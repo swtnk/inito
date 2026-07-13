@@ -26,6 +26,7 @@ all-in-one `@Data`.
   `@AllArgsConstructor`, `@RequiredArgsConstructor`.
 - [@Builder](decorators/builder.md) — a fluent, chainable builder.
 - [@Config](decorators/config.md) — load fields from environment variables.
+- [@Jsonize](decorators/jsonize.md) — `to_dict()`/`to_json()` serializing every field.
 
 ## Dependency injection
 
@@ -68,6 +69,7 @@ decorators/equals-and-hash-code
 decorators/constructors
 decorators/builder
 decorators/config
+decorators/jsonize
 ```
 
 ```{toctree}

@@ -161,18 +161,20 @@ Unlike every other decorator in this library, `@Inject` and cold
 post-construction attribute/method access on an already-resolved object
 is. `@Inject` wraps a function (typically a composition-root entry point),
 and resolving its container-registered parameters happens on every call.
-It still inspects the wrapped function's signature and type hints **exactly
-once, at decoration time**; the per-call path only checks which parameters
-the caller already supplied (a name/positional-index check — no
-`Signature.bind_partial` per call) and resolves the rest. Precomputing the
-signature is what first brought the call cost from ~830ns to ~200ns; each
-unfilled, registered parameter is then resolved by a **single** container
-traversal — `_resolve_optional` (override → warm singleton → registration),
-bound once at decoration — rather than the former `is_registered` check
-*followed by* `get`, which trims the resolution step a further ~15% (the
-`202 ns` figure predates this fold — re-run the benchmark to regenerate).
-See [the Dependency injection guide](dependency-injection.md) for why this
-boundary is architecturally different from every other generated member.
+It inspects the wrapped function's signature and type hints **exactly once, at
+decoration time** — and, for an ordinary signature (no `*args`/`**kwargs`/
+positional-only), **generates a wrapper with the function's own parameters**, so
+a call skips the generic `*args`/`**kwargs` packing and the per-parameter Python
+loop entirely; exotic signatures fall back to a generic wrapper with identical
+behavior. Each unfilled, registered parameter is then resolved by a **single**
+container traversal — `_resolve_optional` (override → warm singleton →
+registration), bound once at decoration. Together these took the per-call cost
+from ~830ns → ~200ns (precomputing the signature) → ~55ns (the specialized
+wrapper) on the benchmark machine — within a few ns of a plain call plus one
+`container.get()`. (The `202 ns` figure above predates the specialized wrapper —
+re-run the benchmark to regenerate.) See
+[the Dependency injection guide](dependency-injection.md) for why this boundary
+is architecturally different from every other generated member.
 
 Concurrent first-access to a singleton from multiple threads is safe
 (verified with a real `threading` reproduction: 20 threads racing a cold

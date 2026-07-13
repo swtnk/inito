@@ -58,6 +58,10 @@ def _method_source(owner: str, name: str, fn: Any, field_types: dict[str, str]) 
         return "def __delattr__(self, name: str) -> None: ..."
     if name == "to_builder":
         return f"def to_builder(self) -> {owner}.Builder: ..."
+    if name == "to_dict":
+        return "def to_dict(self) -> dict[str, Any]: ..."
+    if name == "to_json":
+        return "def to_json(self, **kwargs: Any) -> str: ..."
     if name.startswith("get_"):
         return f"def {name}(self) -> {field_types.get(name[4:], 'Any')}: ..."
     if name.startswith("set_"):

@@ -142,3 +142,17 @@ Also exported as `inito.builder`. Guide: [@Builder](../decorators/builder.md).
 ```
 
 Also exported as `inito.config`. Guide: [@Config](../decorators/config.md).
+
+## @Jsonize / jsonize
+
+```{eval-rst}
+.. autodata:: inito.Jsonize
+   :annotation:
+
+.. autoclass:: inito.JsonizeOptions
+   :members:
+```
+
+Also exported as `inito.jsonize`. Generates `to_dict()`/`to_json()` serializing
+every declared field (datetime, UUID, Decimal, Enum, bytes, Path, nested
+`@Jsonize`, …) to JSON-native forms. Guide: [@Jsonize](../decorators/jsonize.md).

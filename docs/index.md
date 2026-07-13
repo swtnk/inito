@@ -116,6 +116,7 @@ Every decorator, option, and exception, generated from the source.
 | `@NoArgsConstructor` · `@AllArgsConstructor` · `@RequiredArgsConstructor` | an `__init__` and nothing else | [Constructors](decorators/constructors.md) |
 | `@Builder` / `builder` | fluent `Cls.builder().x(1).build()`, optional `.to_builder()` | [@Builder](decorators/builder.md) |
 | `@Config` | load fields from environment variables, autowired by type | [@Config](decorators/config.md) |
+| `@Jsonize` | `to_dict()`/`to_json()` serializing every field (datetime, UUID, Decimal, …) | [@Jsonize](decorators/jsonize.md) |
 | `@Service` / `@Singleton` / `@Inject` | dependency injection via a `Container` | [DI](dependency-injection.md) |
 
 Every PascalCase decorator has a lowercase alias (`data`, `builder`, `value`, …)
