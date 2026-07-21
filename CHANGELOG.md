@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-07-21
+
+First stable release. The API is now considered stable and follows Semantic
+Versioning: breaking changes will require a major-version bump.
+
+No source changes since `1.0.0-rc8` — this promotes the release-candidate series
+(`rc1`–`rc8`) to a stable guarantee. The complete, itemized history of everything
+that shipped across the candidates is preserved in the entries below.
+
+### Highlights
+
+- Zero-runtime-dependency boilerplate decorators: `@Data`, `@Value`, `@Builder`,
+  `@Getter`/`@Setter`, `@ToString`, `@EqualsAndHashCode`, and the constructor
+  family (`@NoArgsConstructor`/`@AllArgsConstructor`/`@RequiredArgsConstructor`).
+- Annotation-native dependency injection: `Container`, `@Singleton`/`@Service`/
+  `@Component`, `Scope` (`SINGLETON`/`TRANSIENT`/`THREAD_LOCAL`/`SCOPED`),
+  `Qualifier`, `Factory[T]`, `@Resource` lifecycle management, full async
+  resolution, and FastAPI `Injected[T]`.
+- `@Config` environment/settings loading and `@Jsonize` serialization.
+- Static-typing support across the surface: a mypy plugin, PEP 681
+  `dataclass_transform` stubs for pyright, and the `inito-stubgen` CLI.
+
 ## [1.0.0-rc8] - 2026-07-13
 
 ### Added
