@@ -56,6 +56,13 @@ clear error or the correct result.
   works unchanged), with full static typing. (A separate `inito`/`inito-di`
   distribution split remains a possible future major release.)
 
+### Documentation
+
+- **Composition-root guidance for DI.** The dependency-injection guide now leads
+  with the explicit composition-root pattern (wire the graph by hand in one
+  function) as the recommended default, framing the global `default_container` /
+  `@Inject` as a convenience and a local `Container` as the enterprise choice.
+
 ### Changed (typing)
 
 - **Stronger zero-config pyright support.** `@Value` now carries a

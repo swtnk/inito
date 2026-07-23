@@ -47,6 +47,32 @@ print(default_container.get(UserRepository)) # explicit resolution, same wiring
 plain = UserRepository(Database())           # still an ordinary class
 ```
 
+## Composition roots (the recommended pattern)
+
+Because every `@Service` class stays an ordinary, directly-constructible class,
+the clearest way to wire an application — especially a large one — is an
+**explicit composition root**: one function that builds the graph by hand, near
+the entry point. No global, no service locator, no magic — just constructors.
+
+```python
+def build_user_service() -> UserService:
+    database = Database()
+    repository = UserRepository(database)
+    return UserService(repository)
+
+
+service = build_user_service()   # the whole graph, wired in one obvious place
+```
+
+This is the easiest thing to read, test (pass fakes straight to the
+constructors), and reason about — the dependencies are visible at the call
+site. Reach for the `Container` when the graph is large or its lifetimes
+(singletons, scopes, resources) are worth centralizing, and prefer a **local**
+`Container` you pass around over the global `default_container` /`@Inject`, which
+are a convenience (handy in scripts and tests) rather than the enterprise
+default. The container never changes your classes, so you can always drop back
+to hand-wiring for a subgraph.
+
 ## The pieces
 
 **A `Container` is the heart of the system — a registry and a resolver in one.**
