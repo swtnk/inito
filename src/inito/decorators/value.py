@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from inito.core.attach import attach_capability
+from inito.core.slots import rebuild_with_slots
 from inito.metadata.extractor import default_extractor
 from inito.reflection.introspection import reject_pydantic_target
 from inito.utils.decorator_factory import make_decorator
@@ -15,11 +16,14 @@ class ValueOptions:
     """Configuration surface for the @Value decorator."""
 
     include_getters: bool = True
+    slots: bool = False
 
 
 def _apply_value(cls: type, options: ValueOptions) -> type:
     reject_pydantic_target(cls, "@Value")
     metadata = default_extractor.extract(cls)
+    if options.slots:
+        cls, metadata = rebuild_with_slots(cls, metadata)
     # Immutability is attached before the constructor so the constructor
     # assigns via object.__setattr__ (bypassing the blocking __setattr__)
     # rather than a plain self.x = x. See generators/constructor.py.

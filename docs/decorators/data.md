@@ -55,6 +55,7 @@ Fields are the class's annotated attributes, accumulated across the MRO
 | `include_getters` | `True` | set `False` to omit `get_<field>()` |
 | `include_setters` | `True` | set `False` to omit `set_<field>()` (does *not* make the class immutable) |
 | `accessors` | `"lombok"` | accessor style: `"lombok"` (`get_x`/`set_x`), `"attr"` (none — use `obj.x`), or `"both"` (alias of `"lombok"`) |
+| `slots` | `False` | set `True` to recreate the class with `__slots__` — smaller instances, no accidental attributes (like `attrs`) |
 
 ```python
 @Data(accessors="attr")        # Pythonic: no get_x/set_x, just user.name
@@ -63,6 +64,17 @@ Fields are the class's annotated attributes, accumulated across the MRO
 `accessors="attr"` is the Pythonic choice for new code — the attribute is the
 accessor. The mypy plugin honors it, so `get_`/`set_` disappear from the typed
 surface too.
+
+```python
+@Data(slots=True)              # smaller instances, no accidental attributes
+```
+
+`slots=True` recreates the class with `__slots__` (Python fixes slots at class
+creation, so they can't be added in place). Defaults, accessors,
+`__post_init__`, `super()`, and `weakref` all keep working, and the mypy plugin
+models the slots. When stacking with `@Builder`, put `@Builder` on the outside
+(`@Builder` above `@Data(slots=True)`) so it targets the rebuilt class. For the
+full memory win every base class should use slots too.
 
 ```python
 @Data(frozen=True)             # immutable value object, no setters

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from inito.core.attach import attach_capability, attach_unhashable
+from inito.core.slots import rebuild_with_slots
 from inito.exceptions.errors import DecoratorConfigurationError
 from inito.generators.constructor import needs_object_setattr
 from inito.metadata.extractor import default_extractor
@@ -33,6 +34,7 @@ class DataOptions:
     include_getters: bool = True
     include_setters: bool = True
     accessors: str = "lombok"
+    slots: bool = False
 
 
 def _apply_data(cls: type, options: DataOptions) -> type:
@@ -42,6 +44,8 @@ def _apply_data(cls: type, options: DataOptions) -> type:
             f"@Data accessors must be one of {_ACCESSOR_MODES}, got {options.accessors!r}."
         )
     metadata = default_extractor.extract(cls)
+    if options.slots:
+        cls, metadata = rebuild_with_slots(cls, metadata)
     # Immutability is attached before the constructor so the constructor
     # generator sees the blocking __setattr__ and assigns fields via
     # object.__setattr__; a non-frozen class keeps the faster plain

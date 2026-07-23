@@ -30,6 +30,7 @@ def transform_data(ctx: ClassDefContext) -> bool:
         add_getters(ctx, fields)
     if accessors and include_setters and not frozen:
         add_setters(ctx, fields)
+    _apply_slots(ctx, fields)
     return True
 
 
@@ -95,6 +96,7 @@ def transform_value(ctx: ClassDefContext) -> bool:
     add_init(ctx, fields)
     if include_getters:
         add_getters(ctx, fields)
+    _apply_slots(ctx, fields)
     return True
 
 
@@ -129,6 +131,11 @@ def _fail_on_required_after_optional(ctx: ClassDefContext, fields: list[InitoFie
                 ctx.cls,
             )
             return
+
+
+def _apply_slots(ctx: ClassDefContext, fields: list[InitoField]) -> None:
+    if bool_option(ctx, "slots", False):
+        ctx.cls.info.slots = {field.name for field in fields}
 
 
 def add_getters(ctx: ClassDefContext, fields: list[InitoField]) -> None:

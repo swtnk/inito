@@ -28,6 +28,12 @@ clear error or the correct result.
   `get_x`/`set_x`), `"attr"` (none — the attribute *is* the accessor, the
   Pythonic style), or `"both"` (alias of `"lombok"`). Honored by the mypy plugin,
   so `accessors="attr"` also drops `get_`/`set_` from what the type-checker sees.
+- **`slots=True`** on `@Data`/`@Value` — recreate the class with `__slots__` for
+  a smaller per-instance footprint and no accidental attributes, the way `attrs`
+  does. Field defaults, getters/setters, `__post_init__`, `super()` in your
+  methods, and `weakref` all keep working; the mypy plugin models the slots so an
+  undeclared attribute is a type error too. (Put `@Builder` outside
+  `@Data(slots=True)` when stacking, so the builder targets the rebuilt class.)
 
 ### Fixed
 

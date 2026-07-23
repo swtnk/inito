@@ -85,6 +85,23 @@ def test_all_args_constructor_rejects_required_after_optional(check_mypy):
     assert "cannot follow defaulted field" in out
 
 
+def test_data_slots_rejects_an_undeclared_attribute(check_mypy):
+    status, out = check_mypy(
+        """
+        from inito import Data
+
+        @Data(slots=True)
+        class Point:
+            x: int
+
+        p = Point(1)
+        p.z = 5
+        """
+    )
+    assert status == 1
+    assert "z" in out
+
+
 def test_field_default_factory_makes_the_param_optional(check_mypy):
     status, out = check_mypy(
         """
