@@ -48,6 +48,14 @@ clear error or the correct result.
   type-check time — the same footgun the runtime rejects — pointing to
   `field(default_factory=...)`.
 
+- **`import inito` is now DI-free.** The dependency-injection layer (`Container`,
+  `@Service`/`@Component`/`@Singleton`/`@Inject`, `Factory`, `@Resource`, FastAPI
+  `Injected`) is imported lazily on first access, so importing inito for just the
+  data types no longer pulls in the DI machinery — a faster, leaner cold import.
+  Every name is still importable exactly as before (`from inito import Container`
+  works unchanged), with full static typing. (A separate `inito`/`inito-di`
+  distribution split remains a possible future major release.)
+
 ### Changed (typing)
 
 - **Stronger zero-config pyright support.** `@Value` now carries a

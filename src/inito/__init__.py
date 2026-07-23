@@ -1,4 +1,18 @@
-"""Inito: a Lombok-inspired boilerplate-elimination library for Python."""
+"""Inito: a Lombok-inspired boilerplate-elimination library for Python.
+
+The core - the data-codegen decorators (``@Data``, ``@Value``, ``@Builder``,
+accessors, constructors, ``@Config``, ``@Jsonize``, ``field``) - is imported
+eagerly. The optional dependency-injection layer (``Container``, ``@Service``,
+``@Singleton``, ``@Inject``, ``Factory``, ``@Resource``, FastAPI ``Injected``)
+is imported lazily on first access, so ``import inito`` stays DI-free for code
+that only wants the data types. Every name is still importable exactly as
+before - ``from inito import Container`` triggers the lazy load transparently.
+"""
+
+from __future__ import annotations
+
+import importlib
+from typing import TYPE_CHECKING, Any
 
 from inito.decorators.all_args_constructor import (
     AllArgsConstructor,
@@ -14,7 +28,6 @@ from inito.decorators.equals_and_hash_code import (
     equals_and_hash_code,
 )
 from inito.decorators.getter import Getter, GetterOptions, getter
-from inito.decorators.inject import Inject, inject
 from inito.decorators.jsonize import Jsonize, JsonizeOptions, jsonize
 from inito.decorators.no_args_constructor import (
     NoArgsConstructor,
@@ -26,20 +39,66 @@ from inito.decorators.required_args_constructor import (
     RequiredArgsConstructorOptions,
     required_args_constructor,
 )
-from inito.decorators.resource import Resource, ResourceOptions, resource
-from inito.decorators.service import Component, Service, ServiceOptions, component, service
 from inito.decorators.setter import Setter, SetterOptions, setter
-from inito.decorators.singleton import Singleton, singleton
 from inito.decorators.to_string import ToString, ToStringOptions, to_string
 from inito.decorators.value import Value, ValueOptions, value
-from inito.di.container import Container, Scope, default_container
-from inito.di.dependency_resolver import Qualifier
-from inito.di.factory import Factory
-from inito.di.integrations.fastapi import Injected
 from inito.exceptions.errors import InitoError
 from inito.metadata.field import field
 
 __version__ = "1.0.1"
+
+_LAZY_ATTRS = {
+    "Container": "inito.di.container",
+    "Scope": "inito.di.container",
+    "default_container": "inito.di.container",
+    "Qualifier": "inito.di.dependency_resolver",
+    "Factory": "inito.di.factory",
+    "Injected": "inito.di.integrations.fastapi",
+    "Component": "inito.decorators.service",
+    "Service": "inito.decorators.service",
+    "ServiceOptions": "inito.decorators.service",
+    "component": "inito.decorators.service",
+    "service": "inito.decorators.service",
+    "Singleton": "inito.decorators.singleton",
+    "singleton": "inito.decorators.singleton",
+    "Inject": "inito.decorators.inject",
+    "inject": "inito.decorators.inject",
+    "Resource": "inito.decorators.resource",
+    "ResourceOptions": "inito.decorators.resource",
+    "resource": "inito.decorators.resource",
+}
+"""The dependency-injection surface: ``name -> module``, imported on first use."""
+
+
+def __getattr__(name: str) -> Any:  # noqa: ANN401 -- module-level lazy attribute access (PEP 562)
+    """Lazily import a DI name on first access, then cache it in the module."""
+    module_name = _LAZY_ATTRS.get(name)
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(importlib.import_module(module_name), name)
+    globals()[name] = value
+    return value
+
+
+def __dir__() -> list[str]:
+    return sorted(__all__)
+
+
+if TYPE_CHECKING:
+    from inito.decorators.inject import Inject, inject
+    from inito.decorators.resource import Resource, ResourceOptions, resource
+    from inito.decorators.service import (
+        Component,
+        Service,
+        ServiceOptions,
+        component,
+        service,
+    )
+    from inito.decorators.singleton import Singleton, singleton
+    from inito.di.container import Container, Scope, default_container
+    from inito.di.dependency_resolver import Qualifier
+    from inito.di.factory import Factory
+    from inito.di.integrations.fastapi import Injected
 
 __all__ = [
     "AllArgsConstructor",
