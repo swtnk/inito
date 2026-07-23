@@ -13,10 +13,16 @@ from inito.utils.decorator_factory import make_decorator
 
 @dataclass(frozen=True)
 class ValueOptions:
-    """Configuration surface for the @Value decorator."""
+    """Configuration surface for the @Value decorator.
+
+    freeze_collections=True stores a mutable collection field as an immutable
+    one (list->tuple, set->frozenset, dict->read-only mapping) at construction,
+    hardening the shallow freeze that @Value already provides.
+    """
 
     include_getters: bool = True
     slots: bool = False
+    freeze_collections: bool = False
 
 
 def _apply_value(cls: type, options: ValueOptions) -> type:
@@ -28,7 +34,8 @@ def _apply_value(cls: type, options: ValueOptions) -> type:
     # assigns via object.__setattr__ (bypassing the blocking __setattr__)
     # rather than a plain self.x = x. See generators/constructor.py.
     attach_capability(cls, metadata, "immutable")
-    attach_capability(cls, metadata, "constructor")
+    constructor = "freezing_constructor" if options.freeze_collections else "constructor"
+    attach_capability(cls, metadata, constructor)
     attach_capability(cls, metadata, "repr")
     attach_capability(cls, metadata, "eq")
     attach_capability(cls, metadata, "hash")

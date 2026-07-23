@@ -52,6 +52,8 @@ stacking is needed.
 | Option | Default | Effect |
 |---|---|---|
 | `include_getters` | `True` | set `False` to omit `get_<field>()` |
+| `slots` | `False` | set `True` to recreate the class with `__slots__` (smaller instances) |
+| `freeze_collections` | `False` | store a mutable collection field as an immutable one at construction |
 
 `@Value` never generates setters — that is the point — so there is no
 `include_setters` option.
@@ -72,6 +74,13 @@ lock down via an option.
 - A non-frozen class uses a plain `self.x = x`, which is faster; the
   immutable path costs a little more to construct but reads at the same
   speed. See [Performance](../performance.md).
+- **The freeze is shallow.** `@Value` blocks *reassignment* (`price.amount = 0`),
+  not mutation of a mutable field value (`bag.items.append(...)`). Pass
+  `freeze_collections=True` to store `list`→`tuple`, `set`→`frozenset`, and
+  `dict`→read-only mapping at construction, so the top-level container can't be
+  mutated either (a `list`/`set` field then also becomes hashable). It stays
+  shallow — nested containers are left as-is — and the declared annotation is
+  unchanged, so treat the stored value as read-only.
 
 ## See also
 

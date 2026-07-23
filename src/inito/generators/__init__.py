@@ -17,6 +17,7 @@ from inito.generators.registry import GeneratorRegistry, default_registry
 from inito.generators.repr_ import ReprGenerator
 
 default_registry.register("constructor", ConstructorGenerator())
+default_registry.register("freezing_constructor", ConstructorGenerator(freeze_collections=True))
 default_registry.register("no_args_constructor", NoArgsConstructorGenerator())
 default_registry.register("required_args_constructor", RequiredArgsConstructorGenerator())
 default_registry.register("repr", ReprGenerator())

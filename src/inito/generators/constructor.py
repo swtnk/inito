@@ -25,19 +25,29 @@ from typing import Any
 from inito.exceptions.errors import InvalidFieldDefinitionError
 from inito.metadata.class_metadata import ClassMetadata
 from inito.metadata.field import RESERVED_FIELD_PREFIX, FieldMetadata
+from inito.utils.freezing import freeze_value
 
 
 class ConstructorGenerator:
-    """Generates an __init__ accepting every declared field."""
+    """Generates an __init__ accepting every declared field.
+
+    ``freeze_collections`` wraps each assigned value in ``freeze_value`` so a
+    mutable collection is stored as an immutable one - used by
+    ``@Value(freeze_collections=True)``.
+    """
 
     method_name = "__init__"
+
+    def __init__(self, freeze_collections: bool = False) -> None:
+        """Store whether assigned collection values are frozen at construction."""
+        self.freeze_collections = freeze_collections
 
     def generate_source(self, metadata: ClassMetadata) -> str:
         """Return the __init__ source accepting every declared field."""
         _reject_required_after_optional(metadata)
         use_setattr = needs_object_setattr(metadata.owner)
         parameters = render_parameter_list(metadata.fields)
-        body = render_assignment_body(metadata.fields, use_setattr)
+        body = render_assignment_body(metadata.fields, use_setattr, self.freeze_collections)
         header = f"def __init__(self{', ' + parameters if parameters else ''}):"
         return f"{header}\n{body}\n{render_post_init_call(metadata)}"
 
@@ -51,6 +61,8 @@ class ConstructorGenerator:
             elif field.has_default:
                 globals_ns[default_name(field)] = field.default
         _add_setattr_global(metadata, globals_ns)
+        if self.freeze_collections:
+            globals_ns[_FREEZE_GLOBAL] = freeze_value
         return globals_ns
 
 
@@ -183,20 +195,24 @@ def _reject_required_after_optional(metadata: ClassMetadata) -> None:
             )
 
 
-def render_assignment_body(fields: tuple[FieldMetadata, ...], use_setattr: bool) -> str:
+def render_assignment_body(
+    fields: tuple[FieldMetadata, ...], use_setattr: bool, freeze: bool = False
+) -> str:
     """Render the __init__ body assigning every field to self."""
     if not fields:
         return "    pass"
-    return "\n".join(_render_assignment(field, use_setattr) for field in fields)
+    return "\n".join(_render_assignment(field, use_setattr, freeze) for field in fields)
 
 
-def _render_assignment(field: FieldMetadata, use_setattr: bool) -> str:
+def _render_assignment(field: FieldMetadata, use_setattr: bool, freeze: bool = False) -> str:
     if field.default_factory is not None:
         sentinel = factory_sentinel_name(field)
         factory = factory_name(field)
         value_expr = f"{factory}() if {field.name} is {sentinel} else {field.name}"
     else:
         value_expr = field.name
+    if freeze:
+        value_expr = f"{_FREEZE_GLOBAL}({value_expr})"
     return _assignment_line(field.name, value_expr, use_setattr)
 
 
@@ -214,6 +230,7 @@ def needs_object_setattr(cls: type) -> bool:
 
 
 _SETATTR_GLOBAL = f"{RESERVED_FIELD_PREFIX}setattr"
+_FREEZE_GLOBAL = f"{RESERVED_FIELD_PREFIX}freeze"
 
 
 def _assignment_line(name: str, value_expr: str, use_setattr: bool) -> str:

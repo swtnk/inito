@@ -34,6 +34,11 @@ clear error or the correct result.
   methods, and `weakref` all keep working; the mypy plugin models the slots so an
   undeclared attribute is a type error too. (Put `@Builder` outside
   `@Data(slots=True)` when stacking, so the builder targets the rebuilt class.)
+- **`@Value(freeze_collections=True)`** — store a mutable collection field as an
+  immutable one at construction (`list`→`tuple`, `set`→`frozenset`,
+  `dict`→read-only `MappingProxyType`), hardening `@Value`'s shallow freeze. A
+  `list`/`set` field then also becomes hashable. Shallow by design; the declared
+  annotation is unchanged, so treat the stored value as read-only.
 
 ### Fixed
 

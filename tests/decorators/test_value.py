@@ -100,4 +100,50 @@ def test_value_rejects_non_type_non_options_argument():
 
 
 def test_value_options_defaults():
-    assert ValueOptions() == ValueOptions(include_getters=True)
+    assert ValueOptions() == ValueOptions(
+        include_getters=True, slots=False, freeze_collections=False
+    )
+
+
+def test_freeze_collections_converts_mutable_values_to_immutable():
+    from types import MappingProxyType
+
+    @Value(freeze_collections=True)
+    class Bag:
+        items: list
+        tags: set
+        meta: dict
+
+    bag = Bag([1, 2], {3, 4}, {"a": 1})
+    assert bag.items == (1, 2)
+    assert isinstance(bag.items, tuple)
+    assert bag.tags == frozenset({3, 4})
+    assert isinstance(bag.meta, MappingProxyType)
+    with pytest.raises(TypeError):
+        bag.meta["b"] = 2
+
+
+def test_freeze_collections_makes_a_list_field_hashable():
+    @Value(freeze_collections=True)
+    class Tags:
+        names: list
+
+    assert hash(Tags(["a", "b"])) == hash(Tags(["a", "b"]))
+
+
+def test_freeze_collections_leaves_non_collection_fields_untouched():
+    @Value(freeze_collections=True)
+    class Point:
+        x: int
+        label: str
+
+    point = Point(1, "a")
+    assert (point.x, point.label) == (1, "a")
+
+
+def test_value_without_freeze_collections_keeps_a_list():
+    @Value
+    class Bag:
+        items: list
+
+    assert isinstance(Bag([1]).items, list)
