@@ -1,3 +1,6 @@
+import linecache
+import traceback
+
 import pytest
 
 from inito.exceptions.errors import CodeGenerationError
@@ -32,3 +35,22 @@ def test_build_function_defaults_qualname_to_name():
 def test_build_function_wraps_compile_errors():
     with pytest.raises(CodeGenerationError):
         build_function("broken", "def broken(:\n    pass\n")
+
+
+def test_generated_source_is_registered_with_linecache_for_tracebacks():
+    source = "def boom():\n    raise ValueError('x')\n"
+    fn = build_function("boom", source, qualname="Widget.boom")
+    filename = fn.__code__.co_filename
+    assert linecache.getline(filename, 2).strip() == "raise ValueError('x')"
+
+    try:
+        fn()
+    except ValueError:
+        rendered = traceback.format_exc()
+    assert "raise ValueError('x')" in rendered
+
+
+def test_generated_filenames_are_unique():
+    a = build_function("f", "def f():\n    return 1\n", qualname="A.f")
+    b = build_function("f", "def f():\n    return 2\n", qualname="A.f")
+    assert a.__code__.co_filename != b.__code__.co_filename

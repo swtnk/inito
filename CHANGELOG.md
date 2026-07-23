@@ -40,6 +40,11 @@ clear error or the correct result.
   `list`/`set` field then also becomes hashable. Shallow by design; the declared
   annotation is unchanged, so treat the stored value as read-only.
 
+- **Readable tracebacks through generated code.** Each generated method's source
+  is registered with `linecache`, so a traceback that passes through a generated
+  `__init__`/`__eq__`/`__post_init__` frame shows the real source line instead of
+  a blank `<inito:...>` frame.
+
 ### Changed (typing)
 
 - **Stronger zero-config pyright support.** `@Value` now carries a
