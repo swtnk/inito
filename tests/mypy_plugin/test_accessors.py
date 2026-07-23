@@ -1,3 +1,22 @@
+def test_data_accessors_attr_omits_get_set(check_mypy):
+    status, out = check_mypy(
+        """
+        from inito import Data
+
+        @Data(accessors="attr")
+        class User:
+            name: str
+
+        u = User("Ada")
+        reveal_type(u.name)
+        u.get_name()
+        """
+    )
+    assert status == 1
+    assert 'Revealed type is "str"' in out
+    assert "has no attribute" in out
+
+
 def test_getter_synthesizes_only_getters(check_mypy):
     status, out = check_mypy(
         """

@@ -12,7 +12,7 @@ from mypy.plugins.common import add_method_to_class
 from mypy.types import NoneType
 
 from inito.typing.mypy_plugin.fields import InitoField, collect_fields
-from inito.typing.mypy_plugin.options import bool_option
+from inito.typing.mypy_plugin.options import bool_option, str_option
 
 
 def transform_data(ctx: ClassDefContext) -> bool:
@@ -23,11 +23,12 @@ def transform_data(ctx: ClassDefContext) -> bool:
     frozen = bool_option(ctx, "frozen", False)
     include_getters = bool_option(ctx, "include_getters", True)
     include_setters = bool_option(ctx, "include_setters", True)
+    accessors = str_option(ctx, "accessors", "lombok") != "attr"
 
     add_init(ctx, fields)
-    if include_getters:
+    if accessors and include_getters:
         add_getters(ctx, fields)
-    if include_setters and not frozen:
+    if accessors and include_setters and not frozen:
         add_setters(ctx, fields)
     return True
 

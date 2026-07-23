@@ -54,6 +54,15 @@ Fields are the class's annotated attributes, accumulated across the MRO
 | `frozen` | `False` | make instances **immutable** (assignment/deletion raise `FrozenInstanceError`) and skip setters |
 | `include_getters` | `True` | set `False` to omit `get_<field>()` |
 | `include_setters` | `True` | set `False` to omit `set_<field>()` (does *not* make the class immutable) |
+| `accessors` | `"lombok"` | accessor style: `"lombok"` (`get_x`/`set_x`), `"attr"` (none — use `obj.x`), or `"both"` (alias of `"lombok"`) |
+
+```python
+@Data(accessors="attr")        # Pythonic: no get_x/set_x, just user.name
+```
+
+`accessors="attr"` is the Pythonic choice for new code — the attribute is the
+accessor. The mypy plugin honors it, so `get_`/`set_` disappear from the typed
+surface too.
 
 ```python
 @Data(frozen=True)             # immutable value object, no setters

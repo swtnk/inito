@@ -24,6 +24,10 @@ clear error or the correct result.
   enforce invariants, exactly like `dataclasses`. A frozen class sets derived
   fields from the hook via `object.__setattr__`. The builder's direct-build path
   calls it too, so a builder-constructed instance runs the same invariants.
+- **`@Data(accessors=...)`** — choose the accessor style: `"lombok"` (default,
+  `get_x`/`set_x`), `"attr"` (none — the attribute *is* the accessor, the
+  Pythonic style), or `"both"` (alias of `"lombok"`). Honored by the mypy plugin,
+  so `accessors="attr"` also drops `get_`/`set_` from what the type-checker sees.
 
 ### Fixed
 

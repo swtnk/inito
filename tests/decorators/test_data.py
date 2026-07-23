@@ -102,7 +102,37 @@ def test_data_rejects_non_type_non_options_argument():
 
 
 def test_data_options_defaults():
-    assert DataOptions() == DataOptions(frozen=False, include_getters=True, include_setters=True)
+    assert DataOptions() == DataOptions(
+        frozen=False, include_getters=True, include_setters=True, accessors="lombok"
+    )
+
+
+def test_accessors_attr_omits_get_set_but_keeps_the_attribute():
+    @Data(accessors="attr")
+    class User:
+        name: str
+
+    user = User("Ada")
+    assert user.name == "Ada"
+    assert not hasattr(User, "get_name")
+    assert not hasattr(User, "set_name")
+
+
+def test_accessors_both_generates_lombok_accessors():
+    @Data(accessors="both")
+    class User:
+        name: str
+
+    assert hasattr(User, "get_name")
+    assert hasattr(User, "set_name")
+
+
+def test_invalid_accessors_value_is_rejected():
+    with pytest.raises(DecoratorConfigurationError, match="accessors must be one of"):
+
+        @Data(accessors="java")
+        class Bad:
+            x: int
 
 
 def test_metadata_is_cached_and_not_rebuilt():
