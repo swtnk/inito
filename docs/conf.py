@@ -13,6 +13,7 @@ release = __version__
 extensions = [
     "myst_parser",
     "sphinx_design",
+    "sphinx_sitemap",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
@@ -40,6 +41,11 @@ html_title = "InitO"
 # navigation and assets, so the site works under this subpath; html_baseurl
 # only sets the canonical URL (SEO) and any absolute references.
 html_baseurl = "https://swetanksubham.com/inito/"
+
+# sphinx-sitemap: emit sitemap.xml at the docs root for search engines. The
+# site is single-version and single-language, so drop the {version}/{lang}
+# path segments the default scheme would add.
+sitemap_url_scheme = "{link}"
 
 html_theme_options = {
     "logo": {"text": "InitO"},

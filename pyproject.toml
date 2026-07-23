@@ -49,6 +49,7 @@ dev = [
     "sphinx>=7",
     "pydata-sphinx-theme>=0.15",
     "sphinx-design>=0.6",
+    "sphinx-sitemap>=2.6",
     "myst-parser>=3",
     "pre-commit>=3.7",
     "attrs>=23",

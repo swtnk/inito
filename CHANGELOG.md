@@ -58,6 +58,8 @@ clear error or the correct result.
 
 ### Documentation
 
+- **Docs sitemap for search engines.** The docs build now emits a `sitemap.xml`
+  (via `sphinx-sitemap`) so crawlers can discover every page.
 - **Composition-root guidance for DI.** The dependency-injection guide now leads
   with the explicit composition-root pattern (wire the graph by hand in one
   function) as the recommended default, framing the global `default_container` /
