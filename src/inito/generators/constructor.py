@@ -39,7 +39,7 @@ class ConstructorGenerator:
         parameters = render_parameter_list(metadata.fields)
         body = render_assignment_body(metadata.fields, use_setattr)
         header = f"def __init__(self{', ' + parameters if parameters else ''}):"
-        return f"{header}\n{body}\n"
+        return f"{header}\n{body}\n{render_post_init_call(metadata)}"
 
     def build_globals(self, metadata: ClassMetadata) -> dict[str, Any]:
         """Return the defaults and default factories the source references."""
@@ -64,7 +64,7 @@ class NoArgsConstructorGenerator:
         _require_all_fields_have_defaults(metadata)
         use_setattr = needs_object_setattr(metadata.owner)
         body = render_no_args_assignment_body(metadata.fields, use_setattr)
-        return f"def __init__(self):\n{body}\n"
+        return f"def __init__(self):\n{body}\n{render_post_init_call(metadata)}"
 
     def build_globals(self, metadata: ClassMetadata) -> dict[str, Any]:
         """Return the defaults and default factories the source references."""
@@ -117,7 +117,7 @@ class RequiredArgsConstructorGenerator:
         body = render_required_args_assignment_body(
             required, optional, needs_object_setattr(metadata.owner)
         )
-        return f"{header}\n{body}\n"
+        return f"{header}\n{body}\n{render_post_init_call(metadata)}"
 
     def build_globals(self, metadata: ClassMetadata) -> dict[str, Any]:
         """Return the defaults and default factories the optional fields need."""
@@ -138,6 +138,22 @@ def render_required_args_assignment_body(
     lines = [_assignment_line(field.name, field.name, use_setattr) for field in required]
     lines.extend(_render_no_args_assignment(field, use_setattr) for field in optional)
     return "\n".join(lines) if lines else "    pass"
+
+
+POST_INIT_METHOD = "__post_init__"
+"""The user hook a generated constructor calls after assigning every field."""
+
+
+def has_post_init(cls: type) -> bool:
+    """Whether cls (or a base) defines the ``__post_init__`` invariant hook."""
+    return hasattr(cls, POST_INIT_METHOD)
+
+
+def render_post_init_call(metadata: ClassMetadata) -> str:
+    """Render the trailing ``self.__post_init__()`` line, or nothing if absent."""
+    if has_post_init(metadata.owner):
+        return f"    self.{POST_INIT_METHOD}()\n"
+    return ""
 
 
 def render_parameter_list(fields: tuple[FieldMetadata, ...]) -> str:

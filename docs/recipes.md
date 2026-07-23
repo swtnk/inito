@@ -60,6 +60,39 @@ ServerConfig().tags.append("a")
 print(ServerConfig().tags)         # []  — a fresh list per instance, not shared
 ```
 
+## Validating invariants with `__post_init__`
+
+Define `__post_init__(self)` and every generated constructor calls it after the
+fields are assigned — the place to enforce invariants, exactly like
+`dataclasses`. It runs for the builder's `build()` too, so a builder-constructed
+instance is validated the same way. On a frozen class, set a derived field from
+the hook via `object.__setattr__`.
+
+```python
+from inito import Value
+
+
+@Value
+class Percentage:
+    value: float
+
+    def __post_init__(self) -> None:
+        if not 0.0 <= self.value <= 100.0:
+            raise ValueError("value must be between 0 and 100")
+
+
+Percentage(42.0)                   # ok
+
+try:
+    Percentage(150.0)              # invariant violated
+except ValueError as error:
+    print(error)                   # value must be between 0 and 100
+```
+
+For validation at a trust boundary (HTTP/queue input), keep using Pydantic (or
+similar) at the edge and map into inito types — `__post_init__` is for
+lightweight, always-on invariants, not a schema/coercion engine.
+
 ## Fluent builder for a request/response model
 
 `@Builder` shines when a type has several optional fields and you want

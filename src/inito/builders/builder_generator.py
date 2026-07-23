@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from inito.exceptions.errors import BuilderValidationError
-from inito.generators.constructor import default_name, factory_name
+from inito.generators.constructor import default_name, factory_name, has_post_init
 from inito.metadata.class_metadata import ClassMetadata
 from inito.metadata.field import RESERVED_FIELD_PREFIX, FieldMetadata
 from inito.utils.codegen import build_function
@@ -57,7 +57,9 @@ class BuilderGenerator:
             )
         namespace[options.build_method_name] = build_function(
             options.build_method_name,
-            _render_build_method_source(fields, options.build_method_name, options.use_init),
+            _render_build_method_source(
+                fields, options.build_method_name, options.use_init, has_post_init(metadata.owner)
+            ),
             _build_method_globals(metadata),
             f"{metadata.qualified_name}.Builder.{options.build_method_name}",
         )
@@ -124,7 +126,10 @@ def _render_fluent_setter_source(field: FieldMetadata, method_name: str) -> str:
 
 
 def _render_build_method_source(
-    fields: tuple[FieldMetadata, ...], build_method_name: str, use_init: bool
+    fields: tuple[FieldMetadata, ...],
+    build_method_name: str,
+    use_init: bool,
+    call_post_init: bool,
 ) -> str:
     if use_init:
         return _render_use_init_build_source(fields, build_method_name)
@@ -138,6 +143,9 @@ def _render_build_method_source(
     lines.extend(
         f'    {_SETATTR_GLOBAL}(_instance, "{field.name}", self._{field.name})' for field in fields
     )
+    # Bypassing __init__ would skip the invariant hook, so call it here too.
+    if call_post_init:
+        lines.append("    _instance.__post_init__()")
     lines.append("    return _instance")
     return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
 

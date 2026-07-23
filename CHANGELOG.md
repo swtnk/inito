@@ -19,6 +19,11 @@ clear error or the correct result.
   builds a fresh object per instance, and `field(default=...)` sets a plain
   default. Recognized by the mypy plugin and (via PEP 681 `field_specifiers`) by
   pyright, so the annotated field type still checks. New `field` export.
+- **`__post_init__` hook.** If a class defines `__post_init__(self)`, every
+  generated constructor calls it after assigning the fields — the place to
+  enforce invariants, exactly like `dataclasses`. A frozen class sets derived
+  fields from the hook via `object.__setattr__`. The builder's direct-build path
+  calls it too, so a builder-constructed instance runs the same invariants.
 
 ### Fixed
 
