@@ -4,6 +4,18 @@ API reference for every code-generating decorator. For usage, options, and
 examples, see the corresponding [User Guide](../user-guide.md) page linked
 from each section.
 
+## field
+
+```{eval-rst}
+.. autofunction:: inito.field
+```
+
+Declare a field's default explicitly — the inito-native equivalent of
+`dataclasses.field`. Use `field(default_factory=...)` for a mutable default
+(a bare `items: list = []` is rejected) and `field(default=...)` for a plain
+one. Recognized by the mypy plugin and by pyright (PEP 681 `field_specifiers`),
+so the annotated field type still checks.
+
 ## @Data / data
 
 ```{eval-rst}

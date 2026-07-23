@@ -3,10 +3,80 @@ import typing
 
 import pytest
 
-from inito.exceptions.errors import AnnotationResolutionError
+from inito.exceptions.errors import AnnotationResolutionError, InvalidFieldDefinitionError
 from inito.metadata.class_metadata import METADATA_ATTRIBUTE
 from inito.metadata.extractor import MetadataExtractor
-from inito.metadata.field import MISSING
+from inito.metadata.field import MISSING, field
+
+
+def test_rejects_a_mutable_literal_default():
+    class Sample:
+        items: list = []  # noqa: RUF012 -- the footgun this test asserts is rejected
+
+    with pytest.raises(InvalidFieldDefinitionError, match="mutable default"):
+        MetadataExtractor().extract(Sample)
+
+
+def test_field_default_factory_is_read_and_sentinel_removed_from_class():
+    class Sample:
+        items: list = field(default_factory=list)
+
+    metadata = MetadataExtractor().extract(Sample)
+    assert metadata.fields[0].default is MISSING
+    assert metadata.fields[0].default_factory is list
+    assert "items" not in Sample.__dict__
+
+
+def test_field_plain_default_is_read_and_left_on_class():
+    class Sample:
+        n: int = field(default=5)
+
+    metadata = MetadataExtractor().extract(Sample)
+    assert metadata.fields[0].default == 5
+    assert Sample.n == 5
+
+
+def test_field_rejects_a_mutable_plain_default():
+    class Sample:
+        items: list = field(default=[])
+
+    with pytest.raises(InvalidFieldDefinitionError, match="mutable default"):
+        MetadataExtractor().extract(Sample)
+
+
+def test_rejects_a_non_identifier_field_name():
+    sample = type("Sample", (), {"__annotations__": {"bad-name": int}})
+    with pytest.raises(InvalidFieldDefinitionError, match="not a valid Python identifier"):
+        MetadataExtractor().extract(sample)
+
+
+def test_rejects_a_keyword_field_name():
+    sample = type("Sample", (), {"__annotations__": {"class": int}})
+    with pytest.raises(InvalidFieldDefinitionError, match="not a valid Python identifier"):
+        MetadataExtractor().extract(sample)
+
+
+def test_rejects_a_reserved_prefix_field_name():
+    class Sample:
+        _inito_x: int = 1
+
+    with pytest.raises(InvalidFieldDefinitionError, match="reserved"):
+        MetadataExtractor().extract(Sample)
+
+
+def test_inherited_field_spec_is_read_without_touching_the_base():
+    class Base:
+        items: list = field(default_factory=list)
+
+    class Sub(Base):
+        n: int = 1
+
+    metadata = MetadataExtractor().extract(Sub)
+    by_name = {f.name: f for f in metadata.fields}
+    assert by_name["items"].default_factory is list
+    # The inherited sentinel must stay on Base, never be deleted off Sub.
+    assert "items" in Base.__dict__
+    assert "items" not in Sub.__dict__
 
 
 def test_extracts_plain_annotated_fields_in_order():

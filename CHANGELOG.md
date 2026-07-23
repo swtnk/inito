@@ -5,6 +5,51 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-07-21
+
+Safety fixes to the data-model semantics so inito upholds the guarantees a
+`dataclasses`/`attrs` replacement is expected to provide. Some of these change
+behavior that `1.0.0` accepted silently; each replaces a silent footgun with a
+clear error or the correct result.
+
+### Added
+
+- **`field()`** — declare a field's default explicitly, the inito-native
+  equivalent of `dataclasses.field`: `items: list = field(default_factory=list)`
+  builds a fresh object per instance, and `field(default=...)` sets a plain
+  default. Recognized by the mypy plugin and (via PEP 681 `field_specifiers`) by
+  pyright, so the annotated field type still checks. New `field` export.
+
+### Fixed
+
+- **Mutable default values are no longer silently shared across instances.** A
+  mutable literal default (`items: list = []`) now raises
+  `InvalidFieldDefinitionError` at decoration time — as `dataclasses` and `attrs`
+  do — pointing to `field(default_factory=...)`. Previously every instance shared
+  one object.
+- **A field name that is not a valid identifier, is a keyword, or collides with
+  inito's generated code** now raises `InvalidFieldDefinitionError` instead of
+  producing a miscompiled method. All codegen-internal globals are namespaced
+  under a reserved `_inito_` prefix, and field names using that prefix are
+  rejected, so a field can never shadow an internal helper (e.g. a field named
+  `_setattr` no longer breaks a frozen constructor).
+- **Hand-written methods are no longer overwritten.** A `__repr__`, `__eq__`,
+  `__init__`, etc. that you define in the class body is left untouched;
+  inito only generates the members you didn't write. (Methods synthesized by a
+  stacked `@dataclass` are still taken over, as before.)
+
+### Changed (behavior)
+
+- **A mutable `@Data` class is now unhashable** (`__hash__` is `None`), matching
+  `dataclasses(eq=True, frozen=False)`, so a mutated instance can no longer break
+  its own `set`/`dict` membership. Use `@Data(frozen=True)` or `@Value` for a
+  hashable value type; a `@Data` stacked on a frozen dataclass stays hashable.
+- **Constructor parameters keep declaration order.** The generated `__init__` no
+  longer reorders required fields ahead of defaulted ones; a required field
+  declared after a defaulted one now raises `InvalidFieldDefinitionError` (as
+  `dataclasses` does) instead of silently permuting positional arguments. The
+  mypy plugin reports the same case.
+
 ## [1.0.0] - 2026-07-21
 
 First stable release. The API is now considered stable and follows Semantic

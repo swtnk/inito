@@ -37,8 +37,9 @@ from inito.di.dependency_resolver import Qualifier
 from inito.di.factory import Factory
 from inito.di.integrations.fastapi import Injected
 from inito.exceptions.errors import InitoError
+from inito.metadata.field import field
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = [
     "AllArgsConstructor",
@@ -86,6 +87,7 @@ __all__ = [
     "data",
     "default_container",
     "equals_and_hash_code",
+    "field",
     "getter",
     "inject",
     "jsonize",

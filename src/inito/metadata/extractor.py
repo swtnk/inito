@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import dataclasses
+import keyword
 import typing
 
+from inito.exceptions.errors import InvalidFieldDefinitionError
 from inito.metadata.class_metadata import METADATA_ATTRIBUTE, ClassMetadata
-from inito.metadata.field import MISSING, FieldMetadata
+from inito.metadata.field import MISSING, RESERVED_FIELD_PREFIX, FieldMetadata, FieldSpec
 from inito.reflection.introspection import (
     collect_ordered_field_names,
     is_class_var,
@@ -25,6 +27,8 @@ class MetadataExtractor:
             return typing.cast(ClassMetadata, cached)
 
         fields = self._extract_fields(cls)
+        for field in fields:
+            _validate_field_name(field.name, cls.__qualname__)
         metadata = ClassMetadata(owner=cls, fields=fields, qualified_name=cls.__qualname__)
         setattr(cls, METADATA_ATTRIBUTE, metadata)
         return metadata
@@ -90,14 +94,59 @@ class MetadataExtractor:
             type_hint = hints[name]
             if is_class_var(type_hint):
                 continue
-            fields.append(
-                FieldMetadata(
-                    name=name,
-                    type_hint=type_hint,
-                    default=getattr(cls, name, MISSING),
-                )
-            )
+            fields.append(self._field_from_annotation(cls, name, type_hint))
         return tuple(fields)
+
+    def _field_from_annotation(self, cls: type, name: str, type_hint: object) -> FieldMetadata:
+        raw = getattr(cls, name, MISSING)
+        if isinstance(raw, FieldSpec):
+            default, default_factory = raw.default, raw.default_factory
+            _normalize_spec_attribute(cls, name, default)
+        else:
+            default, default_factory = raw, None
+        _reject_mutable_default(name, default, cls.__qualname__)
+        return FieldMetadata(
+            name=name, type_hint=type_hint, default=default, default_factory=default_factory
+        )
+
+
+def _validate_field_name(name: str, qualified_name: str) -> None:
+    if not name.isidentifier() or keyword.iskeyword(name):
+        raise InvalidFieldDefinitionError(
+            f"{qualified_name!r} declares a field named {name!r}, which is not a "
+            f"valid Python identifier; inito compiles field names into generated "
+            f"method source, so every field must be a plain identifier."
+        )
+    if name.startswith(RESERVED_FIELD_PREFIX):
+        raise InvalidFieldDefinitionError(
+            f"{qualified_name!r} declares a field named {name!r}: names starting "
+            f"with {RESERVED_FIELD_PREFIX!r} are reserved for inito's generated code."
+        )
+
+
+def _normalize_spec_attribute(cls: type, name: str, default: object) -> None:
+    """Replace a ``field(...)`` sentinel left on the class with its plain default.
+
+    Mirrors :func:`dataclasses`: a plain-default spec leaves the value on the
+    class (so ``Cls.x`` reads it); a factory-only spec removes the sentinel so a
+    class-level read raises ``AttributeError`` rather than returning a FieldSpec.
+    Runs at decoration time, before any code generation.
+    """
+    if default is MISSING:
+        if name in cls.__dict__:
+            delattr(cls, name)
+    else:
+        setattr(cls, name, default)
+
+
+def _reject_mutable_default(name: str, default: object, qualified_name: str) -> None:
+    if default is not MISSING and default.__class__.__hash__ is None:
+        raise InvalidFieldDefinitionError(
+            f"{qualified_name!r} gives field {name!r} a mutable default "
+            f"({default.__class__.__name__}); a single instance would be shared "
+            f"across every object. Declare it as "
+            f"`{name}: ... = field(default_factory=...)` (from inito import field)."
+        )
 
 
 default_extractor = MetadataExtractor()

@@ -14,11 +14,13 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from inito.exceptions.errors import BuilderValidationError
+from inito.generators.constructor import default_name, factory_name
 from inito.metadata.class_metadata import ClassMetadata
-from inito.metadata.field import FieldMetadata
+from inito.metadata.field import RESERVED_FIELD_PREFIX, FieldMetadata
 from inito.utils.codegen import build_function
 
 _UNSET = object()
+_SETATTR_GLOBAL = f"{RESERVED_FIELD_PREFIX}setattr"
 
 
 @dataclass(frozen=True)
@@ -99,9 +101,9 @@ def _initial_value_reference(field: FieldMetadata, use_init: bool) -> str:
     if use_init:
         return "_unset"
     if field.default_factory is not None:
-        return f"_factory_{field.name}()"
+        return f"{factory_name(field)}()"
     if field.has_default:
-        return f"_default_{field.name}"
+        return default_name(field)
     return "_unset"
 
 
@@ -111,9 +113,9 @@ def _init_globals(fields: tuple[FieldMetadata, ...], use_init: bool) -> dict[str
         return globals_ns
     for field in fields:
         if field.default_factory is not None:
-            globals_ns[f"_factory_{field.name}"] = field.default_factory
+            globals_ns[factory_name(field)] = field.default_factory
         elif field.has_default:
-            globals_ns[f"_default_{field.name}"] = field.default
+            globals_ns[default_name(field)] = field.default
     return globals_ns
 
 
@@ -127,13 +129,15 @@ def _render_build_method_source(
     if use_init:
         return _render_use_init_build_source(fields, build_method_name)
     # Default: build() constructs via __new__ + object.__setattr__ (bound once
-    # as _setattr), bypassing __init__. This must stay correct when immutability
-    # is applied *after* the builder is generated (e.g. @Value @Builder), which
-    # can't be detected here. object.__setattr__ keeps the instance's
-    # key-sharing dict intact, so attribute reads stay fast.
+    # as _inito_setattr), bypassing __init__. This must stay correct when
+    # immutability is applied *after* the builder is generated (e.g. @Value
+    # @Builder), which can't be detected here. object.__setattr__ keeps the
+    # instance's key-sharing dict intact, so attribute reads stay fast.
     lines = [_render_unset_check(field, build_method_name) for field in fields if field.is_required]
     lines.append("    _instance = _owner_cls.__new__(_owner_cls)")
-    lines.extend(f'    _setattr(_instance, "{field.name}", self._{field.name})' for field in fields)
+    lines.extend(
+        f'    {_SETATTR_GLOBAL}(_instance, "{field.name}", self._{field.name})' for field in fields
+    )
     lines.append("    return _instance")
     return f"def {build_method_name}(self):\n" + "\n".join(lines) + "\n"
 
@@ -166,7 +170,7 @@ def _build_method_globals(metadata: ClassMetadata) -> dict[str, Any]:
         "_unset": _UNSET,
         "_BuilderValidationError": BuilderValidationError,
         "_owner_cls": metadata.owner,
-        "_setattr": object.__setattr__,
+        _SETATTR_GLOBAL: object.__setattr__,
     }
 
 

@@ -68,3 +68,34 @@ def test_required_args_constructor_excludes_defaulted_fields(check_mypy):
     assert 'Revealed type is "str"' in out
     assert "Missing positional argument" in out
     assert "Too many arguments" in out
+
+
+def test_all_args_constructor_rejects_required_after_optional(check_mypy):
+    status, out = check_mypy(
+        """
+        from inito import AllArgsConstructor
+
+        @AllArgsConstructor
+        class Bad:
+            a: int = 1
+            b: int
+        """
+    )
+    assert status == 1
+    assert "cannot follow defaulted field" in out
+
+
+def test_field_default_factory_makes_the_param_optional(check_mypy):
+    status, out = check_mypy(
+        """
+        from inito import Data, field
+
+        @Data
+        class Bag:
+            items: list[int] = field(default_factory=list)
+
+        Bag()
+        Bag(items=[1])
+        """
+    )
+    assert status == 0, out

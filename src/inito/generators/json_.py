@@ -9,7 +9,9 @@ from inito.metadata.class_metadata import ClassMetadata
 from inito.utils.codegen import build_function
 from inito.utils.json_encoding import serialize_value
 
-_TO_JSON_SOURCE = "def to_json(self, **kwargs):\n    return _dumps(self.to_dict(), **kwargs)\n"
+_TO_JSON_SOURCE = (
+    "def to_json(self, **kwargs):\n    return _inito_dumps(self.to_dict(), **kwargs)\n"
+)
 
 
 class JsonGenerator:
@@ -21,11 +23,11 @@ class JsonGenerator:
         to_dict = build_function(
             "to_dict",
             _to_dict_source(metadata),
-            {"_serialize": serialize_value},
+            {"_inito_serialize": serialize_value},
             f"{qualname}.to_dict",
         )
         to_json = build_function(
-            "to_json", _TO_JSON_SOURCE, {"_dumps": json.dumps}, f"{qualname}.to_json"
+            "to_json", _TO_JSON_SOURCE, {"_inito_dumps": json.dumps}, f"{qualname}.to_json"
         )
         return (
             GeneratedMethod(name="to_dict", callable=to_dict),
@@ -37,6 +39,7 @@ def _to_dict_source(metadata: ClassMetadata) -> str:
     if not metadata.fields:
         return "def to_dict(self):\n    return {}\n"
     items = "".join(
-        f'        "{field.name}": _serialize(self.{field.name}),\n' for field in metadata.fields
+        f'        "{field.name}": _inito_serialize(self.{field.name}),\n'
+        for field in metadata.fields
     )
     return f"def to_dict(self):\n    return {{\n{items}    }}\n"

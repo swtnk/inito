@@ -11,7 +11,7 @@ from inito import (
 from inito.stubs.emit import _builder_class_source, member_stub_source
 
 
-def test_data_emits_init_accessors_repr_eq_hash():
+def test_data_emits_init_accessors_repr_eq_but_no_hash_when_mutable():
     @Data
     class User:
         name: str
@@ -23,7 +23,8 @@ def test_data_emits_init_accessors_repr_eq_hash():
     assert "def set_age(self, value: int) -> None: ..." in source
     assert "def __repr__(self) -> str: ..." in source
     assert "def __eq__(self, other: object) -> bool: ..." in source
-    assert "def __hash__(self) -> int: ..." in source
+    # A mutable @Data is unhashable (no __hash__ generated), so none is emitted.
+    assert "__hash__" not in source
 
 
 def test_no_args_constructor_emits_zero_argument_init():
@@ -65,6 +66,8 @@ def test_value_emits_getters_and_setattr_guard_but_no_setters():
     assert "set_x" not in source
     assert "def __setattr__(self, name: str, value: object) -> None: ..." in source
     assert "def __delattr__(self, name: str) -> None: ..." in source
+    # @Value is frozen, so it stays hashable and emits __hash__.
+    assert "def __hash__(self) -> int: ..." in source
 
 
 def test_builder_emits_nested_builder_factory_and_build():

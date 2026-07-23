@@ -98,8 +98,12 @@ def transform_value(ctx: ClassDefContext) -> bool:
 
 
 def add_init(ctx: ClassDefContext, fields: list[InitoField]) -> None:
-    """Add an __init__ accepting fields, required ones ordered before defaulted ones."""
-    ordered = [f for f in fields if not f.has_default] + [f for f in fields if f.has_default]
+    """Add an __init__ accepting fields in declaration order, matching the runtime.
+
+    Reports the same error the runtime raises when a required field follows a
+    defaulted one, since that can't form a valid positional signature.
+    """
+    _fail_on_required_after_optional(ctx, fields)
     args = [
         Argument(
             Var(field.name, field.type),
@@ -107,9 +111,23 @@ def add_init(ctx: ClassDefContext, fields: list[InitoField]) -> None:
             None,
             ARG_OPT if field.has_default else ARG_POS,
         )
-        for field in ordered
+        for field in fields
     ]
     add_method_to_class(ctx.api, ctx.cls, "__init__", args=args, return_type=NoneType())
+
+
+def _fail_on_required_after_optional(ctx: ClassDefContext, fields: list[InitoField]) -> None:
+    optional_before: str | None = None
+    for field in fields:
+        if field.has_default:
+            optional_before = field.name
+        elif optional_before is not None:
+            ctx.api.fail(
+                f"Required field {field.name!r} cannot follow defaulted field "
+                f"{optional_before!r}; reorder the fields or give it a default.",
+                ctx.cls,
+            )
+            return
 
 
 def add_getters(ctx: ClassDefContext, fields: list[InitoField]) -> None:

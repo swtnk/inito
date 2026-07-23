@@ -24,7 +24,7 @@ from typing import Any
 
 from inito.exceptions.errors import InvalidFieldDefinitionError
 from inito.metadata.class_metadata import ClassMetadata
-from inito.metadata.field import FieldMetadata
+from inito.metadata.field import RESERVED_FIELD_PREFIX, FieldMetadata
 
 
 class ConstructorGenerator:
@@ -34,6 +34,7 @@ class ConstructorGenerator:
 
     def generate_source(self, metadata: ClassMetadata) -> str:
         """Return the __init__ source accepting every declared field."""
+        _reject_required_after_optional(metadata)
         use_setattr = needs_object_setattr(metadata.owner)
         parameters = render_parameter_list(metadata.fields)
         body = render_assignment_body(metadata.fields, use_setattr)
@@ -140,12 +141,30 @@ def render_required_args_assignment_body(
 
 
 def render_parameter_list(fields: tuple[FieldMetadata, ...]) -> str:
-    """Render the __init__ parameter list: required fields, then optional ones."""
-    required = [field.name for field in fields if field.is_required]
-    optional = [
-        f"{field.name}={_default_reference(field)}" for field in fields if not field.is_required
-    ]
-    return ", ".join(required + optional)
+    """Render the __init__ parameter list in declaration order.
+
+    Order is preserved so positional construction maps arguments to the fields
+    the reader declared. ``_reject_required_after_optional`` has already ensured
+    no required field follows an optional one, so this stays valid Python.
+    """
+    return ", ".join(
+        field.name if field.is_required else f"{field.name}={_default_reference(field)}"
+        for field in fields
+    )
+
+
+def _reject_required_after_optional(metadata: ClassMetadata) -> None:
+    optional_before: str | None = None
+    for field in metadata.fields:
+        if not field.is_required:
+            optional_before = field.name
+        elif optional_before is not None:
+            raise InvalidFieldDefinitionError(
+                f"{metadata.qualified_name!r} declares required field "
+                f"{field.name!r} after field {optional_before!r}, which has a "
+                f"default; a required field cannot follow a defaulted one. "
+                f"Reorder the fields, or give {field.name!r} a default too."
+            )
 
 
 def render_assignment_body(fields: tuple[FieldMetadata, ...], use_setattr: bool) -> str:
@@ -178,15 +197,18 @@ def needs_object_setattr(cls: type) -> bool:
     return any("__setattr__" in klass.__dict__ for klass in cls.__mro__[:-1])
 
 
+_SETATTR_GLOBAL = f"{RESERVED_FIELD_PREFIX}setattr"
+
+
 def _assignment_line(name: str, value_expr: str, use_setattr: bool) -> str:
     if use_setattr:
-        return f'    _setattr(self, "{name}", {value_expr})'
+        return f'    {_SETATTR_GLOBAL}(self, "{name}", {value_expr})'
     return f"    self.{name} = {value_expr}"
 
 
 def _add_setattr_global(metadata: ClassMetadata, globals_ns: dict[str, Any]) -> None:
     if needs_object_setattr(metadata.owner):
-        globals_ns["_setattr"] = object.__setattr__
+        globals_ns[_SETATTR_GLOBAL] = object.__setattr__
 
 
 def _default_reference(field: FieldMetadata) -> str:
@@ -197,14 +219,14 @@ def _default_reference(field: FieldMetadata) -> str:
 
 def default_name(field: FieldMetadata) -> str:
     """Name of the global variable holding field's default value."""
-    return f"_default_{field.name}"
+    return f"{RESERVED_FIELD_PREFIX}default_{field.name}"
 
 
 def factory_name(field: FieldMetadata) -> str:
     """Name of the global variable holding field's default factory."""
-    return f"_factory_{field.name}"
+    return f"{RESERVED_FIELD_PREFIX}factory_{field.name}"
 
 
 def factory_sentinel_name(field: FieldMetadata) -> str:
     """Name of the global sentinel marking 'call the default factory'."""
-    return f"_factory_sentinel_{field.name}"
+    return f"{RESERVED_FIELD_PREFIX}factory_sentinel_{field.name}"

@@ -108,7 +108,7 @@ Every decorator, option, and exception, generated from the source.
 
 | Decorator | Generates | Guide |
 |---|---|---|
-| `@Data` | constructor · `__repr__` · `__eq__` · `__hash__` · `get_x`/`set_x` — the all-in-one | [@Data](decorators/data.md) |
+| `@Data` | constructor · `__repr__` · `__eq__` · `get_x`/`set_x` — the all-in-one (`__hash__` when frozen) | [@Data](decorators/data.md) |
 | `@Value` | like `@Data` but **immutable** and setter-free | [@Value](decorators/value.md) |
 | `@Getter` / `@Setter` | `get_x()` / `set_x(value)` accessors only | [Accessors](decorators/accessors.md) |
 | `@ToString` | `__repr__` only | [@ToString](decorators/to-string.md) |

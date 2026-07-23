@@ -1,12 +1,12 @@
 # @Data
 
 The all-in-one decorator: one line gives a class a constructor, `__repr__`,
-`__eq__`, `__hash__`, and a getter/setter per field.
+`__eq__`, and a getter/setter per field (plus `__hash__` when frozen).
 
 ## The problem it solves
 
 A class that just holds a few fields still needs a constructor, a readable
-`repr`, value-based equality and hashing, and `get_x`/`set_x` accessors.
+`repr`, value-based equality, and `get_x`/`set_x` accessors.
 Writing those by hand is repetitive and drifts out of sync whenever a field
 is added or renamed. `@Data` derives all of them from the class's
 annotations, so there is nothing to keep in sync.
@@ -35,10 +35,10 @@ user.set_age(31)
 
 | Member | Behaviour |
 |---|---|
-| `__init__` | required fields first, then defaulted ones — the usual Python ordering |
+| `__init__` | every field, in declaration order (a required field after a defaulted one is rejected, as in `dataclasses`) |
 | `__repr__` | `ClassName(field=value, ...)` for every field |
 | `__eq__` | value equality; different classes compare `NotImplemented` |
-| `__hash__` | hashes the tuple of all field values |
+| `__hash__` | **only when frozen** — a mutable `@Data` is unhashable (see below) |
 | `get_<field>()` | one per field (unless `include_getters=False`) |
 | `set_<field>(value)` | one per field (unless `include_setters=False` or `frozen=True`) |
 
@@ -67,22 +67,29 @@ is the more descriptive choice when immutability is the point (see
 
 ## Notes & gotchas
 
-- **Mutable defaults** (a `list`/`dict`/`set`) need `dataclasses.field`,
-  which InitO reads only from a real dataclass — stack `@dataclass`:
+- **Mutable defaults are rejected.** A shared mutable literal
+  (`tags: list = []`) would be one object across every instance — the classic
+  Python footgun — so InitO raises at decoration time. Use
+  [`field(default_factory=...)`](../reference/decorators.md) for a fresh object
+  per instance:
 
   ```python
-  from dataclasses import dataclass, field
+  from inito import Data, field
 
   @Data
-  @dataclass
   class Config:
       tags: list = field(default_factory=list)   # a fresh list per instance
   ```
 
-- **Your own methods are untouched.** `@Data` only attaches the members
-  listed above; any other method you define is left alone. It *will*
-  overwrite a method it generates (e.g. a hand-written `__repr__`) since it
-  attaches its version last.
+- **A mutable `@Data` is unhashable.** Like `dataclasses(eq=True,
+  frozen=False)`, a non-frozen `@Data` sets `__hash__` to `None`, so a mutated
+  instance can't silently break its own `set`/`dict` membership. Use
+  `@Data(frozen=True)` or [@Value](value.md) for a hashable value type. (A
+  `@Data` stacked on a frozen dataclass stays hashable.)
+- **Your own methods are untouched.** `@Data` attaches only the members you did
+  *not* write: a hand-written `__repr__`, `__eq__`, or `__init__` in the class
+  body is left exactly as-is. (Methods synthesized by a stacked `@dataclass` are
+  still taken over.)
 - **`include_setters=False` is not immutability** — it only omits the
   `set_x` helpers; `obj.x = 5` still works. Use `frozen=True` (or `@Value`)
   to actually forbid mutation.

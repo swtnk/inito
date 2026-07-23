@@ -1,5 +1,7 @@
+import dataclasses
+
 import inito.core.attach as attach_module
-from inito.core.attach import attach_capability, attach_method
+from inito.core.attach import attach_capability, attach_method, attach_unhashable
 from inito.generators.base import GeneratedMethod
 from inito.generators.registry import GeneratorRegistry
 from inito.metadata.class_metadata import ClassMetadata
@@ -16,6 +18,51 @@ def test_attach_method_sets_attribute_and_module():
     attach_method(Sample, GeneratedMethod(name="greet", callable=greet))
     assert Sample().greet() == "hi"
     assert Sample.greet.__module__ == Sample.__module__
+
+
+def test_attach_method_never_clobbers_a_user_defined_member():
+    class Sample:
+        def greet(self) -> str:
+            return "mine"
+
+    attach_method(Sample, GeneratedMethod(name="greet", callable=lambda self: "generated"))
+    assert Sample().greet() == "mine"
+
+
+def test_attach_method_overwrites_its_own_earlier_generated_member():
+    class Sample:
+        pass
+
+    attach_method(Sample, GeneratedMethod(name="greet", callable=lambda self: "first"))
+    attach_method(Sample, GeneratedMethod(name="greet", callable=lambda self: "second"))
+    assert Sample().greet() == "second"
+
+
+def test_attach_method_overwrites_dataclass_synthesized_dunder():
+    @dataclasses.dataclass
+    class Sample:
+        x: int
+
+    attach_method(Sample, GeneratedMethod(name="__repr__", callable=lambda self: "inito"))
+    assert repr(Sample(1)) == "inito"
+
+
+def test_attach_unhashable_sets_hash_to_none():
+    class Sample:
+        pass
+
+    attach_unhashable(Sample)
+    assert Sample.__hash__ is None
+
+
+def test_attach_unhashable_respects_a_user_defined_hash():
+    class Sample:
+        def __hash__(self) -> int:
+            return 7
+
+    attach_unhashable(Sample)
+    assert Sample.__hash__ is not None
+    assert hash(Sample()) == 7
 
 
 def test_attach_capability_attaches_single_method_generator(monkeypatch):

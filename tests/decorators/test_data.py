@@ -9,7 +9,7 @@ from inito.metadata.class_metadata import METADATA_ATTRIBUTE
 from inito.metadata.extractor import default_extractor
 
 
-def test_bare_data_generates_constructor_repr_eq_hash_getters_setters():
+def test_bare_data_generates_constructor_repr_eq_getters_setters():
     @Data
     class User:
         name: str
@@ -20,10 +20,21 @@ def test_bare_data_generates_constructor_repr_eq_hash_getters_setters():
     assert user.age == 30
     assert repr(user) == "User(name='Ada', age=30)"
     assert user == User("Ada", 30)
-    assert hash(user) == hash(User("Ada", 30))
     assert user.get_name() == "Ada"
     user.set_age(31)
     assert user.age == 31
+
+
+def test_bare_data_is_unhashable_because_mutable():
+    # A mutable value class must not be hashable: a mutated instance would break
+    # its own set/dict membership. Matches dataclasses(eq=True, frozen=False).
+    @Data
+    class User:
+        name: str
+
+    assert User.__hash__ is None
+    with pytest.raises(TypeError):
+        {User("Ada")}
 
 
 def test_data_frozen_true_omits_setters_but_keeps_getters():

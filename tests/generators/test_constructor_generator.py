@@ -1,3 +1,6 @@
+import pytest
+
+from inito.exceptions.errors import InvalidFieldDefinitionError
 from inito.generators.base import generate_method
 from inito.generators.constructor import ConstructorGenerator
 from inito.metadata.class_metadata import ClassMetadata
@@ -8,10 +11,10 @@ def _metadata(fields: tuple) -> ClassMetadata:
     return ClassMetadata(owner=object, fields=fields, qualified_name="Sample")
 
 
-def test_required_fields_ordered_before_optional_in_signature():
+def test_signature_preserves_declaration_order():
     fields = (
-        FieldMetadata(name="b", type_hint=int, default=2),
         FieldMetadata(name="a", type_hint=int),
+        FieldMetadata(name="b", type_hint=int, default=2),
     )
     generated = generate_method(ConstructorGenerator(), _metadata(fields))
 
@@ -22,6 +25,15 @@ def test_required_fields_ordered_before_optional_in_signature():
     instance = Sample(1)
     assert instance.a == 1
     assert instance.b == 2
+
+
+def test_required_field_after_optional_is_rejected():
+    fields = (
+        FieldMetadata(name="b", type_hint=int, default=2),
+        FieldMetadata(name="a", type_hint=int),
+    )
+    with pytest.raises(InvalidFieldDefinitionError, match="required field 'a'"):
+        generate_method(ConstructorGenerator(), _metadata(fields))
 
 
 def test_default_value_can_be_overridden():

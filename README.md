@@ -139,15 +139,17 @@ main()
 ## Decorators
 
 Each decorator can be used bare (`@Data`) or with options (`@Data(frozen=True)`),
-and reads fields from the class's **type annotations** (required fields first,
-defaulted fields after — matching normal Python parameter ordering). Adding or
+and reads fields from the class's **type annotations**, in declaration order (a
+required field after a defaulted one is rejected, as in `dataclasses`). Adding or
 renaming a field automatically changes what gets generated the next time the
 module is imported; there is nothing to keep in sync.
 
 ### `@Data`
 
-The all-in-one. Generates a constructor, `__repr__`, `__eq__`, `__hash__`, and
-`get_<field>()`/`set_<field>(value)` accessors for every field.
+The all-in-one. Generates a constructor, `__repr__`, `__eq__`, and
+`get_<field>()`/`set_<field>(value)` accessors for every field. A non-frozen
+`@Data` is unhashable (like a mutable dataclass); `@Data(frozen=True)` and
+`@Value` add `__hash__`. Use `field(default_factory=...)` for a mutable default.
 
 ```python
 @Data

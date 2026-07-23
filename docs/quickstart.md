@@ -27,10 +27,10 @@ print(user.get_name())   # Ada
 user.set_age(31)
 ```
 
-`@Data` generates a constructor, `__repr__`, `__eq__`, `__hash__`, and
-`get_<field>()`/`set_<field>(value)` accessors for every declared field —
-required fields first, defaulted fields after, matching normal Python
-parameter ordering rules.
+`@Data` generates a constructor, `__repr__`, `__eq__`, and
+`get_<field>()`/`set_<field>(value)` accessors for every declared field, in
+declaration order. A non-frozen `@Data` is unhashable (like a mutable
+dataclass); use `@Data(frozen=True)` or `@Value` for a hashable value type.
 
 ### Options
 

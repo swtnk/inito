@@ -38,18 +38,16 @@ totals = {Money(500): "five dollars"}
 
 ## Configuration object with defaults and a mutable default
 
-Required fields first, defaulted fields after — the same ordering Python
-uses. For a **mutable** default (a list, dict, set), stack `@dataclass` so
-InitO picks up `field(default_factory=...)`; each instance then gets its own
-fresh container.
+Fields keep declaration order (a required field after a defaulted one is
+rejected, as in `dataclasses`). For a **mutable** default (a list, dict, set),
+use `field(default_factory=...)` so each instance gets its own fresh container —
+a bare `tags: list = []` is rejected, since one object would be shared.
 
 ```python
-from dataclasses import dataclass, field
-from inito import Data
+from inito import Data, field
 
 
 @Data
-@dataclass
 class ServerConfig:
     host: str = "localhost"
     port: int = 8080
