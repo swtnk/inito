@@ -28,10 +28,20 @@ plugins = ["inito.typing.mypy_plugin"]
 
 ## Type checking (pyright / Pylance)
 
-pyright has no plugin mechanism, so it sees `@Data`/`@Value`/
-`@AllArgsConstructor` constructors natively (via `dataclass_transform` stubs)
-but not accessors, `@Builder`, or the other constructors. For **full**
-coverage, generate stub files with the bundled tool:
+pyright has no plugin mechanism, so it reads `dataclass_transform` (PEP 681)
+stubs instead. What that covers **zero-config**, no stubgen needed:
+
+- `@Data` / `@Value` / `@AllArgsConstructor` constructors and their fields.
+- `field(default_factory=...)` / `field(default=...)` (declared as
+  `field_specifiers`), so a defaulted field is optional in the constructor.
+- The **`accessors="attr"`** style end to end — since there are no `get_`/`set_`
+  methods to miss, an attr-style `@Data` type-checks with nothing extra.
+
+What still needs stubs under pyright: the Lombok `get_`/`set_` accessors,
+`@Builder`'s fluent API (no PEP 681 mechanism models a builder), and
+`@NoArgsConstructor`/`@RequiredArgsConstructor` (whose signatures don't match
+`dataclass_transform`'s standard semantics). For **full** coverage there, or if
+you use Lombok-style accessors, generate stub files with the bundled tool:
 
 ```bash
 pip install "inito[stubgen]"     # pulls mypy, used only for the base stub

@@ -66,3 +66,28 @@ def test_generated_stubs_make_pyright_see_generated_members(tmp_path):
     assert main([str(tmp_path / "models.py")]) == 0
 
     assert _pyright_error_count(tmp_path) == 0  # every generated member now visible
+
+
+_ZERO_CONFIG = """
+from inito import Data, field
+
+
+@Data(accessors="attr")
+class Config:
+    name: str
+    tags: list[str] = field(default_factory=list)
+
+
+c1 = Config("prod")
+c2 = Config("dev", ["a"])
+name: str = c1.name
+count: int = len(c1.tags)
+"""
+
+
+def test_attr_style_data_type_checks_with_no_stubs(tmp_path):
+    # dataclass_transform (with field_specifiers) covers the constructor, the
+    # fields, and field(default_factory=...) - so the Pythonic attr-accessor
+    # style needs no stubgen to type-check cleanly under pyright.
+    (tmp_path / "m.py").write_text(_ZERO_CONFIG)
+    assert _pyright_error_count(tmp_path) == 0

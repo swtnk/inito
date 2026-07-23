@@ -40,6 +40,15 @@ clear error or the correct result.
   `list`/`set` field then also becomes hashable. Shallow by design; the declared
   annotation is unchanged, so treat the stored value as read-only.
 
+### Changed (typing)
+
+- **Stronger zero-config pyright support.** `@Value` now carries a
+  `dataclass_transform` stub (like `@Data`/`@AllArgsConstructor`), and all three
+  declare `field` as a PEP 681 `field_specifier`, so the constructor, the fields,
+  and `field(default_factory=...)` type-check under pyright with no stubgen. The
+  Pythonic `accessors="attr"` style is fully covered zero-config; Lombok
+  accessors and `@Builder` still need `inito-stubgen` for pyright.
+
 ### Fixed
 
 - **Mutable default values are no longer silently shared across instances.** A
