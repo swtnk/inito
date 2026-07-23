@@ -44,6 +44,9 @@ clear error or the correct result.
   is registered with `linecache`, so a traceback that passes through a generated
   `__init__`/`__eq__`/`__post_init__` frame shows the real source line instead of
   a blank `<inito:...>` frame.
+- **The mypy plugin flags a mutable literal default** (`items: list = []`) at
+  type-check time — the same footgun the runtime rejects — pointing to
+  `field(default_factory=...)`.
 
 ### Changed (typing)
 

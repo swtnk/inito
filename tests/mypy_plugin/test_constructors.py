@@ -85,6 +85,21 @@ def test_all_args_constructor_rejects_required_after_optional(check_mypy):
     assert "cannot follow defaulted field" in out
 
 
+def test_data_flags_a_mutable_literal_default(check_mypy):
+    status, out = check_mypy(
+        """
+        from inito import Data
+
+        @Data
+        class Bag:
+            items: list[int] = []
+        """
+    )
+    assert status == 1
+    assert "shared across instances" in out
+    assert "field(default_factory=...)" in out
+
+
 def test_data_slots_rejects_an_undeclared_attribute(check_mypy):
     status, out = check_mypy(
         """

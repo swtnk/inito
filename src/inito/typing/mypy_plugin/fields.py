@@ -15,8 +15,11 @@ from mypy.nodes import (
     AssignmentStmt,
     Block,
     Decorator,
+    DictExpr,
+    ListExpr,
     NameExpr,
     PlaceholderNode,
+    SetExpr,
     TempNode,
     TypeAlias,
     TypeInfo,
@@ -24,6 +27,8 @@ from mypy.nodes import (
 )
 from mypy.plugin import ClassDefContext
 from mypy.types import Type
+
+_MUTABLE_LITERALS = (ListExpr, DictExpr, SetExpr)
 
 
 @dataclass(frozen=True)
@@ -53,7 +58,21 @@ def collect_fields(ctx: ClassDefContext) -> list[InitoField] | None:
         return None
     found.update(current)
 
+    report_mutable_defaults(ctx)
     return list(found.values())
+
+
+def report_mutable_defaults(ctx: ClassDefContext) -> None:
+    """Flag a mutable literal default (``= []``/``{}``/``{...}``), as the runtime does."""
+    for stmt in _assignment_statements(ctx.cls.defs):
+        if stmt.new_syntax and isinstance(stmt.rvalue, _MUTABLE_LITERALS):
+            name = stmt.lvalues[0]
+            label = name.name if isinstance(name, NameExpr) else "field"
+            ctx.api.fail(
+                f"Mutable default for {label!r} is shared across instances; "
+                f"use field(default_factory=...) from inito.",
+                stmt,
+            )
 
 
 def _own_fields(info: TypeInfo, body: Block | None = None) -> dict[str, InitoField] | None:
