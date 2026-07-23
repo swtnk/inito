@@ -1,0 +1,1258 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>inito.di.container &#8212; InitO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/inito/di/container';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://swetanksubham.com/inito/_modules/inito/di/container.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">InitO</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">inito.di.container</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for inito.di.container</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;A lazy-resolving dependency-injection container: register once, build on first get().&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextvars</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito.di.dependency_resolver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dependency</span><span class="p">,</span>
+    <span class="n">resolve_constructor_dependencies</span><span class="p">,</span>
+    <span class="n">resolve_provider_dependencies</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito.di.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito.di.resource</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RESOURCE_ATTRIBUTE</span><span class="p">,</span>
+    <span class="n">ProviderKind</span><span class="p">,</span>
+    <span class="n">ProviderSpec</span><span class="p">,</span>
+    <span class="n">ResourceSpec</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito.exceptions.errors</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AmbiguousDependencyError</span><span class="p">,</span>
+    <span class="n">CircularDependencyError</span><span class="p">,</span>
+    <span class="n">DependencyRegistrationError</span><span class="p">,</span>
+    <span class="n">ResourceTeardownError</span><span class="p">,</span>
+    <span class="n">ScopeError</span><span class="p">,</span>
+    <span class="n">UnresolvableDependencyError</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="n">_MISSING</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+<span class="sd">&quot;&quot;&quot;Sentinel for &#39;no cached instance&#39; - distinct from a legitimately falsy one.&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_safe_issubclass</span><span class="p">(</span><span class="n">child</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: ANN401 -- arbitrary base type</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return whether child subclasses parent, False if issubclass can&#39;t judge parent.</span>
+
+<span class="sd">    A dependency&#39;s registrable type may be a parameterized generic (``list[int]``)</span>
+<span class="sd">    or a non-runtime-checkable Protocol: ``issubclass(child, parent)`` raises</span>
+<span class="sd">    TypeError for those (and, quirkily, ``isinstance(list[int], type)`` is True on</span>
+<span class="sd">    some Python versions), so such a type is simply not an injectable interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="Scope">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Scope">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Scope</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;How a registered service&#39;s lifetime is managed.&quot;&quot;&quot;</span>
+
+    <span class="n">SINGLETON</span> <span class="o">=</span> <span class="s2">&quot;singleton&quot;</span>
+    <span class="n">TRANSIENT</span> <span class="o">=</span> <span class="s2">&quot;transient&quot;</span>
+    <span class="n">THREAD_LOCAL</span> <span class="o">=</span> <span class="s2">&quot;thread_local&quot;</span>
+    <span class="n">SCOPED</span> <span class="o">=</span> <span class="s2">&quot;scoped&quot;</span></div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Scope</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single active ``container.scope()``: its per-scope instance cache and finalizers.&quot;&quot;&quot;</span>
+
+    <span class="n">instances</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">finalizers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Finalizer</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">lock</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span>
+
+
+<span class="n">_current_scope</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">[</span><span class="n">_Scope</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span>
+    <span class="s2">&quot;inito_current_scope&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;The scope active on this thread/async-task, if any - set by ``container.scope()``.&quot;&quot;&quot;</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceRegistration</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A registered service: its class, scope, resolved dependencies, and primary flag.&quot;&quot;&quot;</span>
+
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span>
+    <span class="n">dependencies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">]</span>
+    <span class="n">primary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">resource</span><span class="p">:</span> <span class="n">ResourceSpec</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># class-form @Resource lifecycle</span>
+    <span class="n">provider</span><span class="p">:</span> <span class="n">ProviderSpec</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># function-form @Resource generator provider</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Finalizer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single resource&#39;s teardown, recorded at build time and run LIFO at shutdown.</span>
+
+<span class="sd">    Exactly one of ``close``/``aclose`` is set; ``key`` is the registration whose</span>
+<span class="sd">    cached singleton is dropped once torn down so a later ``get()`` rebuilds it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span><span class="p">:</span> <span class="nb">type</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">close</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">aclose</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether this resource must be torn down with ``await``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aclose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_advance_sync_generator</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">generator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resume a provider generator past its ``yield`` to run its cleanup.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">raise</span> <span class="n">ResourceTeardownError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: a @Resource generator must yield exactly once.&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_advance_async_generator</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">generator</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401 -- async gen</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resume an async provider generator past its ``yield`` to run its cleanup.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">generator</span><span class="o">.</span><span class="fm">__anext__</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">StopAsyncIteration</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">raise</span> <span class="n">ResourceTeardownError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: a @Resource generator must yield exactly once.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_raise_teardown_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">detail</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ResourceTeardownError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resource teardown failed for </span><span class="si">{</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Container">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Container</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Registers services at decoration time; resolves and builds instances lazily on get().</span>
+
+<span class="sd">    Singleton construction is thread-safe: concurrent first-access to the</span>
+<span class="sd">    same singleton from multiple threads is serialized via a per-class</span>
+<span class="sd">    lock, so a service is never constructed more than once and every</span>
+<span class="sd">    caller receives the same instance. Already-cached singletons cost</span>
+<span class="sd">    nothing extra - no lock is touched once resolved. A Container is</span>
+<span class="sd">    always process-local; it is not shared across separate OS processes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an empty container with no registrations.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">ServiceRegistration</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_locks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory_plans</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Finalizer</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Container.register">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span> <span class="o">=</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+        <span class="n">qualifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">primary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register cls under scope (and optional qualifier), without instantiating it.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DependencyRegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">!r}</span><span class="s2"> is already registered.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">qualifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">qualifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DependencyRegistrationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Qualifier </span><span class="si">{</span><span class="n">qualifier</span><span class="si">!r}</span><span class="s2"> is already registered to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="p">[</span><span class="n">qualifier</span><span class="p">]</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">dependencies</span> <span class="o">=</span> <span class="n">resolve_constructor_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RESOURCE_ATTRIBUTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DependencyRegistrationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">: @Resource requires singleton or scoped lifetime so its &quot;</span>
+                <span class="s2">&quot;teardown is container- or scope-managed.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">ServiceRegistration</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">primary</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="n">resource</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">qualifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="p">[</span><span class="n">qualifier</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">:</span>
+            <span class="c1"># Create the construction lock now, at (single-threaded) decoration</span>
+            <span class="c1"># time, so the cold resolve path reads it with a plain dict lookup</span>
+            <span class="c1"># instead of guarding a lazily-created-lock dict on every build.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_locks</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Container.register_provider">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.register_provider">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">ProviderSpec</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span> <span class="o">=</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a function-form @Resource provider, keyed by the type it yields.&quot;&quot;&quot;</span>
+        <span class="n">provided</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">provided_type</span>
+        <span class="k">if</span> <span class="n">provided</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DependencyRegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">provided</span><span class="si">!r}</span><span class="s2"> is already registered.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DependencyRegistrationError</span><span class="p">(</span>
+                <span class="s2">&quot;@Resource providers must be singleton- or scope-scoped.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">dependencies</span> <span class="o">=</span> <span class="n">resolve_provider_dependencies</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">[</span><span class="n">provided</span><span class="p">]</span> <span class="o">=</span> <span class="n">ServiceRegistration</span><span class="p">(</span>
+            <span class="n">provided</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="n">spec</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_locks</span><span class="p">[</span><span class="n">provided</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Container.get">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve and return an instance of cls, building its dependency graph bottom-up.&quot;&quot;&quot;</span>
+        <span class="c1"># An active override wins over everything, including a cached singleton;</span>
+        <span class="c1"># the empty-dict guard keeps this ~free when nothing is overridden (the</span>
+        <span class="c1"># production case), so the warm fast-path is unregressed.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">provider</span><span class="p">())</span>
+        <span class="c1"># Warm-singleton fast path: a single dict lookup, skipping registration</span>
+        <span class="c1"># lookup / scope / cycle checks and even typing.cast (a real runtime call</span>
+        <span class="c1"># here). A cached instance is never None, so a miss falls through to the</span>
+        <span class="c1"># full resolve. This is the overwhelmingly common call once the graph is</span>
+        <span class="c1"># built, so the returned-Any is silenced rather than paying for a cast.</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">instance</span>  <span class="c1"># type: ignore[no-any-return]</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="p">()))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401 -- instance of cls, or _MISSING</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve cls if it is overridden or registered, else return the ``_MISSING`` sentinel.</span>
+
+<span class="sd">        The single-lookup fast path for ``@Inject``: it folds ``is_registered`` and</span>
+<span class="sd">        ``get`` into one traversal (override -&gt; warm singleton -&gt; registration),</span>
+<span class="sd">        so an injectable whose singleton is already cached costs one dict read.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">provider</span><span class="p">()</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">instance</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">())</span>
+        <span class="k">return</span> <span class="n">_MISSING</span>
+
+<div class="viewcode-block" id="Container.aget">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.aget">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async twin of ``get``, awaiting async @Resource providers anywhere in the graph.</span>
+
+<span class="sd">        Sync services, singletons, scoped services, and cached instances resolve</span>
+<span class="sd">        exactly as ``get`` does; an async-generator provider is awaited to its first</span>
+<span class="sd">        yield. Use this whenever the graph contains an async resource.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">provider</span><span class="p">())</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">instance</span>  <span class="c1"># type: ignore[no-any-return]</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">()))</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aresolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">provider</span><span class="p">()</span>
+        <span class="n">registration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnresolvableDependencyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">!r}</span><span class="s2"> is not registered in the container.&quot;</span><span class="p">)</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cached</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">cycle</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">CircularDependencyError</span><span class="p">(</span>
+                <span class="s2">&quot;Circular dependency detected: &quot;</span> <span class="o">+</span> <span class="s2">&quot; -&gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abuild</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_abuild</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_singleton</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_scoped</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">instance</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aconstruct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">THREAD_LOCAL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local_cache</span><span class="p">()[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aresolve_singleton</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_locks</span><span class="p">[</span><span class="bp">cls</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">:</span>  <span class="c1"># pragma: no cover -- double-checked lock; race only</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">finalizer</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aconstruct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">if</span> <span class="n">finalizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_record_finalizer</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aresolve_scoped</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">scope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_scope</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">scope</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>  <span class="c1"># pragma: no cover -- double-checked lock; race only</span>
+                <span class="k">return</span> <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">finalizer</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aconstruct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">if</span> <span class="n">finalizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">scope</span><span class="o">.</span><span class="n">finalizers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aconstruct</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">_Finalizer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">provider</span> <span class="o">=</span> <span class="n">registration</span><span class="o">.</span><span class="n">provider</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">provider</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">ProviderKind</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span><span class="p">:</span>
+            <span class="n">generator</span> <span class="o">=</span> <span class="n">provider</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generator</span><span class="o">.</span><span class="fm">__anext__</span><span class="p">()</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">_Finalizer</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">aclose</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_advance_async_generator</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">generator</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aresolve_dependencies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">registration</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve_dependency</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resolved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolved</span>
+        <span class="k">return</span> <span class="n">kwargs</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aresolve_dependency</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dependency</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aautowire</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unresolved_dependency</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_aautowire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependency</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">factory_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_factory</span><span class="p">(</span><span class="n">dependency</span><span class="o">.</span><span class="n">factory_target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_MISSING</span>
+        <span class="n">resolved_type</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="n">registrable</span>
+        <span class="k">if</span> <span class="n">resolved_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve</span><span class="p">(</span><span class="n">resolved_type</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">implementation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pick_implementation</span><span class="p">(</span><span class="n">resolved_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">implementation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aresolve</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_MISSING</span>
+
+<div class="viewcode-block" id="Container.override">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.override">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make get(cls) return instance until cleared. For tests/environment swaps.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">instance</span></div>
+
+
+<div class="viewcode-block" id="Container.override_factory">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.override_factory">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">override_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make get(cls) return factory() on each resolution until cleared.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">factory</span></div>
+
+
+<div class="viewcode-block" id="Container.clear_override">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.clear_override">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove any override for cls.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Container.clear_overrides">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.clear_overrides">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all overrides.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Container.overrides">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.overrides">[docs]</a>
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Temporarily override each type -&gt; instance in mapping, restoring on exit.</span>
+
+<span class="sd">        Both the overrides and the singleton cache are snapshotted and restored,</span>
+<span class="sd">        so any singleton built *under* the override is discarded on exit and the</span>
+<span class="sd">        container returns to its prior state - the behavior a test expects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previous_overrides</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">)</span>
+        <span class="n">previous_singletons</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">)</span>
+        <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span> <span class="o">=</span> <span class="n">previous_overrides</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span> <span class="o">=</span> <span class="n">previous_singletons</span></div>
+
+
+<div class="viewcode-block" id="Container.is_registered">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.is_registered">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether cls has been registered in this container.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span></div>
+
+
+<div class="viewcode-block" id="Container.reset">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the singleton/thread-local caches, overrides, and pending finalizers.</span>
+
+<span class="sd">        Registrations are kept. A test helper: it drops resource finalizers **without**</span>
+<span class="sd">        running them, so tear resources down with ``shutdown_resources()`` first if their</span>
+<span class="sd">        cleanup matters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Container.shutdown_resources">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.shutdown_resources">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tear down every built @Resource in reverse construction order (LIFO).</span>
+
+<span class="sd">        Best-effort: each is closed even if an earlier one raised, and the failures</span>
+<span class="sd">        are aggregated into a single ``ResourceTeardownError``. Raises immediately,</span>
+<span class="sd">        tearing nothing down, if an **async** resource is pending — use</span>
+<span class="sd">        ``ashutdown_resources()`` / ``async with container`` for those.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_lock</span><span class="p">:</span>
+            <span class="n">pending</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_teardown_sync</span><span class="p">(</span><span class="n">pending</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forget_singleton</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Container.ashutdown_resources">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.ashutdown_resources">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ashutdown_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async twin of ``shutdown_resources``: awaits async teardowns, runs sync ones.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_lock</span><span class="p">:</span>
+            <span class="n">pending</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_teardown_async</span><span class="p">(</span><span class="n">pending</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forget_singleton</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forget_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_teardown_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finalizers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Finalizer</span><span class="p">],</span> <span class="n">drop</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">finalizer</span><span class="o">.</span><span class="n">is_async</span> <span class="k">for</span> <span class="n">finalizer</span> <span class="ow">in</span> <span class="n">finalizers</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ResourceTeardownError</span><span class="p">(</span>
+                <span class="s2">&quot;async @Resource teardown requires `await container.ashutdown_resources()` / &quot;</span>
+                <span class="s2">&quot;`await ...` or `async with`.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">finalizer</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">finalizers</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">finalizer</span><span class="o">.</span><span class="n">close</span><span class="p">)()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># best-effort; aggregated and re-raised below</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">finalizer</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+            <span class="n">drop</span><span class="p">(</span><span class="n">finalizer</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">_raise_teardown_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_teardown_async</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">finalizers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Finalizer</span><span class="p">],</span> <span class="n">drop</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">finalizer</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">finalizers</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">finalizer</span><span class="o">.</span><span class="n">aclose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">finalizer</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">finalizer</span><span class="o">.</span><span class="n">close</span><span class="p">)()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># best-effort; aggregated and re-raised below</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">finalizer</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+            <span class="n">drop</span><span class="p">(</span><span class="n">finalizer</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">_raise_teardown_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Container.scope">
+<a class="viewcode-back" href="../../../reference/dependency-injection.html#inito.Container.scope">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ScopeHandle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open a scope for ``Scope.SCOPED`` services; usable as ``with`` or ``async with``.</span>
+
+<span class="sd">        Within the block, a scoped service is built once and cached, and a scoped</span>
+<span class="sd">        @Resource is torn down (LIFO) when the block exits. Scopes nest and are</span>
+<span class="sd">        task/thread-local.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_ScopeHandle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Container</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enter a ``with`` block; resources are still built lazily on first ``get()``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tear down all built resources on block exit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_resources</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Container</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enter an ``async with`` block; resources are still built lazily.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Await teardown of all built resources on block exit.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ashutdown_resources</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_thread_local_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_thread_local</span><span class="p">,</span> <span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="k">return</span> <span class="n">cache</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cached_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">_MISSING</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">THREAD_LOCAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local_cache</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">_MISSING</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">:</span>
+            <span class="n">active</span> <span class="o">=</span> <span class="n">_current_scope</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">active</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">active</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">_MISSING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_MISSING</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Scope</span><span class="p">:</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="n">_current_scope</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">active</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ScopeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> is scope-bound (Scope.SCOPED) but no scope is active; &quot;</span>
+                <span class="s2">&quot;resolve it inside `with container.scope():` or `async with container.scope():`.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">active</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">provider</span><span class="p">()</span>
+        <span class="n">registration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnresolvableDependencyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">!r}</span><span class="s2"> is not registered in the container.&quot;</span><span class="p">)</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cached</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">cycle</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">CircularDependencyError</span><span class="p">(</span>
+                <span class="s2">&quot;Circular dependency detected: &quot;</span> <span class="o">+</span> <span class="s2">&quot; -&gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_singleton</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_scoped</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="n">Scope</span><span class="o">.</span><span class="n">THREAD_LOCAL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_local_cache</span><span class="p">()[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_scoped</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">scope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_scope</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">scope</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>  <span class="c1"># pragma: no cover -- double-checked lock; race only</span>
+                <span class="k">return</span> <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">finalizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">scope</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">if</span> <span class="n">finalizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">scope</span><span class="o">.</span><span class="n">finalizers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_singleton</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="c1"># Dependencies are resolved *before* taking cls&#39;s lock: each dependency is</span>
+        <span class="c1"># itself resolved (and, if a singleton, cached) under its own lock, so no</span>
+        <span class="c1"># thread ever holds two singleton locks at once. That keeps the critical</span>
+        <span class="c1"># section to just construct-and-cache and, unlike holding cls&#39;s lock across</span>
+        <span class="c1"># the whole recursive subtree, cannot deadlock two threads resolving a</span>
+        <span class="c1"># cyclic graph from opposite ends. Double-checked locking keeps the</span>
+        <span class="c1"># warm/cached path lock-free (checked in _resolve before we get here).</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="c1"># The lock was created for this singleton at register() time, so this is</span>
+        <span class="c1"># a plain (thread-safe) dict read - no guard lock needed on the cold path.</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_locks</span><span class="p">[</span><span class="bp">cls</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">finalizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_singletons</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">if</span> <span class="n">finalizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_record_finalizer</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">_Finalizer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build one instance, returning it with its teardown finalizer (or None).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_from_provider</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registration</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">resource</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">instance</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_finalizer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">registration</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct_from_provider</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="n">ProviderSpec</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">_Finalizer</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">ProviderKind</span><span class="o">.</span><span class="n">ASYNC_GENERATOR</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnresolvableDependencyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> is an async @Resource generator; build it with &quot;</span>
+                <span class="s2">&quot;`await container.aget(...)` or inside `async with container`.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">provider</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span>
+        <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">_Finalizer</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_advance_sync_generator</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">generator</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_class_finalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">resource</span><span class="p">:</span> <span class="n">ResourceSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Finalizer</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span>
+        <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">is_context_manager</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">_Finalizer</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">teardown</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">resource</span><span class="o">.</span><span class="n">close_method</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">is_async</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_Finalizer</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">aclose</span><span class="o">=</span><span class="n">teardown</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Finalizer</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="n">teardown</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record_finalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finalizer</span><span class="p">:</span> <span class="n">_Finalizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_finalizers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_dependencies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">registration</span><span class="p">:</span> <span class="n">ServiceRegistration</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">registration</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependency</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resolved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolved</span>
+        <span class="k">return</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_dependency</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dependency</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autowire</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unresolved_dependency</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unresolved_dependency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dependency</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the default (return _MISSING to omit) or raise; shared by sync and async.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnresolvableDependencyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">.__init__ parameter </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> requests qualifier &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span><span class="si">!r}</span><span class="s2">, which is not registered.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">has_default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_MISSING</span>  <span class="c1"># unregistered + default -&gt; omit, the ctor&#39;s own default applies</span>
+        <span class="k">raise</span> <span class="n">UnresolvableDependencyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">.__init__ parameter </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> (type &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dependency</span><span class="o">.</span><span class="n">type_hint</span><span class="si">!r}</span><span class="s2">) isn&#39;t registered and has no default value.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_autowire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependency</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve dependency to an instance if its type is autowirable, else _MISSING.</span>
+
+<span class="sd">        Shared by _resolve_dependency (which then raises or applies a default) and</span>
+<span class="sd">        a Factory (which then applies call-time args or the target&#39;s own default).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">factory_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_factory</span><span class="p">(</span><span class="n">dependency</span><span class="o">.</span><span class="n">factory_target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency</span><span class="o">.</span><span class="n">qualifier</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_MISSING</span>
+        <span class="n">resolved_type</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="n">registrable</span>  <span class="c1"># precomputed at registration time</span>
+        <span class="k">if</span> <span class="n">resolved_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">resolved_type</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">implementation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pick_implementation</span><span class="p">(</span><span class="n">resolved_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">implementation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_MISSING</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_factory_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">]:</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory_plans</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="n">resolve_constructor_dependencies</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># inspected once per target</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_factory_plans</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="n">plan</span>
+        <span class="k">return</span> <span class="n">plan</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Factory</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">_BoundFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory_plan</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pick_implementation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the sole or primary registered subclass of an unregistered base, if any.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_type</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">registration</span><span class="o">.</span><span class="n">cls</span>
+            <span class="k">for</span> <span class="n">registration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">registration</span><span class="o">.</span><span class="n">cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">base_type</span> <span class="ow">and</span> <span class="n">_safe_issubclass</span><span class="p">(</span><span class="n">registration</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="n">base_type</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">primaries</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span><span class="o">.</span><span class="n">primary</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">primaries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">primaries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="n">AmbiguousDependencyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_type</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> has multiple registered implementations &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="bp">cls</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">candidates</span><span class="p">)</span><span class="si">}</span><span class="s2">); mark one &quot;</span>
+            <span class="s2">&quot;@Service(primary=True) or inject Annotated[..., Qualifier(name)].&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_drop_nothing</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Teardown drop-callback for a scope: its instances are discarded with the scope.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ScopeHandle</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returned by ``container.scope()``: a scope context manager (sync and async).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">Container</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span><span class="p">:</span> <span class="n">_Scope</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_token</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">Token</span><span class="p">[</span><span class="n">_Scope</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_enter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Container</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="o">=</span> <span class="n">_Scope</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">_current_scope</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scope</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Scope</span><span class="p">:</span>
+        <span class="n">_current_scope</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;contextvars.Token[_Scope | None]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">_Scope</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Container</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enter</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">_teardown_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exit</span><span class="p">()</span><span class="o">.</span><span class="n">finalizers</span><span class="p">,</span> <span class="n">_drop_nothing</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Container</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enter</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">_teardown_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exit</span><span class="p">()</span><span class="o">.</span><span class="n">finalizers</span><span class="p">,</span> <span class="n">_drop_nothing</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_BoundFactory</span><span class="p">(</span><span class="n">Factory</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A ``Factory[T]`` bound to a container: builds a fresh target per call.</span>
+
+<span class="sd">    Call-time keyword arguments win; every other constructor parameter whose type</span>
+<span class="sd">    is autowirable is resolved from the container; anything left falls to the</span>
+<span class="sd">    target&#39;s own default (or a natural missing-argument ``TypeError`` at the call).</span>
+<span class="sd">    The plan is the target&#39;s constructor dependencies, inspected once and cached.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">Container</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span> <span class="o">=</span> <span class="n">plan</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa: ANN401 -- forwards to the target ctor</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># call-time kwargs win over autowiring</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">final</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">_autowire</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="p">())</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span><span class="p">:</span>
+                <span class="n">final</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">(</span><span class="o">**</span><span class="n">final</span><span class="p">)</span>
+
+
+<span class="n">default_container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+<span class="sd">&quot;&quot;&quot;Shared container that @Service/@Singleton register into by default.&quot;&quot;&quot;</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Swetank Subham.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

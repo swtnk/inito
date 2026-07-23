@@ -1,0 +1,1127 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dependency injection &#8212; InitO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=292eb321"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dependency-injection';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://swetanksubham.com/inito/dependency-injection.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using InitO with your framework" href="frameworks.html" />
+    <link rel="prev" title="@Jsonize" href="decorators/jsonize.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">InitO</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts: the problem InitO solves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Decorators</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="decorators/data.html">@Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/value.html">@Value</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/accessors.html">@Getter and @Setter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/to-string.html">@ToString</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/equals-and-hash-code.html">@EqualsAndHashCode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/constructors.html">Constructors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/builder.html">@Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/config.html">@Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators/jsonize.html">@Jsonize</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Dependency injection</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Dependency injection</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes and guides</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="frameworks.html">Using InitO with your framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration guide</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security &amp; code generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user-guide.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Dependency injection</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dependency-injection">
+<h1>Dependency injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">#</a></h1>
+<p>A small, zero-dependency DI layer: <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> register classes,
+<code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code> autowires functions, and a <code class="docutils literal notranslate"><span class="pre">Container</span></code> resolves the graph lazily.</p>
+<section id="the-problem-it-solves">
+<h2>The problem it solves<a class="headerlink" href="#the-problem-it-solves" title="Link to this heading">#</a></h2>
+<p>As an application grows, wiring objects together by hand becomes its own
+chore: a handler needs a service, which needs a repository, which needs a
+database connection — and every call site has to build that whole chain in
+the right order. InitO splits that into two jobs: the
+<a class="reference internal" href="decorators/constructors.html"><span class="std std-doc">constructor decorators</span></a> declare what
+a class depends on (its typed constructor parameters), and a <code class="docutils literal notranslate"><span class="pre">Container</span></code>
+resolves and builds the graph for you, once, on demand.</p>
+<p>Crucially, <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> <strong>never rewrites your class</strong> — it stays an ordinary,
+directly-constructible Python class. The container is an <em>opt-in</em> way to
+build it, not a replacement for <code class="docutils literal notranslate"><span class="pre">MyService(...)</span></code>.</p>
+</section>
+<section id="quick-example">
+<h2>Quick example<a class="headerlink" href="#quick-example" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Singleton</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">RequiredArgsConstructor</span><span class="p">,</span> <span class="n">default_container</span>
+
+
+<span class="nd">@Singleton</span>                       <span class="c1"># one shared instance per container</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Ada&quot;</span><span class="p">}</span>            <span class="c1"># seed data — no constructor needed</span>
+
+
+<span class="nd">@Service</span>                         <span class="c1"># autowired from the container on demand</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">Database</span>                 <span class="c1"># a field annotation is all it takes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
+
+
+<span class="nd">@Inject</span>                          <span class="c1"># fills `repo` from the container</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">repo</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="n">handler</span><span class="p">())</span>                             <span class="c1"># Ada</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">default_container</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">UserRepository</span><span class="p">))</span> <span class="c1"># explicit resolution, same wiring</span>
+<span class="n">plain</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">(</span><span class="n">Database</span><span class="p">())</span>           <span class="c1"># still an ordinary class</span>
+</pre></div>
+</div>
+</section>
+<section id="composition-roots-the-recommended-pattern">
+<h2>Composition roots (the recommended pattern)<a class="headerlink" href="#composition-roots-the-recommended-pattern" title="Link to this heading">#</a></h2>
+<p>Because every <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> class stays an ordinary, directly-constructible class,
+the clearest way to wire an application — especially a large one — is an
+<strong>explicit composition root</strong>: one function that builds the graph by hand, near
+the entry point. No global, no service locator, no magic — just constructors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_user_service</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">UserService</span><span class="p">:</span>
+    <span class="n">database</span> <span class="o">=</span> <span class="n">Database</span><span class="p">()</span>
+    <span class="n">repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">UserService</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span>
+
+
+<span class="n">service</span> <span class="o">=</span> <span class="n">build_user_service</span><span class="p">()</span>   <span class="c1"># the whole graph, wired in one obvious place</span>
+</pre></div>
+</div>
+<p>This is the easiest thing to read, test (pass fakes straight to the
+constructors), and reason about — the dependencies are visible at the call
+site. Reach for the <code class="docutils literal notranslate"><span class="pre">Container</span></code> when the graph is large or its lifetimes
+(singletons, scopes, resources) are worth centralizing, and prefer a <strong>local</strong>
+<code class="docutils literal notranslate"><span class="pre">Container</span></code> you pass around over the global <code class="docutils literal notranslate"><span class="pre">default_container</span></code> /<code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code>, which
+are a convenience (handy in scripts and tests) rather than the enterprise
+default. The container never changes your classes, so you can always drop back
+to hand-wiring for a subgraph.</p>
+</section>
+<section id="the-pieces">
+<h2>The pieces<a class="headerlink" href="#the-pieces" title="Link to this heading">#</a></h2>
+<p><strong>A <code class="docutils literal notranslate"><span class="pre">Container</span></code> is the heart of the system — a registry and a resolver in one.</strong>
+It holds <em>registrations</em> (which classes are available for injection and what
+each one’s constructor depends on), and on demand it builds instances, wires
+their dependencies, caches them according to their scope, and hands them back.
+You rarely create one by hand: a shared <code class="docutils literal notranslate"><span class="pre">default_container</span></code> already exists, and
+<code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> register into it. Make your own <code class="docutils literal notranslate"><span class="pre">Container</span></code> only to
+isolate a subsystem’s wiring or a test.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>What it is</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;Component</span></code></p></td>
+<td><p>Marks a class as <strong>available for injection</strong> — registers it (and the types its constructor needs) in a container, at decoration time. It never instantiates or mutates the class; <code class="docutils literal notranslate"><span class="pre">MyService(...)</span></code> still works normally.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> with singleton lifetime (the default) — sugar for <code class="docutils literal notranslate"><span class="pre">&#64;Service(scope=Scope.SINGLETON)</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code></p></td>
+<td><p>Wraps a <strong>function</strong> so a container fills its type-annotated parameters that the caller didn’t supply.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Container</span></code></p></td>
+<td><p>The registry + resolver + lifetime manager. <code class="docutils literal notranslate"><span class="pre">container.get(cls)</span></code> builds <code class="docutils literal notranslate"><span class="pre">cls</span></code>, wiring its dependencies bottom-up, and returns it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_container</span></code></p></td>
+<td><p>The shared <code class="docutils literal notranslate"><span class="pre">Container</span></code> that <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> use unless you pass <code class="docutils literal notranslate"><span class="pre">container=</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Scope</span></code></p></td>
+<td><p>A service’s lifetime: <code class="docutils literal notranslate"><span class="pre">SINGLETON</span></code> (one cached instance), <code class="docutils literal notranslate"><span class="pre">TRANSIENT</span></code> (fresh every time), <code class="docutils literal notranslate"><span class="pre">THREAD_LOCAL</span></code> (one per thread), or <code class="docutils literal notranslate"><span class="pre">SCOPED</span></code> (one per <code class="docutils literal notranslate"><span class="pre">container.scope()</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Qualifier</span></code></p></td>
+<td><p>Names <em>which</em> implementation to inject when several implement one base type — <code class="docutils literal notranslate"><span class="pre">Annotated[Repo,</span> <span class="pre">Qualifier(&quot;postgres&quot;)]</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Factory[T]</span></code></p></td>
+<td><p>Inject a <strong>callable</strong> that builds a fresh <code class="docutils literal notranslate"><span class="pre">T</span></code> on demand, autowiring its registered dependencies and taking the rest as call-time arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code></p></td>
+<td><p>Mark a class or generator function whose instance the container <strong>opens lazily and closes</strong> (LIFO) at <code class="docutils literal notranslate"><span class="pre">shutdown_resources()</span></code> / <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">container</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">container.scope()</span></code></p></td>
+<td><p>Open a <strong>scope</strong> (<code class="docutils literal notranslate"><span class="pre">with</span></code> / <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>) for <code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code> services — one instance per scope, scoped resources torn down at exit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Injected[T]</span></code></p></td>
+<td><p>A <strong>FastAPI</strong> dependency that resolves <code class="docutils literal notranslate"><span class="pre">T</span></code> from the container per request, inside a per-request scope.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;Component</span></code> is a literal alias for <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>; use whichever name you prefer.</p>
+</section>
+<section id="how-resolution-works">
+<h2>How resolution works<a class="headerlink" href="#how-resolution-works" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> reads a class’s constructor parameter types <strong>once, at
+decoration time</strong>, and records them. Nothing is instantiated yet. The first
+time you ask for the class — via <code class="docutils literal notranslate"><span class="pre">container.get(cls)</span></code> or an
+<code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code>-decorated call — the container resolves the dependency graph
+bottom-up, builds each instance, and (for singletons) caches it.</p>
+<p>A constructor parameter is <strong>autowired only if its annotated type is itself
+a registered service</strong>. A parameter whose type is <em>not</em> registered:</p>
+<ul class="simple">
+<li><p>keeps its <strong>default value</strong> if it has one (plain config like
+<code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3</span></code> just works), or</p></li>
+<li><p>raises <code class="docutils literal notranslate"><span class="pre">UnresolvableDependencyError</span></code> if it has no default (the container
+has nothing to supply and no fallback).</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Service</span>
+<span class="nd">@AllArgsConstructor</span>           <span class="c1"># inito writes __init__(self, db, ttl=60)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cache</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">Database</span>              <span class="c1"># registered -&gt; autowired</span>
+    <span class="n">ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span>             <span class="c1"># not registered, has a default -&gt; keeps 60</span>
+</pre></div>
+</div>
+</section>
+<section id="scopes">
+<h2>Scopes<a class="headerlink" href="#scopes" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Scope</span>
+</pre></div>
+</div>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Scope.SINGLETON</span></code></strong> (the default, and what <code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> selects) builds
+the instance once and caches it — every <code class="docutils literal notranslate"><span class="pre">get()</span></code> after the first returns
+the same object.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Scope.TRANSIENT</span></code></strong> never caches — every <code class="docutils literal notranslate"><span class="pre">get()</span></code> rebuilds the subtree:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Service</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">Scope</span><span class="o">.</span><span class="n">TRANSIENT</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequestContext</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Scope.THREAD_LOCAL</span></code></strong> caches <strong>one instance per thread</strong> — every thread
+that resolves the service gets its own, shared within that thread. Useful for
+objects that aren’t safe to share across threads (a connection, a cursor):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Service</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">Scope</span><span class="o">.</span><span class="n">THREAD_LOCAL</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code></strong> caches <strong>one instance per active scope</strong> — a request, a
+task, a unit of work. A scoped service is resolved inside a
+<code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">container.scope():</span></code> (or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container.scope():</span></code>) block; the same
+instance is returned throughout that scope, a fresh one in the next scope, and
+a scoped <a class="reference internal" href="#resources-lifecycle-and-teardown"><code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code></a> is torn down when the
+scope exits. Resolving a scoped service with no active scope raises <code class="docutils literal notranslate"><span class="pre">ScopeError</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Service</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">Scope</span><span class="o">.</span><span class="n">SCOPED</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnitOfWork</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">with</span> <span class="n">container</span><span class="o">.</span><span class="n">scope</span><span class="p">():</span>
+    <span class="n">uow</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">UnitOfWork</span><span class="p">)</span>        <span class="c1"># one per scope</span>
+</pre></div>
+</div>
+<p>Scopes are <code class="docutils literal notranslate"><span class="pre">contextvars</span></code>-based (task/thread-local) and nest — the innermost
+wins. A scoped <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> (e.g. a per-request DB session) is opened lazily and
+closed at scope exit, LIFO; async scoped resources are torn down by
+<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container.scope()</span></code>.</p>
+</li>
+</ul>
+<p>One subtlety: a transient service used as a dependency of a <em>singleton</em> is
+built once — at the singleton’s first resolution — because the singleton
+that holds it is itself cached. “Transient” means “fresh each time it is
+resolved directly”, not “fresh inside every consumer”.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> is a standalone decorator, not something you stack on
+<code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>. Passing it a conflicting <code class="docutils literal notranslate"><span class="pre">scope=</span></code> argument raises
+<code class="docutils literal notranslate"><span class="pre">DecoratorConfigurationError</span></code> — use <code class="docutils literal notranslate"><span class="pre">&#64;Service(scope=...)</span></code> when you want a
+non-default scope.</p>
+</section>
+<section id="containers">
+<h2>Containers<a class="headerlink" href="#containers" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> register into the shared <code class="docutils literal notranslate"><span class="pre">default_container</span></code> unless
+you pass <code class="docutils literal notranslate"><span class="pre">container=</span></code>. Create your own <code class="docutils literal notranslate"><span class="pre">Container</span></code> to isolate a subsystem’s
+registrations — especially handy in tests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
+
+<span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+
+
+<span class="nd">@Service</span><span class="p">(</span><span class="n">container</span><span class="o">=</span><span class="n">container</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Repo</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="n">container</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Repo</span><span class="p">)</span>             <span class="c1"># resolved from the isolated container</span>
+<span class="n">container</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="n">Repo</span><span class="p">)</span>   <span class="c1"># True</span>
+<span class="n">container</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>               <span class="c1"># clear cached singletons (keeps registrations)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">container.get(cls)</span></code> is typed generically (<code class="docutils literal notranslate"><span class="pre">type[T]</span> <span class="pre">-&gt;</span> <span class="pre">T</span></code>), so both mypy and
+pyright infer the returned type with no plugin or stub needed.</p>
+</section>
+<section id="multiple-implementations-qualifiers">
+<h2>Multiple implementations (qualifiers)<a class="headerlink" href="#multiple-implementations-qualifiers" title="Link to this heading">#</a></h2>
+<p>When several classes implement one base type, a bare <code class="docutils literal notranslate"><span class="pre">repo:</span> <span class="pre">Repo</span></code> parameter is
+ambiguous. Name the one you want with <code class="docutils literal notranslate"><span class="pre">typing.Annotated</span></code> and a <code class="docutils literal notranslate"><span class="pre">Qualifier</span></code> — no
+markers, no string keys scattered around:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Qualifier</span>
+
+
+<span class="nd">@Service</span><span class="p">(</span><span class="n">qualifier</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PostgresRepo</span><span class="p">(</span><span class="n">Repo</span><span class="p">):</span> <span class="o">...</span>
+
+
+<span class="nd">@Service</span><span class="p">(</span><span class="n">qualifier</span><span class="o">=</span><span class="s2">&quot;sqlite&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SqliteRepo</span><span class="p">(</span><span class="n">Repo</span><span class="p">):</span> <span class="o">...</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Users</span><span class="p">:</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Repo</span><span class="p">,</span> <span class="n">Qualifier</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">)]</span>     <span class="c1"># -&gt; PostgresRepo</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Reports</span><span class="p">:</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">Repo</span>                                        <span class="c1"># bare interface -&gt; the `primary` one</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;Service(qualifier=&quot;name&quot;)</span></code> registers an implementation under that name;
+<code class="docutils literal notranslate"><span class="pre">Annotated[Repo,</span> <span class="pre">Qualifier(&quot;name&quot;)]</span></code> (or a bare string, <code class="docutils literal notranslate"><span class="pre">Annotated[Repo,</span> <span class="pre">&quot;name&quot;]</span></code>) resolves it.</p></li>
+<li><p>A <strong>bare</strong> interface parameter resolves the sole registered implementation, or
+the one marked <code class="docutils literal notranslate"><span class="pre">&#64;Service(primary=True)</span></code> when several exist. Several with no
+<code class="docutils literal notranslate"><span class="pre">primary</span></code> raises <code class="docutils literal notranslate"><span class="pre">AmbiguousDependencyError</span></code> naming the candidates.</p></li>
+<li><p>The qualifier is read once, at registration — never per <code class="docutils literal notranslate"><span class="pre">get()</span></code>.</p></li>
+</ul>
+</section>
+<section id="configuration-injection">
+<h2>Configuration injection<a class="headerlink" href="#configuration-injection" title="Link to this heading">#</a></h2>
+<p>A <a class="reference internal" href="decorators/config.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">&#64;Config</span></code></span></a> class loads its fields from environment
+variables; registered as a <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>, it is autowired by type like any other
+dependency — 12-factor configuration with no globals or import-time reads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">RequiredArgsConstructor</span><span class="p">,</span> <span class="n">Service</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@Config</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;APP_&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Settings</span><span class="p">:</span>
+    <span class="n">database_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///app.db&quot;</span>     <span class="c1"># reads APP_DATABASE_URL</span>
+    <span class="n">pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>                          <span class="c1"># reads APP_POOL_SIZE, coerced to int</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span>                          <span class="c1"># loaded from the environment, autowired</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dsn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">database_url</span>
+</pre></div>
+</div>
+<p>A Pydantic <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> works the same way (it loads the environment itself) —
+register it as a <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> and it autowires by type.</p>
+</section>
+<section id="factory-call-time-arguments">
+<h2>Factory (call-time arguments)<a class="headerlink" href="#factory-call-time-arguments" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> is built <strong>once</strong>, with <em>every</em> constructor parameter autowired from
+the container. But some objects have to be built <strong>on demand, from runtime data</strong>
+the container can’t know — a report for a given title, a session for a given
+request — while still autowiring the dependencies the container <em>does</em> have.
+Inject a <code class="docutils literal notranslate"><span class="pre">Factory[T]</span></code> and call it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Factory</span><span class="p">,</span> <span class="n">RequiredArgsConstructor</span><span class="p">,</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Singleton</span>
+
+
+<span class="nd">@Singleton</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Renderer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Report</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">renderer</span><span class="p">:</span> <span class="n">Renderer</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># renderer autowired, title supplied</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dashboard</span><span class="p">:</span>
+    <span class="n">make_report</span><span class="p">:</span> <span class="n">Factory</span><span class="p">[</span><span class="n">Report</span><span class="p">]</span>                <span class="c1"># injected: a callable that builds a Report</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sales</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_report</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Sales&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>   <span class="c1"># -&gt; &quot;[Sales]&quot;</span>
+</pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">make_report(title=&quot;Sales&quot;)</span></code> builds a <strong>fresh</strong> <code class="docutils literal notranslate"><span class="pre">Report</span></code>: the <code class="docutils literal notranslate"><span class="pre">renderer</span></code>
+parameter is autowired from the container, <code class="docutils literal notranslate"><span class="pre">title</span></code> comes from the call, and a new
+instance is returned every time. The rules:</p>
+<ul class="simple">
+<li><p><strong>Call-time keyword arguments win.</strong> Any keyword you pass is used as-is, even if
+that parameter <em>could</em> have been autowired — handy for supplying a test double.</p></li>
+<li><p><strong>The rest is autowired.</strong> Every other parameter whose type is a registered
+service (or has a qualifier) is resolved from the container.</p></li>
+<li><p><strong>Anything left falls to the target’s own default</strong>, or raises a natural
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> at the call if a required parameter was neither passed nor
+autowirable.</p></li>
+<li><p><strong>The target need not be registered.</strong> A <code class="docutils literal notranslate"><span class="pre">Factory[T]</span></code> is a <em>prototype</em> builder;
+<code class="docutils literal notranslate"><span class="pre">T</span></code> itself doesn’t have to be a <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>.</p></li>
+<li><p><strong>Fresh every call</strong> — the result is never cached, whatever the target’s scope.</p></li>
+</ul>
+<p>Because a factory is lazy, a <code class="docutils literal notranslate"><span class="pre">Factory[B]</span></code> parameter also <strong>breaks an
+otherwise-circular graph</strong>: <code class="docutils literal notranslate"><span class="pre">A</span></code> can hold a <code class="docutils literal notranslate"><span class="pre">Factory[B]</span></code> while <code class="docutils literal notranslate"><span class="pre">B</span></code> depends on <code class="docutils literal notranslate"><span class="pre">A</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">B</span></code> is only built when the factory is actually called.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Factory</span></code> is both the annotation and the static type: <code class="docutils literal notranslate"><span class="pre">mypy</span></code> and pyright both see
+<code class="docutils literal notranslate"><span class="pre">make_report(...)</span></code> returning <code class="docutils literal notranslate"><span class="pre">Report</span></code> with no plugin or stub needed. (The call-time
+keyword arguments themselves are typed as <code class="docutils literal notranslate"><span class="pre">Any</span></code>.)</p>
+</section>
+<section id="resources-lifecycle-and-teardown">
+<h2>Resources (lifecycle and teardown)<a class="headerlink" href="#resources-lifecycle-and-teardown" title="Link to this heading">#</a></h2>
+<p>A singleton is opened once — but a DB pool, HTTP client, or session must also be
+<strong>closed</strong>, in the reverse of the order it was opened. <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> marks something
+whose teardown the container owns; it runs on <code class="docutils literal notranslate"><span class="pre">shutdown_resources()</span></code> or when a
+<code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">container:</span></code> block exits. Resources are still built <strong>lazily</strong> (on first
+<code class="docutils literal notranslate"><span class="pre">get()</span></code>); <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> only registers <em>how</em> to tear them down.</p>
+<section id="a-resource-class">
+<h3>A resource class<a class="headerlink" href="#a-resource-class" title="Link to this heading">#</a></h3>
+<p>Mark a <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> class <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code>. It is torn down by its <code class="docutils literal notranslate"><span class="pre">close()</span></code>
+method — or, if it has none, its <code class="docutils literal notranslate"><span class="pre">__enter__</span></code>/<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> context-manager protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequiredArgsConstructor</span><span class="p">,</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">Service</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@Resource</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+    <span class="n">dsn</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Database&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dsn</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>                      <span class="c1"># called at teardown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">with</span> <span class="n">container</span><span class="p">:</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Database</span><span class="p">)</span>                  <span class="c1"># opened on first get()</span>
+    <span class="o">...</span>
+<span class="c1"># db.close() runs here, and for every other resource, in reverse order</span>
+</pre></div>
+</div>
+<p>Rename the teardown method with <code class="docutils literal notranslate"><span class="pre">&#64;Resource(close=&quot;dispose&quot;)</span></code>. <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> requires
+a <strong>singleton</strong> scope, so its lifetime is container-managed.</p>
+</section>
+<section id="a-generator-provider">
+<h3>A generator provider<a class="headerlink" href="#a-generator-provider" title="Link to this heading">#</a></h3>
+<p>Mark a <strong>generator function</strong> <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> and it registers a provider keyed by the
+type it yields; its parameters are autowired, and the code after <code class="docutils literal notranslate"><span class="pre">yield</span></code> is the
+teardown:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resource</span>
+
+
+<span class="nd">@Resource</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pool</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Pool</span><span class="p">]:</span>   <span class="c1"># settings autowired</span>
+    <span class="n">resource</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">resource</span>                                 <span class="c1"># what container.get(Pool) returns</span>
+    <span class="n">resource</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>                               <span class="c1"># runs at shutdown</span>
+</pre></div>
+</div>
+</section>
+<section id="async-resources">
+<h3>Async resources<a class="headerlink" href="#async-resources" title="Link to this heading">#</a></h3>
+<p>An async resource is a class with an <code class="docutils literal notranslate"><span class="pre">async</span></code> close method (<code class="docutils literal notranslate"><span class="pre">&#64;Resource(close=&quot;aclose&quot;)</span></code>)
+or an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> generator provider. Async teardown is awaited by
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.ashutdown_resources()</span></code> or an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container:</span></code> block, and an
+async generator provider is built with <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.aget(Cls)</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">container</span><span class="p">:</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="k">await</span> <span class="n">container</span><span class="o">.</span><span class="n">aget</span><span class="p">(</span><span class="n">HttpSession</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="c1"># session&#39;s async teardown is awaited on exit</span>
+</pre></div>
+</div>
+<p>Calling the <strong>sync</strong> <code class="docutils literal notranslate"><span class="pre">shutdown_resources()</span></code> while an async resource is pending
+raises <code class="docutils literal notranslate"><span class="pre">ResourceTeardownError</span></code>, pointing you at the async path. Teardown is
+best-effort: every resource is closed even if one raises, and the failures are
+aggregated into a single <code class="docutils literal notranslate"><span class="pre">ResourceTeardownError</span></code>.</p>
+</section>
+</section>
+<section id="async-resolution">
+<h2>Async resolution<a class="headerlink" href="#async-resolution" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.aget(cls)</span></code> is the async twin of <code class="docutils literal notranslate"><span class="pre">get()</span></code>. It resolves the <strong>whole
+dependency graph</strong>, awaiting an async <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> generator provider <em>anywhere</em> in
+it — not just at the top — so an async resource can be an ordinary constructor
+dependency:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Resource</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pool</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Pool</span><span class="p">]:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="k">await</span> <span class="n">open_pool</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">p</span>
+    <span class="k">await</span> <span class="n">p</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+
+
+<span class="nd">@Service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Repo</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Pool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>   <span class="c1"># the async pool, autowired</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">pool</span>
+
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">container</span><span class="p">:</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">container</span><span class="o">.</span><span class="n">aget</span><span class="p">(</span><span class="n">Repo</span><span class="p">)</span>         <span class="c1"># builds pool, then Repo</span>
+</pre></div>
+</div>
+<p>Sync services, singletons, scoped services, and cached instances resolve exactly
+as <code class="docutils literal notranslate"><span class="pre">get()</span></code> does; only an async-generator provider is awaited. Use <code class="docutils literal notranslate"><span class="pre">aget</span></code> whenever
+the graph contains an async resource.</p>
+</section>
+<section id="fastapi">
+<h2>FastAPI<a class="headerlink" href="#fastapi" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Injected[T]</span></code> wires a service into a FastAPI handler — it resolves <code class="docutils literal notranslate"><span class="pre">T</span></code> from the
+container per request, inside a fresh <code class="docutils literal notranslate"><span class="pre">container.scope()</span></code> that is torn down when
+the request ends (so a scoped <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code>, like a per-request DB session, is
+opened and closed automatically):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Injected</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="n">Injected</span><span class="p">[</span><span class="n">UserService</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both forms work: the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> form <code class="docutils literal notranslate"><span class="pre">service:</span> <span class="pre">Injected[UserService]</span></code> and the
+default-value form <code class="docutils literal notranslate"><span class="pre">service:</span> <span class="pre">UserService</span> <span class="pre">=</span> <span class="pre">Injected(UserService)</span></code> (pass
+<code class="docutils literal notranslate"><span class="pre">container=</span></code> to the call form for a non-default container). FastAPI is an
+<strong>optional</strong> dependency — inito never imports it at runtime; using <code class="docutils literal notranslate"><span class="pre">Injected</span></code>
+without it installed raises <code class="docutils literal notranslate"><span class="pre">FrameworkIntegrationError</span></code>.</p>
+</section>
+<section id="testing-with-overrides">
+<h2>Testing with overrides<a class="headerlink" href="#testing-with-overrides" title="Link to this heading">#</a></h2>
+<p>Swap any dependency for a fake, with no monkeypatching, so a service under test
+gets a stub instead of the real thing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">container</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="n">Repo</span><span class="p">,</span> <span class="n">FakeRepo</span><span class="p">())</span>                  <span class="c1"># a fixed instance</span>
+<span class="n">container</span><span class="o">.</span><span class="n">override_factory</span><span class="p">(</span><span class="n">Repo</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">FakeRepo</span><span class="p">())</span>  <span class="c1"># a fresh one each resolution</span>
+
+<span class="k">with</span> <span class="n">container</span><span class="o">.</span><span class="n">overrides</span><span class="p">({</span><span class="n">Repo</span><span class="p">:</span> <span class="n">FakeRepo</span><span class="p">()}):</span>         <span class="c1"># scoped; auto-restored on exit</span>
+    <span class="k">assert</span> <span class="n">container</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">is</span> <span class="n">FakeRepo</span>
+
+<span class="n">container</span><span class="o">.</span><span class="n">clear_override</span><span class="p">(</span><span class="n">Repo</span><span class="p">)</span>                         <span class="c1"># or clear_overrides() for all</span>
+</pre></div>
+</div>
+<p>An override wins over everything — including a cached singleton — and doesn’t
+require the type to be registered, so you can stub a collaborator the container
+has never seen. <code class="docutils literal notranslate"><span class="pre">container.reset()</span></code> clears the instance caches <strong>and</strong> overrides
+(registrations stay).</p>
+</section>
+<section id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Exception</p></th>
+<th class="head"><p>When</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DependencyRegistrationError</span></code></p></td>
+<td><p>a constructor parameter has no type annotation, or a class is registered twice</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UnresolvableDependencyError</span></code></p></td>
+<td><p>a needed type is unregistered and has no default; or <code class="docutils literal notranslate"><span class="pre">get()</span></code> is called for an unregistered class</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CircularDependencyError</span></code></p></td>
+<td><p>the dependency graph has a cycle (<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">→</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">A</span></code>); the message lists the cycle</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AmbiguousDependencyError</span></code></p></td>
+<td><p>a bare interface has several registered implementations and no <code class="docutils literal notranslate"><span class="pre">primary</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ResourceTeardownError</span></code></p></td>
+<td><p>a <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> teardown raised, or a sync <code class="docutils literal notranslate"><span class="pre">shutdown_resources()</span></code> met an async resource</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ScopeError</span></code></p></td>
+<td><p>a <code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code> service was resolved with no active <code class="docutils literal notranslate"><span class="pre">container.scope()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FrameworkIntegrationError</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Injected</span></code> was used but FastAPI isn’t installed</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="performance-and-safety">
+<h2>Performance and safety<a class="headerlink" href="#performance-and-safety" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Warm path is cheap.</strong> Once a singleton is cached, <code class="docutils literal notranslate"><span class="pre">container.get(cls)</span></code> is
+a single dict lookup; using the resolved object afterward is ordinary
+Python with no DI overhead. See <a class="reference internal" href="performance.html"><span class="std std-doc">Performance</span></a>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code> has a real per-call cost</strong> — it is the one decorator that does
+work on every call, since it fills a function’s parameters from the
+container each time it is invoked (signature inspection is still done once,
+at decoration time). It targets composition-root entry points (a <code class="docutils literal notranslate"><span class="pre">main()</span></code>
+or request handler), not hot-path methods.</p></li>
+<li><p><strong>Thread-safe.</strong> Concurrent first-access to a singleton constructs it
+exactly once (double-checked locking, per registered class); dependencies
+are resolved before the lock is taken, so cyclic graphs raise cleanly
+instead of deadlocking.</p></li>
+<li><p><strong>Process-local.</strong> A <code class="docutils literal notranslate"><span class="pre">Container</span></code> lives in one process — like any in-memory
+Python object, its singletons are not shared across <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>
+workers. Share cross-process state through a database, file, or shared
+memory instead.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="decorators/constructors.html"><span class="std std-doc">Constructors</span></a> — <code class="docutils literal notranslate"><span class="pre">&#64;RequiredArgsConstructor</span></code>
+pairs naturally with <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>.</p></li>
+<li><p><a class="reference internal" href="recipes.html"><span class="std std-doc">Recipes</span></a> — a full service-layer example.</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html"><span class="std std-doc">Troubleshooting</span></a> — DI error walkthroughs.</p></li>
+<li><p><a class="reference internal" href="reference/index.html"><span class="std std-doc">API reference</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="decorators/jsonize.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">&#64;Jsonize</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="frameworks.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Using InitO with your framework</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-it-solves">The problem it solves</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-example">Quick example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#composition-roots-the-recommended-pattern">Composition roots (the recommended pattern)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-pieces">The pieces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-resolution-works">How resolution works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scopes">Scopes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#containers">Containers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-implementations-qualifiers">Multiple implementations (qualifiers)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-injection">Configuration injection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#factory-call-time-arguments">Factory (call-time arguments)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resources-lifecycle-and-teardown">Resources (lifecycle and teardown)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-resource-class">A resource class</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-generator-provider">A generator provider</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-resources">Async resources</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-resolution">Async resolution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fastapi">FastAPI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-with-overrides">Testing with overrides</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#errors">Errors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-and-safety">Performance and safety</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/swtnk/inito/edit/main/docs/dependency-injection.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/dependency-injection.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Swetank Subham.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

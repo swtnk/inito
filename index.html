@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>InitO &#8212; InitO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=292eb321"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://swetanksubham.com/inito/index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide" href="user-guide.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">InitO</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="inito">
+<h1>InitO<a class="headerlink" href="#inito" title="Link to this heading">#</a></h1>
+<p><strong>A zero-dependency Python library that eliminates data-class boilerplate.</strong></p>
+<p>Decorate a class and InitO writes the mechanical methods it needs — constructor,
+<code class="docutils literal notranslate"><span class="pre">repr</span></code>, equality, hashing, accessors, and builders — as <em>real methods</em>, generated
+once when the class is defined, never at construction or attribute-access time.
+Your objects stay ordinary Python instances and run as fast as code you’d write
+by hand.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+
+
+<span class="nd">@Data</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Ada&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>                      <span class="c1"># User(name=&#39;Ada&#39;, age=30)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>           <span class="c1"># Ada</span>
+<span class="n">user</span><span class="o">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Ada&quot;</span><span class="p">,</span> <span class="mi">31</span><span class="p">))</span>   <span class="c1"># True</span>
+</pre></div>
+</div>
+<p>By hand, <code class="docutils literal notranslate"><span class="pre">User</span></code> is ~20 lines of <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, <code class="docutils literal notranslate"><span class="pre">__repr__</span></code>, <code class="docutils literal notranslate"><span class="pre">__eq__</span></code>, <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, and
+accessors. With InitO it’s the three lines above — and the generated methods are
+the <em>same</em> code you’d have written, <a class="reference internal" href="performance.html"><span class="std std-doc">benchmarked at parity</span></a> with
+handwritten classes and <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>inito<span class="w">       </span><span class="c1"># or:  uv add inito</span>
+</pre></div>
+</div>
+<p>Requires Python 3.9+ (tested through 3.14). No runtime dependencies.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-rocket sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.322.75h1.176a1.75 1.75 0 0 1 1.75 1.749v1.177a10.75 10.75 0 0 1-2.925 7.374l-1.228 1.304a23.699 23.699 0 0 1-1.596 1.542v5.038c0 .615-.323 1.184-.85 1.5l-4.514 2.709a.75.75 0 0 1-1.12-.488l-.963-4.572a1.305 1.305 0 0 1-.14-.129L8.04 15.96l-1.994-1.873a1.305 1.305 0 0 1-.129-.14l-4.571-.963a.75.75 0 0 1-.49-1.12l2.71-4.514c.316-.527.885-.85 1.5-.85h5.037a23.668 23.668 0 0 1 1.542-1.594l1.304-1.23A10.753 10.753 0 0 1 20.321.75Zm-6.344 4.018v-.001l-1.304 1.23a22.275 22.275 0 0 0-3.255 3.851l-2.193 3.29 1.859 1.744a.545.545 0 0 1 .034.034l1.743 1.858 3.288-2.192a22.263 22.263 0 0 0 3.854-3.257l1.228-1.303a9.251 9.251 0 0 0 2.517-6.346V2.5a.25.25 0 0 0-.25-.25h-1.177a9.252 9.252 0 0 0-6.344 2.518ZM6.5 21c-1.209 1.209-3.901 1.445-4.743 1.49a.236.236 0 0 1-.18-.067.236.236 0 0 1-.067-.18c.045-.842.281-3.534 1.49-4.743.9-.9 2.6-.9 3.5 0 .9.9.9 2.6 0 3.5Zm-.592-8.588L8.17 9.017c.23-.346.47-.685.717-1.017H5.066a.25.25 0 0 0-.214.121l-2.167 3.612ZM16 15.112c-.333.248-.672.487-1.018.718l-3.393 2.262.678 3.223 3.612-2.167a.25.25 0 0 0 .121-.214ZM17.5 8a1.5 1.5 0 1 1-3.001-.001A1.5 1.5 0 0 1 17.5 8Z"></path></svg> Quick start</div>
+<p class="sd-card-text">Install InitO and tour every decorator in a few minutes.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="quickstart.html"><span class="doc">Quick start</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-light-bulb sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.81 0-6.5 2.743-6.5 6.119 0 1.536.632 2.572 1.425 3.56.172.215.347.422.527.635l.096.112c.21.25.427.508.63.774.404.531.783 1.128.995 1.834a.75.75 0 0 1-1.436.432c-.138-.46-.397-.89-.753-1.357a18.111 18.111 0 0 0-.582-.714l-.092-.11c-.18-.212-.37-.436-.555-.667C4.87 12.016 4 10.651 4 8.618 4 4.363 7.415 1 12 1s8 3.362 8 7.619c0 2.032-.87 3.397-1.755 4.5-.185.23-.375.454-.555.667l-.092.109c-.21.248-.405.481-.582.714-.356.467-.615.898-.753 1.357a.751.751 0 0 1-1.437-.432c.213-.706.592-1.303.997-1.834.202-.266.419-.524.63-.774l.095-.112c.18-.213.355-.42.527-.634.793-.99 1.425-2.025 1.425-3.561C18.5 5.243 15.81 2.5 12 2.5ZM8.75 18h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5Zm.75 3.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z"></path></svg> Concepts</div>
+<p class="sd-card-text">The boilerplate problem InitO solves — and how it stays fast.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="concepts.html"><span class="doc">Concepts: the problem InitO solves</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-book sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.495 4.495 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.752.752 0 0 1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 0l-.902-.901a2.996 2.996 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 15.232a4.503 4.503 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 2.803.98Z"></path></svg> User Guide</div>
+<p class="sd-card-text">A dedicated page per decorator, plus DI, recipes, and migration.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="user-guide.html"><span class="doc">User Guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-plug sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11.5H2.938c-.794 0-1.438.644-1.438 1.437v8.313a.75.75 0 0 1-1.5 0v-8.312A2.939 2.939 0 0 1 2.937 10H7V6.151c0-.897.678-1.648 1.57-1.74l6.055-.626 1.006-1.174A1.752 1.752 0 0 1 16.96 2h1.29c.966 0 1.75.784 1.75 1.75V6h3.25a.75.75 0 0 1 0 1.5H20V14h3.25a.75.75 0 0 1 0 1.5H20v2.25a1.75 1.75 0 0 1-1.75 1.75h-1.29a1.75 1.75 0 0 1-1.329-.611l-1.006-1.174-6.055-.627A1.749 1.749 0 0 1 7 15.348Zm9.77-7.913v.001l-1.201 1.4a.75.75 0 0 1-.492.258l-6.353.657a.25.25 0 0 0-.224.249v9.196a.25.25 0 0 0 .224.249l6.353.657c.191.02.368.112.493.258l1.2 1.401a.252.252 0 0 0 .19.087h1.29a.25.25 0 0 0 .25-.25v-14a.25.25 0 0 0-.25-.25h-1.29a.252.252 0 0 0-.19.087Z"></path></svg> Dependency injection</div>
+<p class="sd-card-text">Wire object graphs with <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code> and a <code class="docutils literal notranslate"><span class="pre">Container</span></code>.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="dependency-injection.html"><span class="doc">Dependency injection</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-beaker sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.807V3.5h-.563a.75.75 0 0 1 0-1.5h9.125a.75.75 0 0 1 0 1.5H16v5.307l5.125 9.301c.964 1.75-.302 3.892-2.299 3.892H5.174c-1.998 0-3.263-2.142-2.3-3.892ZM4.189 18.832a1.123 1.123 0 0 0 .985 1.668h13.652a1.123 1.123 0 0 0 .985-1.668L17.7 15H6.3ZM14.5 3.5h-5V9a.75.75 0 0 1-.093.362L7.127 13.5h9.746l-2.28-4.138A.75.75 0 0 1 14.5 9Z"></path></svg> Recipes</div>
+<p class="sd-card-text">Real-world, copy-pasteable patterns combining several decorators.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="recipes.html"><span class="doc">Recipes</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-code-square sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 8.24a.75.75 0 0 1-.04 1.06L7.352 12l2.908 2.7a.75.75 0 1 1-1.02 1.1l-3.5-3.25a.75.75 0 0 1 0-1.1l3.5-3.25a.75.75 0 0 1 1.06.04Zm3.44 1.06a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.908-2.7-2.908-2.7Z"></path><path d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25Zm1.75-.25a.25.25 0 0 0-.25.25v16.5c0 .138.112.25.25.25h16.5a.25.25 0 0 0 .25-.25V3.75a.25.25 0 0 0-.25-.25Z"></path></svg> API reference</div>
+<p class="sd-card-text">Every decorator, option, and exception, generated from the source.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="reference/index.html"><span class="doc">API reference</span></a></div>
+</div>
+</div>
+</div>
+<section id="why-inito">
+<h2>Why InitO<a class="headerlink" href="#why-inito" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Real methods, generated once.</strong> Each decorator builds true Python functions
+from your fields at decoration time and attaches them — no <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code>,
+proxies, descriptors, or runtime interception. At runtime your objects are
+ordinary instances, so construction, attribute access, <code class="docutils literal notranslate"><span class="pre">==</span></code>, and <code class="docutils literal notranslate"><span class="pre">hash()</span></code> run
+at <a class="reference internal" href="performance.html"><span class="std std-doc">handwritten speed</span></a>.</p></li>
+<li><p><strong>Zero runtime dependencies.</strong> InitO imports nothing outside the standard
+library, so it installs cleanly into any project and any environment.</p></li>
+<li><p><strong>À la carte.</strong> <code class="docutils literal notranslate"><span class="pre">&#64;Data</span></code> is the all-in-one, but every capability is also a
+standalone decorator (<code class="docutils literal notranslate"><span class="pre">&#64;Getter</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;ToString</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;EqualsAndHashCode</span></code>, …) —
+you never pay for what you don’t ask for.</p></li>
+<li><p><strong>Typed for both checkers.</strong> A bundled <a class="reference internal" href="installation.html#type-checking-mypy"><span class="std std-ref">mypy
+plugin</span></a> makes <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--strict</span></code> see every
+generated member, and <a class="reference internal" href="installation.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">inito-stubgen</span></code></span></a> does the same for
+pyright / Pylance.</p></li>
+<li><p><strong>Batteries included.</strong> Genuine immutability (<code class="docutils literal notranslate"><span class="pre">&#64;Value</span></code>), fluent builders
+(<code class="docutils literal notranslate"><span class="pre">&#64;Builder</span></code>), environment-backed configuration (<code class="docutils literal notranslate"><span class="pre">&#64;Config</span></code>), and a small
+<a class="reference internal" href="dependency-injection.html"><span class="std std-doc">dependency-injection</span></a> layer — same generate-once,
+zero-dependency design throughout.</p></li>
+</ul>
+</section>
+<section id="decorators-at-a-glance">
+<h2>Decorators at a glance<a class="headerlink" href="#decorators-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Decorator</p></th>
+<th class="head"><p>Generates</p></th>
+<th class="head"><p>Guide</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Data</span></code></p></td>
+<td><p>constructor · <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> · <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> · <code class="docutils literal notranslate"><span class="pre">get_x</span></code>/<code class="docutils literal notranslate"><span class="pre">set_x</span></code> — the all-in-one (<code class="docutils literal notranslate"><span class="pre">__hash__</span></code> when frozen)</p></td>
+<td><p><a class="reference internal" href="decorators/data.html"><span class="std std-doc">&#64;Data</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Value</span></code></p></td>
+<td><p>like <code class="docutils literal notranslate"><span class="pre">&#64;Data</span></code> but <strong>immutable</strong> and setter-free</p></td>
+<td><p><a class="reference internal" href="decorators/value.html"><span class="std std-doc">&#64;Value</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Getter</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;Setter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_x()</span></code> / <code class="docutils literal notranslate"><span class="pre">set_x(value)</span></code> accessors only</p></td>
+<td><p><a class="reference internal" href="decorators/accessors.html"><span class="std std-doc">Accessors</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;ToString</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__repr__</span></code> only</p></td>
+<td><p><a class="reference internal" href="decorators/to-string.html"><span class="std std-doc">&#64;ToString</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;EqualsAndHashCode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__eq__</span></code> + <code class="docutils literal notranslate"><span class="pre">__hash__</span></code> only</p></td>
+<td><p><a class="reference internal" href="decorators/equals-and-hash-code.html"><span class="std std-doc">&#64;EqualsAndHashCode</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;NoArgsConstructor</span></code> · <code class="docutils literal notranslate"><span class="pre">&#64;AllArgsConstructor</span></code> · <code class="docutils literal notranslate"><span class="pre">&#64;RequiredArgsConstructor</span></code></p></td>
+<td><p>an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and nothing else</p></td>
+<td><p><a class="reference internal" href="decorators/constructors.html"><span class="std std-doc">Constructors</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Builder</span></code> / <code class="docutils literal notranslate"><span class="pre">builder</span></code></p></td>
+<td><p>fluent <code class="docutils literal notranslate"><span class="pre">Cls.builder().x(1).build()</span></code>, optional <code class="docutils literal notranslate"><span class="pre">.to_builder()</span></code></p></td>
+<td><p><a class="reference internal" href="decorators/builder.html"><span class="std std-doc">&#64;Builder</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Config</span></code></p></td>
+<td><p>load fields from environment variables, autowired by type</p></td>
+<td><p><a class="reference internal" href="decorators/config.html"><span class="std std-doc">&#64;Config</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Jsonize</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>/<code class="docutils literal notranslate"><span class="pre">to_json()</span></code> serializing every field (datetime, UUID, Decimal, …)</p></td>
+<td><p><a class="reference internal" href="decorators/jsonize.html"><span class="std std-doc">&#64;Jsonize</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;Inject</span></code></p></td>
+<td><p>dependency injection via a <code class="docutils literal notranslate"><span class="pre">Container</span></code></p></td>
+<td><p><a class="reference internal" href="dependency-injection.html"><span class="std std-doc">DI</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Every PascalCase decorator has a lowercase alias (<code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">builder</span></code>, <code class="docutils literal notranslate"><span class="pre">value</span></code>, …)
+bound to the same object — use whichever reads better.</p>
+</section>
+<section id="dependency-injection">
+<h2>Dependency injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">#</a></h2>
+<p>A small, lazy, thread-safe <a class="reference internal" href="dependency-injection.html"><span class="std std-doc">DI layer</span></a>: declare a class’s
+dependencies as fields, and a <code class="docutils literal notranslate"><span class="pre">Container</span></code> wires them — no markers, no provider
+objects. <code class="docutils literal notranslate"><span class="pre">&#64;RequiredArgsConstructor</span></code> even writes the constructor for you.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">inito</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">RequiredArgsConstructor</span><span class="p">,</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Singleton</span>
+
+
+<span class="nd">@Singleton</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Ada&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">Database</span>                      <span class="c1"># autowired from the container</span>
+
+
+<span class="nd">@Inject</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">UserService</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>         <span class="c1"># Ada</span>
+
+
+<span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It also supports <a class="reference internal" href="dependency-injection.html#scopes"><span class="std std-ref">scopes</span></a> (singleton, transient,
+thread-local), <a class="reference internal" href="dependency-injection.html#multiple-implementations-qualifiers"><span class="std std-ref">qualifiers</span></a>
+for multiple implementations, <a class="reference internal" href="dependency-injection.html#configuration-injection"><span class="std std-ref">config injection</span></a>,
+<a class="reference internal" href="dependency-injection.html#factory-call-time-arguments"><span class="std std-ref">factories</span></a> for on-demand
+construction with call-time arguments,
+<a class="reference internal" href="dependency-injection.html#resources-lifecycle-and-teardown"><span class="std std-ref">resource lifecycle</span></a> with
+ordered teardown (<code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code>, <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">container</span></code>),
+<a class="reference internal" href="dependency-injection.html#scopes"><span class="std std-ref">scopes</span></a> (<code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code> + <code class="docutils literal notranslate"><span class="pre">container.scope()</span></code>),
+<a class="reference internal" href="dependency-injection.html#async-resolution"><span class="std std-ref">async resolution</span></a> (<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.aget()</span></code>),
+<a class="reference internal" href="dependency-injection.html#fastapi"><span class="std std-ref">FastAPI <code class="docutils literal notranslate"><span class="pre">Injected[T]</span></code></span></a>, and
+<a class="reference internal" href="dependency-injection.html#testing-with-overrides"><span class="std std-ref">test overrides</span></a>.</p>
+</section>
+<section id="type-checking">
+<h2>Type checking<a class="headerlink" href="#type-checking" title="Link to this heading">#</a></h2>
+<p>InitO attaches members at decoration time, so type-checkers need a hint — and it
+ships one for both. Enable the <a class="reference internal" href="installation.html#type-checking-mypy"><span class="std std-ref">mypy plugin</span></a>
+for <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--strict</span></code>, or run <a class="reference internal" href="installation.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">inito-stubgen</span></code></span></a> to generate <code class="docutils literal notranslate"><span class="pre">.pyi</span></code>
+stubs that give <strong>pyright / Pylance</strong> the same full visibility.</p>
+</section>
+<section id="works-with-your-framework">
+<h2>Works with your framework<a class="headerlink" href="#works-with-your-framework" title="Link to this heading">#</a></h2>
+<p>Zero dependencies and plain methods on plain classes mean InitO drops into any
+project. On a Pydantic / SQLAlchemy / Django <strong>model</strong>, use the additive
+decorators and let the framework own construction; the DI layer resolves safely
+from <code class="docutils literal notranslate"><span class="pre">async</span></code> handlers. See <a class="reference internal" href="frameworks.html"><span class="std std-doc">Using InitO with your
+framework</span></a> — with runnable examples for FastAPI, Django, Sanic,
+aiohttp, Redis, boto3, and more.</p>
+</section>
+<section id="when-to-use-inito">
+<h2>When to use InitO<a class="headerlink" href="#when-to-use-inito" title="Link to this heading">#</a></h2>
+<p>Reach for InitO on the classes that are mostly <strong>data</strong> — DTOs, domain/value
+objects, configuration, and service objects. It removes the mechanical methods
+they need without changing what they are: after decoration they’re still plain
+Python classes you can subclass, pickle, and construct directly. It composes
+with, rather than replaces, validation/ORM layers like Pydantic and SQLAlchemy.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="user-guide.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">User Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-inito">Why InitO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decorators-at-a-glance">Decorators at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">Dependency injection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-checking">Type checking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#works-with-your-framework">Works with your framework</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-inito">When to use InitO</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/swtnk/inito/edit/main/docs/index.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/index.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Swetank Subham.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

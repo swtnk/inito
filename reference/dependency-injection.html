@@ -1,0 +1,1014 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dependency injection &#8212; InitO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/dependency-injection';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://swetanksubham.com/inito/reference/dependency-injection.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Decorators" href="decorators.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">InitO</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">Decorators</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Dependency injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Dependency injection</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dependency-injection">
+<h1>Dependency injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">#</a></h1>
+<p>API reference for the DI subsystem. For the full guide (resolution, scopes,
+containers, errors, and the thread-safety/performance guarantees) see
+<a class="reference internal" href="../dependency-injection.html"><span class="std std-doc">Dependency injection</span></a>.</p>
+<section id="container-and-scope">
+<h2>Container and Scope<a class="headerlink" href="#container-and-scope" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.Container">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Container</span></span><a class="reference internal" href="../_modules/inito/di/container.html#Container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container" title="Link to this definition">#</a></dt>
+<dd><p>Registers services at decoration time; resolves and builds instances lazily on get().</p>
+<p>Singleton construction is thread-safe: concurrent first-access to the
+same singleton from multiple threads is serialized via a per-class
+lock, so a service is never constructed more than once and every
+caller receives the same instance. Already-cached singletons cost
+nothing extra - no lock is touched once resolved. A Container is
+always process-local; it is not shared across separate OS processes.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Scope.SINGLETON</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.register" title="Link to this definition">#</a></dt>
+<dd><p>Register cls under scope (and optional qualifier), without instantiating it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>)</p></li>
+<li><p><strong>scope</strong> (<a class="reference internal" href="#inito.Scope" title="inito.di.container.Scope"><em>Scope</em></a>)</p></li>
+<li><p><strong>qualifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>primary</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.register_provider">
+<span class="sig-name descname"><span class="pre">register_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Scope.SINGLETON</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.register_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.register_provider" title="Link to this definition">#</a></dt>
+<dd><p>Register a function-form &#64;Resource provider, keyed by the type it yields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> (<em>ProviderSpec</em>)</p></li>
+<li><p><strong>scope</strong> (<a class="reference internal" href="#inito.Scope" title="inito.di.container.Scope"><em>Scope</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.get" title="Link to this definition">#</a></dt>
+<dd><p>Resolve and return an instance of cls, building its dependency graph bottom-up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>T</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>T</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.aget">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">aget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.aget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.aget" title="Link to this definition">#</a></dt>
+<dd><p>Async twin of <code class="docutils literal notranslate"><span class="pre">get</span></code>, awaiting async &#64;Resource providers anywhere in the graph.</p>
+<p>Sync services, singletons, scoped services, and cached instances resolve
+exactly as <code class="docutils literal notranslate"><span class="pre">get</span></code> does; an async-generator provider is awaited to its first
+yield. Use this whenever the graph contains an async resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>T</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>T</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.override">
+<span class="sig-name descname"><span class="pre">override</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.override"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.override" title="Link to this definition">#</a></dt>
+<dd><p>Make get(cls) return instance until cleared. For tests/environment swaps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>T</em><em>]</em>)</p></li>
+<li><p><strong>instance</strong> (<em>T</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.override_factory">
+<span class="sig-name descname"><span class="pre">override_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.override_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.override_factory" title="Link to this definition">#</a></dt>
+<dd><p>Make get(cls) return factory() on each resolution until cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>T</em><em>]</em>)</p></li>
+<li><p><strong>factory</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><em>T</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.clear_override">
+<span class="sig-name descname"><span class="pre">clear_override</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.clear_override"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.clear_override" title="Link to this definition">#</a></dt>
+<dd><p>Remove any override for cls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.clear_overrides">
+<span class="sig-name descname"><span class="pre">clear_overrides</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.clear_overrides"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.clear_overrides" title="Link to this definition">#</a></dt>
+<dd><p>Remove all overrides.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.overrides">
+<span class="sig-name descname"><span class="pre">overrides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.overrides"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.overrides" title="Link to this definition">#</a></dt>
+<dd><p>Temporarily override each type -&gt; instance in mapping, restoring on exit.</p>
+<p>Both the overrides and the singleton cache are snapshotted and restored,
+so any singleton built <em>under</em> the override is discarded on exit and the
+container returns to its prior state - the behavior a test expects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mapping</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><em>Mapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><em>Iterator</em></a>[None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.is_registered" title="Link to this definition">#</a></dt>
+<dd><p>Whether cls has been registered in this container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.reset" title="Link to this definition">#</a></dt>
+<dd><p>Clear the singleton/thread-local caches, overrides, and pending finalizers.</p>
+<p>Registrations are kept. A test helper: it drops resource finalizers <strong>without</strong>
+running them, so tear resources down with <code class="docutils literal notranslate"><span class="pre">shutdown_resources()</span></code> first if their
+cleanup matters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.shutdown_resources">
+<span class="sig-name descname"><span class="pre">shutdown_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.shutdown_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.shutdown_resources" title="Link to this definition">#</a></dt>
+<dd><p>Tear down every built &#64;Resource in reverse construction order (LIFO).</p>
+<p>Best-effort: each is closed even if an earlier one raised, and the failures
+are aggregated into a single <code class="docutils literal notranslate"><span class="pre">ResourceTeardownError</span></code>. Raises immediately,
+tearing nothing down, if an <strong>async</strong> resource is pending — use
+<code class="docutils literal notranslate"><span class="pre">ashutdown_resources()</span></code> / <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container</span></code> for those.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.ashutdown_resources">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ashutdown_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.ashutdown_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.ashutdown_resources" title="Link to this definition">#</a></dt>
+<dd><p>Async twin of <code class="docutils literal notranslate"><span class="pre">shutdown_resources</span></code>: awaits async teardowns, runs sync ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="inito.Container.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Container.scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Container.scope" title="Link to this definition">#</a></dt>
+<dd><p>Open a scope for <code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code> services; usable as <code class="docutils literal notranslate"><span class="pre">with</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>.</p>
+<p>Within the block, a scoped service is built once and cached, and a scoped
+&#64;Resource is torn down (LIFO) when the block exits. Scopes nest and are
+task/thread-local.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>_ScopeHandle</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.Scope">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/container.html#Scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Scope" title="Link to this definition">#</a></dt>
+<dd><p>How a registered service’s lifetime is managed.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.Qualifier">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Qualifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/dependency_resolver.html#Qualifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Qualifier" title="Link to this definition">#</a></dt>
+<dd><p>Names the desired implementation of an Annotated dependency.</p>
+<p>Use as <code class="docutils literal notranslate"><span class="pre">Annotated[Repo,</span> <span class="pre">Qualifier(&quot;postgres&quot;)]</span></code> to autowire the service
+registered with <code class="docutils literal notranslate"><span class="pre">&#64;Service(qualifier=&quot;postgres&quot;)</span></code> when several implement
+the same base type. A bare string in the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> metadata
+(<code class="docutils literal notranslate"><span class="pre">Annotated[Repo,</span> <span class="pre">&quot;postgres&quot;]</span></code>) is accepted too.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.Factory">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Factory</span></span><a class="reference internal" href="../_modules/inito/di/factory.html#Factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Factory" title="Link to this definition">#</a></dt>
+<dd><p>A callable that builds a fresh <code class="docutils literal notranslate"><span class="pre">T</span></code> per call, autowiring what it can.</p>
+<p>Inject it as a constructor parameter — <code class="docutils literal notranslate"><span class="pre">make:</span> <span class="pre">Factory[Widget]</span></code> — and call it
+to build a <code class="docutils literal notranslate"><span class="pre">Widget</span></code> on demand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_report</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Sales&quot;</span><span class="p">)</span>   <span class="c1"># title supplied now, deps autowired</span>
+</pre></div>
+</div>
+<p>Every keyword argument you pass wins; every other constructor parameter of the
+target whose type is a registered service is autowired from the container; and
+anything left falls to the target’s own default (or raises a natural
+missing-argument error). A fresh instance is built on every call — the result
+is never cached, and the target need not itself be registered.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Factory</span></code> is the annotation/marker and the static type: type-checkers see
+<code class="docutils literal notranslate"><span class="pre">make(...)</span></code> returning <code class="docutils literal notranslate"><span class="pre">T</span></code> with no plugin. The container injects a bound
+implementation; calling <code class="docutils literal notranslate"><span class="pre">Factory</span></code> directly is not supported.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.default_container">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">default_container</span></span><a class="headerlink" href="#inito.default_container" title="Link to this definition">#</a></dt>
+<dd><p>The shared Container that <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code> register into by
+default.</p>
+</dd></dl>
+
+<p><code class="docutils literal notranslate"><span class="pre">Container</span></code> exposes <code class="docutils literal notranslate"><span class="pre">get</span></code>/<code class="docutils literal notranslate"><span class="pre">aget</span></code>/<code class="docutils literal notranslate"><span class="pre">register</span></code>/<code class="docutils literal notranslate"><span class="pre">register_provider</span></code>/<code class="docutils literal notranslate"><span class="pre">is_registered</span></code>/
+<code class="docutils literal notranslate"><span class="pre">reset</span></code>, <code class="docutils literal notranslate"><span class="pre">scope()</span></code> (a <code class="docutils literal notranslate"><span class="pre">with</span></code>/<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> scope for <code class="docutils literal notranslate"><span class="pre">Scope.SCOPED</span></code> services), the
+resource lifecycle <code class="docutils literal notranslate"><span class="pre">shutdown_resources</span></code>/<code class="docutils literal notranslate"><span class="pre">ashutdown_resources</span></code> (and the
+<code class="docutils literal notranslate"><span class="pre">with</span></code>/<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> context-manager protocol), and the test overrides
+<code class="docutils literal notranslate"><span class="pre">override</span></code>/<code class="docutils literal notranslate"><span class="pre">override_factory</span></code>/<code class="docutils literal notranslate"><span class="pre">overrides</span></code>/<code class="docutils literal notranslate"><span class="pre">clear_override</span></code>/<code class="docutils literal notranslate"><span class="pre">clear_overrides</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Scope</span></code> adds <code class="docutils literal notranslate"><span class="pre">SCOPED</span></code> (one instance per <code class="docutils literal notranslate"><span class="pre">scope()</span></code>). <code class="docutils literal notranslate"><span class="pre">Scope</span></code> is <code class="docutils literal notranslate"><span class="pre">SINGLETON</span></code>, <code class="docutils literal notranslate"><span class="pre">TRANSIENT</span></code>, or <code class="docutils literal notranslate"><span class="pre">THREAD_LOCAL</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Qualifier</span></code> names an implementation for <code class="docutils literal notranslate"><span class="pre">Annotated[Base,</span> <span class="pre">Qualifier(&quot;name&quot;)]</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Factory[T]</span></code> injects a callable that builds a fresh <code class="docutils literal notranslate"><span class="pre">T</span></code> per call, autowiring its
+registered dependencies and taking the rest as call-time keyword arguments.</p>
+</section>
+<section id="decorators">
+<h2>Decorators<a class="headerlink" href="#decorators" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Service">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Service</span></span><a class="headerlink" href="#inito.Service" title="Link to this definition">#</a></dt>
+<dd><p>Register cls’s constructor dependency types into a Container (default_container unless container= is given), at decoration time - never instantiates cls. The class remains a perfectly ordinary, directly-constructible Python class; container.get(cls) is the DI-aware path that autowires and builds it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.ServiceOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ServiceOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Scope.SINGLETON</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/service.html#ServiceOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.ServiceOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Service decorator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<a class="reference internal" href="#inito.Scope" title="inito.di.container.Scope"><em>Scope</em></a>)</p></li>
+<li><p><strong>container</strong> (<a class="reference internal" href="#inito.Container" title="inito.di.container.Container"><em>Container</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>qualifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>primary</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Singleton">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Singleton</span></span><a class="reference internal" href="../_modules/inito/decorators/singleton.html#Singleton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Singleton" title="Link to this definition">#</a></dt>
+<dd><p>Register cls into a Container with Scope.SINGLETON, always.</p>
+<p>A standalone decorator, not a stacking requirement on top of &#64;Service -
+&#64;Service(scope=…) already covers every scope, including singleton.
+Rejects an explicit scope= kwarg rather than silently honoring it, since
+a caller passing scope=Scope.TRANSIENT to &#64;Singleton is almost certainly
+a mistake, not an intentional override.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Inject">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Inject</span></span><a class="reference internal" href="../_modules/inito/decorators/inject.html#Inject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Inject" title="Link to this definition">#</a></dt>
+<dd><p>Wrap fn so its type-annotated, unfilled parameters are resolved from a Container per call.</p>
+<p>Explicit args/kwargs supplied by the caller are never overridden. Unlike
+every class decorator in this library, resolution here is a real per-call
+cost (a container.get() per unfilled, container-registered parameter) -
+&#64;Inject targets composition-root entry points (e.g. a main()/handler
+function), not generated hot-path methods, so this cost is intentional
+and documented rather than hidden. All signature/type-hint inspection is
+still done exactly once, at decoration time; the per-call path only checks
+which parameters the caller already supplied and resolves the rest.</p>
+<p>For an ordinary signature (no <code class="docutils literal notranslate"><span class="pre">*args</span></code>/<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>/positional-only), the
+wrapper is generated with the function’s own parameters, so a call skips the
+generic <code class="docutils literal notranslate"><span class="pre">*args</span></code>/<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> packing and per-parameter loop; exotic
+signatures fall back to a generic wrapper with identical behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>container</strong> (<a class="reference internal" href="#inito.Container" title="inito.di.container.Container"><em>Container</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="inito.Resource">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/resource.html#Resource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Resource" title="Link to this definition">#</a></dt>
+<dd><p>Mark a resource whose lifetime the container manages, then closes at shutdown.</p>
+<p>On a <strong>class</strong> (paired with &#64;Service/&#64;Singleton): the instance is torn down by
+its <code class="docutils literal notranslate"><span class="pre">close()</span></code> method — rename it with <code class="docutils literal notranslate"><span class="pre">&#64;Resource(close=&quot;aclose&quot;)</span></code> — or, if
+it has none, the <code class="docutils literal notranslate"><span class="pre">__enter__</span></code>/<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> protocol. An <code class="docutils literal notranslate"><span class="pre">async</span></code> close is
+awaited by <code class="docutils literal notranslate"><span class="pre">ashutdown_resources()</span></code> / <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container</span></code>.</p>
+<p>On a <strong>generator function</strong>: it self-registers a provider keyed by the yielded
+type; its parameters are autowired; the code after <code class="docutils literal notranslate"><span class="pre">yield</span></code> runs at teardown.
+Sync generators build via <code class="docutils literal notranslate"><span class="pre">get()</span></code>, async generators via <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">aget()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.ResourceOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ResourceOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'close'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Scope.SINGLETON</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/resource.html#ResourceOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.ResourceOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Resource decorator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>close</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>container</strong> (<a class="reference internal" href="#inito.Container" title="inito.di.container.Container"><em>Container</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>scope</strong> (<a class="reference internal" href="#inito.Scope" title="inito.di.container.Scope"><em>Scope</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.Injected">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Injected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">container</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/di/integrations/fastapi.html#Injected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.Injected" title="Link to this definition">#</a></dt>
+<dd><p>A FastAPI dependency that resolves <code class="docutils literal notranslate"><span class="pre">T</span></code> from an inito Container per request.</p>
+<p>Two equivalent forms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">svc</span><span class="p">:</span> <span class="n">Injected</span><span class="p">[</span><span class="n">Service</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>            <span class="c1"># Annotated form</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">svc</span><span class="p">:</span> <span class="n">Service</span> <span class="o">=</span> <span class="n">Injected</span><span class="p">(</span><span class="n">Service</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>  <span class="c1"># default-value form</span>
+</pre></div>
+</div>
+<p>Each resolution runs inside a fresh <code class="docutils literal notranslate"><span class="pre">container.scope()</span></code> (opened and torn down
+per request), so a scoped <code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> — e.g. a request-lifetime DB session —
+is built on entry and closed when the request ends. Pass <code class="docutils literal notranslate"><span class="pre">container=</span></code> to the
+call form to resolve from a container other than the default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>container</strong> (<a class="reference internal" href="#inito.Container" title="inito.Container"><em>Container</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><code class="docutils literal notranslate"><span class="pre">&#64;Resource</span></code> marks a class (torn down by <code class="docutils literal notranslate"><span class="pre">close()</span></code>/<code class="docutils literal notranslate"><span class="pre">aclose()</span></code> or the
+<code class="docutils literal notranslate"><span class="pre">__enter__</span></code>/<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> protocol) or a generator-provider function (<code class="docutils literal notranslate"><span class="pre">yield</span></code> the
+resource, then clean up) whose lifetime the <code class="docutils literal notranslate"><span class="pre">Container</span></code> manages. Tear resources
+down with <code class="docutils literal notranslate"><span class="pre">container.shutdown_resources()</span></code> / <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">container</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.ashutdown_resources()</span></code> / <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">container</span></code> for async ones;
+an async generator provider is built with <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">container.aget(cls)</span></code>.</p>
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.component</span></code>/<code class="docutils literal notranslate"><span class="pre">inito.Component</span></code> (a literal alias for
+<code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>), <code class="docutils literal notranslate"><span class="pre">inito.singleton</span></code>, and <code class="docutils literal notranslate"><span class="pre">inito.inject</span></code>. <code class="docutils literal notranslate"><span class="pre">&#64;Service</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;Singleton</span></code>
+register a class’s constructor dependency types at decoration time — they
+never mutate the class, so it stays an ordinary, directly-constructible
+Python class; <code class="docutils literal notranslate"><span class="pre">container.get(cls)</span></code> is the DI-aware path that autowires and
+lazily builds it.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="decorators.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Decorators</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="exceptions.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Exceptions</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#container-and-scope">Container and Scope</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container"><code class="docutils literal notranslate"><span class="pre">Container</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.register"><code class="docutils literal notranslate"><span class="pre">Container.register()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.register_provider"><code class="docutils literal notranslate"><span class="pre">Container.register_provider()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.get"><code class="docutils literal notranslate"><span class="pre">Container.get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.aget"><code class="docutils literal notranslate"><span class="pre">Container.aget()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.override"><code class="docutils literal notranslate"><span class="pre">Container.override()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.override_factory"><code class="docutils literal notranslate"><span class="pre">Container.override_factory()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.clear_override"><code class="docutils literal notranslate"><span class="pre">Container.clear_override()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.clear_overrides"><code class="docutils literal notranslate"><span class="pre">Container.clear_overrides()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.overrides"><code class="docutils literal notranslate"><span class="pre">Container.overrides()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.is_registered"><code class="docutils literal notranslate"><span class="pre">Container.is_registered()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.reset"><code class="docutils literal notranslate"><span class="pre">Container.reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.shutdown_resources"><code class="docutils literal notranslate"><span class="pre">Container.shutdown_resources()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.ashutdown_resources"><code class="docutils literal notranslate"><span class="pre">Container.ashutdown_resources()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Container.scope"><code class="docutils literal notranslate"><span class="pre">Container.scope()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Qualifier"><code class="docutils literal notranslate"><span class="pre">Qualifier</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Factory"><code class="docutils literal notranslate"><span class="pre">Factory</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.default_container"><code class="docutils literal notranslate"><span class="pre">inito.default_container</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decorators">Decorators</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Service"><code class="docutils literal notranslate"><span class="pre">Service</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ServiceOptions"><code class="docutils literal notranslate"><span class="pre">ServiceOptions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Singleton"><code class="docutils literal notranslate"><span class="pre">Singleton</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Inject"><code class="docutils literal notranslate"><span class="pre">Inject</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Resource"><code class="docutils literal notranslate"><span class="pre">Resource()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ResourceOptions"><code class="docutils literal notranslate"><span class="pre">ResourceOptions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Injected"><code class="docutils literal notranslate"><span class="pre">Injected</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/swtnk/inito/edit/main/docs/reference/dependency-injection.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/reference/dependency-injection.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Swetank Subham.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1023 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Decorators &#8212; InitO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=292eb321"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/decorators';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://swetanksubham.com/inito/reference/decorators.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dependency injection" href="dependency-injection.html" />
+    <link rel="prev" title="API reference" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">InitO</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user-guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/swtnk/inito" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/inito/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependency-injection.html">Dependency injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Decorators</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="decorators">
+<h1>Decorators<a class="headerlink" href="#decorators" title="Link to this heading">#</a></h1>
+<p>API reference for every code-generating decorator. For usage, options, and
+examples, see the corresponding <a class="reference internal" href="../user-guide.html"><span class="std std-doc">User Guide</span></a> page linked
+from each section.</p>
+<section id="field">
+<h2>field<a class="headerlink" href="#field" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="inito.field">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/metadata/field.html#field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.field" title="Link to this definition">#</a></dt>
+<dd><p>Declare a field’s default explicitly, e.g. a per-instance <code class="docutils literal notranslate"><span class="pre">default_factory</span></code>.</p>
+<p>The inito-native equivalent of <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.field" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses.field()</span></code></a>: a mutable default
+such as <code class="docutils literal notranslate"><span class="pre">items:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">[]</span></code> is rejected (one object would be shared across
+every instance), so declare it as
+<code class="docutils literal notranslate"><span class="pre">items:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">field(default_factory=list)</span></code> to build a fresh one per
+instance. Returns <code class="docutils literal notranslate"><span class="pre">Any</span></code> so the annotated field type still type-checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
+<li><p><strong>default_factory</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Declare a field’s default explicitly — the inito-native equivalent of
+<code class="docutils literal notranslate"><span class="pre">dataclasses.field</span></code>. Use <code class="docutils literal notranslate"><span class="pre">field(default_factory=...)</span></code> for a mutable default
+(a bare <code class="docutils literal notranslate"><span class="pre">items:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">[]</span></code> is rejected) and <code class="docutils literal notranslate"><span class="pre">field(default=...)</span></code> for a plain
+one. Recognized by the mypy plugin and by pyright (PEP 681 <code class="docutils literal notranslate"><span class="pre">field_specifiers</span></code>),
+so the annotated field type still checks.</p>
+</section>
+<section id="data-data">
+<h2>&#64;Data / data<a class="headerlink" href="#data-data" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Data">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><a class="headerlink" href="#inito.Data" title="Link to this definition">#</a></dt>
+<dd><p>Generate a constructor, __repr__, __eq__, and (per <code class="docutils literal notranslate"><span class="pre">accessors</span></code>) <code class="docutils literal notranslate"><span class="pre">get_</span></code>/<code class="docutils literal notranslate"><span class="pre">set_</span></code> accessors for every declared field. A frozen class is also hashable; a mutable one is made unhashable (as dataclasses does) so a mutated instance can’t break its own set/dict membership. Accepts DataOptions (frozen, include_getters, include_setters, accessors).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.DataOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">DataOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frozen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_getters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_setters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accessors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lombok'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/data.html#DataOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.DataOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Data decorator.</p>
+<p>frozen=True skips setter generation and makes every field genuinely
+immutable: attribute assignment/deletion always raise
+dataclasses.FrozenInstanceError after construction, no
+&#64;dataclass(frozen=True) stacking required. accessors selects the accessor
+style: <code class="docutils literal notranslate"><span class="pre">&quot;lombok&quot;</span></code> (default, <code class="docutils literal notranslate"><span class="pre">get_x</span></code>/<code class="docutils literal notranslate"><span class="pre">set_x</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;attr&quot;</span></code> (none — use
+<code class="docutils literal notranslate"><span class="pre">obj.x</span></code> directly), or <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code> (an alias of <code class="docutils literal notranslate"><span class="pre">&quot;lombok&quot;</span></code>, since the
+attribute is always accessible in Python).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frozen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>include_getters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>include_setters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>accessors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>slots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.data</span></code>. Guide: <a class="reference internal" href="../decorators/data.html"><span class="std std-doc">&#64;Data</span></a>.</p>
+</section>
+<section id="value-value">
+<h2>&#64;Value / value<a class="headerlink" href="#value-value" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Value">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Value</span></span><a class="headerlink" href="#inito.Value" title="Link to this definition">#</a></dt>
+<dd><p>constructor, __repr__, __eq__, __hash__, and <code class="docutils literal notranslate"><span class="pre">get_</span></code> accessors for every declared field - never setters. Attribute assignment and deletion always raise dataclasses.FrozenInstanceError after construction, unconditionally - no &#64;dataclass(frozen=True) stacking required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Generate a genuinely immutable data class</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.ValueOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ValueOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_getters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/value.html#ValueOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.ValueOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Value decorator.</p>
+<p>freeze_collections=True stores a mutable collection field as an immutable
+one (list-&gt;tuple, set-&gt;frozenset, dict-&gt;read-only mapping) at construction,
+hardening the shallow freeze that &#64;Value already provides.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_getters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>slots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>freeze_collections</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.value</span></code>. Generates a constructor, <code class="docutils literal notranslate"><span class="pre">__repr__</span></code>,
+<code class="docutils literal notranslate"><span class="pre">__eq__</span></code>, <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_</span></code> accessors — never setters, and genuinely
+immutable (assignment/deletion raise <code class="docutils literal notranslate"><span class="pre">dataclasses.FrozenInstanceError</span></code>), with
+no <code class="docutils literal notranslate"><span class="pre">&#64;dataclass(frozen=True)</span></code> stacking. Guide: <a class="reference internal" href="../decorators/value.html"><span class="std std-doc">&#64;Value</span></a>.</p>
+</section>
+<section id="getter-getter">
+<h2>&#64;Getter / getter<a class="headerlink" href="#getter-getter" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Getter">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Getter</span></span><a class="headerlink" href="#inito.Getter" title="Link to this definition">#</a></dt>
+<dd><p>Generate a get_&lt;field&gt;() accessor method for every declared field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.GetterOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">GetterOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/getter.html#GetterOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.GetterOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Getter decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.getter</span></code>. Guide: <a class="reference internal" href="../decorators/accessors.html"><span class="std std-doc">Accessors</span></a>.</p>
+</section>
+<section id="setter-setter">
+<h2>&#64;Setter / setter<a class="headerlink" href="#setter-setter" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Setter">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Setter</span></span><a class="headerlink" href="#inito.Setter" title="Link to this definition">#</a></dt>
+<dd><p>Generate a set_&lt;field&gt;(value) mutator method for every declared field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.SetterOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">SetterOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/setter.html#SetterOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.SetterOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Setter decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.setter</span></code>. Guide: <a class="reference internal" href="../decorators/accessors.html"><span class="std std-doc">Accessors</span></a>.</p>
+</section>
+<section id="tostring-to-string">
+<h2>&#64;ToString / to_string<a class="headerlink" href="#tostring-to-string" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.ToString">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ToString</span></span><a class="headerlink" href="#inito.ToString" title="Link to this definition">#</a></dt>
+<dd><p>Generate a __repr__ listing every declared field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.ToStringOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ToStringOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/to_string.html#ToStringOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.ToStringOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;ToString decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.to_string</span></code>. Guide: <a class="reference internal" href="../decorators/to-string.html"><span class="std std-doc">&#64;ToString</span></a>.</p>
+</section>
+<section id="equalsandhashcode-equals-and-hash-code">
+<h2>&#64;EqualsAndHashCode / equals_and_hash_code<a class="headerlink" href="#equalsandhashcode-equals-and-hash-code" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.EqualsAndHashCode">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">EqualsAndHashCode</span></span><a class="headerlink" href="#inito.EqualsAndHashCode" title="Link to this definition">#</a></dt>
+<dd><p>Generate __eq__ and __hash__ over every declared field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.EqualsAndHashCodeOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">EqualsAndHashCodeOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/equals_and_hash_code.html#EqualsAndHashCodeOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.EqualsAndHashCodeOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;EqualsAndHashCode decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.equals_and_hash_code</span></code>.
+Guide: <a class="reference internal" href="../decorators/equals-and-hash-code.html"><span class="std std-doc">&#64;EqualsAndHashCode</span></a>.</p>
+</section>
+<section id="noargsconstructor-no-args-constructor">
+<h2>&#64;NoArgsConstructor / no_args_constructor<a class="headerlink" href="#noargsconstructor-no-args-constructor" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.NoArgsConstructor">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">NoArgsConstructor</span></span><a class="headerlink" href="#inito.NoArgsConstructor" title="Link to this definition">#</a></dt>
+<dd><p>Generate a no-argument __init__ that assigns every field its default. Every field must have a default or default_factory, or decoration raises InvalidFieldDefinitionError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.NoArgsConstructorOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">NoArgsConstructorOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/no_args_constructor.html#NoArgsConstructorOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.NoArgsConstructorOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;NoArgsConstructor decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.no_args_constructor</span></code>.
+Guide: <a class="reference internal" href="../decorators/constructors.html"><span class="std std-doc">Constructors</span></a>.</p>
+</section>
+<section id="allargsconstructor-all-args-constructor">
+<h2>&#64;AllArgsConstructor / all_args_constructor<a class="headerlink" href="#allargsconstructor-all-args-constructor" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.AllArgsConstructor">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">AllArgsConstructor</span></span><a class="headerlink" href="#inito.AllArgsConstructor" title="Link to this definition">#</a></dt>
+<dd><p>Generate a constructor accepting every declared field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.AllArgsConstructorOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">AllArgsConstructorOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/all_args_constructor.html#AllArgsConstructorOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.AllArgsConstructorOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;AllArgsConstructor decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.all_args_constructor</span></code>.
+Guide: <a class="reference internal" href="../decorators/constructors.html"><span class="std std-doc">Constructors</span></a>.</p>
+</section>
+<section id="requiredargsconstructor-required-args-constructor">
+<h2>&#64;RequiredArgsConstructor / required_args_constructor<a class="headerlink" href="#requiredargsconstructor-required-args-constructor" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.RequiredArgsConstructor">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">RequiredArgsConstructor</span></span><a class="headerlink" href="#inito.RequiredArgsConstructor" title="Link to this definition">#</a></dt>
+<dd><p>Generate a constructor accepting only fields without a default; defaulted fields still get their default value assigned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.RequiredArgsConstructorOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">RequiredArgsConstructorOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/required_args_constructor.html#RequiredArgsConstructorOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.RequiredArgsConstructorOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;RequiredArgsConstructor decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.required_args_constructor</span></code>.
+Guide: <a class="reference internal" href="../decorators/constructors.html"><span class="std std-doc">Constructors</span></a>.</p>
+</section>
+<section id="builder-builder">
+<h2>&#64;Builder / builder<a class="headerlink" href="#builder-builder" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Builder">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Builder</span></span><a class="headerlink" href="#inito.Builder" title="Link to this definition">#</a></dt>
+<dd><p>Generate a nested fluent Builder class, a builder() classmethod, and (with to_builder=True) a to_builder() instance method. Accepts BuilderOptions (to_builder, setter_prefix, build_method_name, use_init). By default build() assigns fields directly, bypassing __init__ for speed; pass use_init=True to construct through the class’s own __init__ so a framework or hand-written constructor’s validation runs (e.g. Pydantic, SQLAlchemy, Django models).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.BuilderOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">BuilderOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_builder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_method_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/builders/builder_generator.html#BuilderOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.BuilderOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Builder decorator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_builder</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>setter_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>build_method_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>use_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.builder</span></code>. Guide: <a class="reference internal" href="../decorators/builder.html"><span class="std std-doc">&#64;Builder</span></a>.</p>
+</section>
+<section id="config-config">
+<h2>&#64;Config / config<a class="headerlink" href="#config-config" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Config">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#inito.Config" title="Link to this definition">#</a></dt>
+<dd><p>Generate a zero-argument __init__ that loads each declared field from an environment variable (UPPER_SNAKE of the field name, with an optional prefix), coerced to the field’s annotated type, at construction time. Fields without an env value fall back to their default; a required field with neither raises ConfigResolutionError. Register a &#64;Config class as a &#64;Service to autowire it by type. Accepts ConfigOptions(prefix).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.ConfigOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">ConfigOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inito/decorators/config.html#ConfigOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.ConfigOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Config decorator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.config</span></code>. Guide: <a class="reference internal" href="../decorators/config.html"><span class="std std-doc">&#64;Config</span></a>.</p>
+</section>
+<section id="jsonize-jsonize">
+<h2>&#64;Jsonize / jsonize<a class="headerlink" href="#jsonize-jsonize" title="Link to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="inito.Jsonize">
+<span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">Jsonize</span></span><a class="headerlink" href="#inito.Jsonize" title="Link to this definition">#</a></dt>
+<dd><p>Generate to_dict() (a JSON-native dict) and to_json() (a JSON string) over every declared field, coercing datetime/date/time (ISO 8601), UUID, Decimal, Enum, bytes (base64), Path, mappings, sequences/sets, and nested &#64;Jsonize objects. to_json forwards its keyword arguments to json.dumps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="inito.JsonizeOptions">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">inito.</span></span><span class="sig-name descname"><span class="pre">JsonizeOptions</span></span><a class="reference internal" href="../_modules/inito/decorators/jsonize.html#JsonizeOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#inito.JsonizeOptions" title="Link to this definition">#</a></dt>
+<dd><p>Configuration surface for the &#64;Jsonize decorator (no options yet).</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<p>Also exported as <code class="docutils literal notranslate"><span class="pre">inito.jsonize</span></code>. Generates <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>/<code class="docutils literal notranslate"><span class="pre">to_json()</span></code> serializing
+every declared field (datetime, UUID, Decimal, Enum, bytes, Path, nested
+<code class="docutils literal notranslate"><span class="pre">&#64;Jsonize</span></code>, …) to JSON-native forms. Guide: <a class="reference internal" href="../decorators/jsonize.html"><span class="std std-doc">&#64;Jsonize</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dependency-injection.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dependency injection</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#field">field</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.field"><code class="docutils literal notranslate"><span class="pre">field()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-data">@Data / data</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Data"><code class="docutils literal notranslate"><span class="pre">Data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.DataOptions"><code class="docutils literal notranslate"><span class="pre">DataOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#value-value">@Value / value</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Value"><code class="docutils literal notranslate"><span class="pre">Value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ValueOptions"><code class="docutils literal notranslate"><span class="pre">ValueOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getter-getter">@Getter / getter</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Getter"><code class="docutils literal notranslate"><span class="pre">Getter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.GetterOptions"><code class="docutils literal notranslate"><span class="pre">GetterOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setter-setter">@Setter / setter</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Setter"><code class="docutils literal notranslate"><span class="pre">Setter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.SetterOptions"><code class="docutils literal notranslate"><span class="pre">SetterOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tostring-to-string">@ToString / to_string</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ToString"><code class="docutils literal notranslate"><span class="pre">ToString</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ToStringOptions"><code class="docutils literal notranslate"><span class="pre">ToStringOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equalsandhashcode-equals-and-hash-code">@EqualsAndHashCode / equals_and_hash_code</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.EqualsAndHashCode"><code class="docutils literal notranslate"><span class="pre">EqualsAndHashCode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.EqualsAndHashCodeOptions"><code class="docutils literal notranslate"><span class="pre">EqualsAndHashCodeOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noargsconstructor-no-args-constructor">@NoArgsConstructor / no_args_constructor</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.NoArgsConstructor"><code class="docutils literal notranslate"><span class="pre">NoArgsConstructor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.NoArgsConstructorOptions"><code class="docutils literal notranslate"><span class="pre">NoArgsConstructorOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#allargsconstructor-all-args-constructor">@AllArgsConstructor / all_args_constructor</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.AllArgsConstructor"><code class="docutils literal notranslate"><span class="pre">AllArgsConstructor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.AllArgsConstructorOptions"><code class="docutils literal notranslate"><span class="pre">AllArgsConstructorOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requiredargsconstructor-required-args-constructor">@RequiredArgsConstructor / required_args_constructor</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.RequiredArgsConstructor"><code class="docutils literal notranslate"><span class="pre">RequiredArgsConstructor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.RequiredArgsConstructorOptions"><code class="docutils literal notranslate"><span class="pre">RequiredArgsConstructorOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#builder-builder">@Builder / builder</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Builder"><code class="docutils literal notranslate"><span class="pre">Builder</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.BuilderOptions"><code class="docutils literal notranslate"><span class="pre">BuilderOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-config">@Config / config</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.ConfigOptions"><code class="docutils literal notranslate"><span class="pre">ConfigOptions</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jsonize-jsonize">@Jsonize / jsonize</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.Jsonize"><code class="docutils literal notranslate"><span class="pre">Jsonize</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inito.JsonizeOptions"><code class="docutils literal notranslate"><span class="pre">JsonizeOptions</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/swtnk/inito/edit/main/docs/reference/decorators.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/reference/decorators.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Swetank Subham.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
